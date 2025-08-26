@@ -1,5 +1,7 @@
 package app;
 
+import ui.Ui;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -47,5 +49,6 @@ public class Main {
          */
 
         // Ideia base para criacao e uma tela acima
+        Ui screen = new Ui();
     }
 }
