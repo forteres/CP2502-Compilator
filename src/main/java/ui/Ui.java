@@ -36,7 +36,7 @@ public class Ui {
         menuBar = new MenuBar(editArea, resultArea);
         screen.setJMenuBar(menuBar.menuBar);
 
-        toolBar = new ToolBar();
+        toolBar = new ToolBar(menuBar);
         screen.add(toolBar.toolBar, BorderLayout.NORTH);
 
         splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollArea, resultArea);
