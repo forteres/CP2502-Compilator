@@ -31,7 +31,7 @@ public class Ui {
         screen.add(toolBar.toolBar, BorderLayout.NORTH);
 
         editArea = new RSyntaxTextArea(20, 60);
-        editArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+        editArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA); // alterar
         editArea.setCodeFoldingEnabled(true);
 
         scrollArea = new RTextScrollPane(editArea);
