@@ -24,12 +24,6 @@ public class Ui {
         screen.setLocationRelativeTo(null);
         screen.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
-        menuBar = new MenuBar();
-        screen.setJMenuBar(menuBar.menuBar);
-
-        toolBar = new ToolBar();
-        screen.add(toolBar.toolBar, BorderLayout.NORTH);
-
         editArea = new RSyntaxTextArea(20, 60);
         editArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA); // alterar
         editArea.setCodeFoldingEnabled(true);
@@ -38,6 +32,12 @@ public class Ui {
 
         resultArea = new JTextField();
         resultArea.setEditable(false);
+
+        menuBar = new MenuBar(editArea, resultArea);
+        screen.setJMenuBar(menuBar.menuBar);
+
+        toolBar = new ToolBar();
+        screen.add(toolBar.toolBar, BorderLayout.NORTH);
 
         splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollArea, resultArea);
         splitPane.setResizeWeight(0.7);

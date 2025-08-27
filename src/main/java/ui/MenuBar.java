@@ -1,24 +1,31 @@
 package ui;
 
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+
 import javax.swing.*;
 
 public class MenuBar {
     JMenuBar menuBar;
-            public MenuBar() {
-                menuBar = new JMenuBar();
+    RSyntaxTextArea editArea;
+    JTextField resultArea;
 
-                JMenu menuFile = getMenuFile();
+    public MenuBar(RSyntaxTextArea editArea, JTextField resultArea) {
+        menuBar = new JMenuBar();
+        this.editArea = editArea;
+        this.resultArea = resultArea;
 
-                JMenu menuEdit = getMenuEdit();
+        JMenu menuFile = getMenuFile();
 
-                JMenu menuCompilator = getMenuCompilator();
+        JMenu menuEdit = getMenuEdit();
 
-                menuBar.add(menuFile);
-                menuBar.add(menuEdit);
-                menuBar.add(menuCompilator);
-            }
+        JMenu menuCompilator = getMenuCompilator();
 
-    private static JMenu getMenuFile() {
+        menuBar.add(menuFile);
+        menuBar.add(menuEdit);
+        menuBar.add(menuCompilator);
+    }
+
+    private JMenu getMenuFile() {
         JMenu menuFile = new JMenu("Arquivo");
 
         JMenuItem menuFile_New = new JMenuItem("Novo");
@@ -39,7 +46,7 @@ public class MenuBar {
         menuFile.add(menuFile_Exit);
         return menuFile;
     }
-    private static JMenu getMenuEdit() {
+    private JMenu getMenuEdit() {
         JMenu menuEdit = new JMenu("Edição");
 
         JMenuItem menuEdit_Cut = new JMenuItem("Recortar");
@@ -54,7 +61,7 @@ public class MenuBar {
         menuEdit.add(menuEdit_Paste);
         return menuEdit;
     }
-    private static JMenu getMenuCompilator() {
+    private JMenu getMenuCompilator() {
         JMenu menuCompilator = new JMenu("Compilação");
 
         JMenuItem menuCompilator_Build = new JMenuItem("Compilar");
@@ -70,34 +77,36 @@ public class MenuBar {
     //##Button Functions
 
     //File Functions
-    public static void newAction(){
+    public void newAction(){
 
     }
-    public static void openAction(){
+    public void openAction(){
 
     }
-    public static void saveAction(){
+    public void saveAction(){
 
     }
-    public static void saveAsAction(){
+    public void saveAsAction(){
 
     }
-    public static void exitAction(){
+    public void exitAction(){
 
     }
 
     //Edit Functions
-    public static void cutAction(){
+    public void cutAction(){
+        editArea.cut();
     }
-    public static void copyAction(){
+    public void copyAction(){
+        editArea.copy();
     }
-    public static void pasteAction(){
-
+    public void pasteAction(){
+        editArea.paste();
     }
 
     //Compilator Functions
-    public static void buildAction(){
+    public void buildAction(){
     }
-    public static void runAction(){
+    public void runAction(){
     }
 }
