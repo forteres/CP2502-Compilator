@@ -1,13 +1,16 @@
 package ui;
 
+import app.FileManager;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 import javax.swing.*;
+import java.io.IOException;
 
 public class MenuBar {
     JMenuBar menuBar;
     RSyntaxTextArea editArea;
     JTextField resultArea;
+    FileManager fileManager;
 
     public MenuBar(RSyntaxTextArea editArea, JTextField resultArea) {
         menuBar = new JMenuBar();
@@ -23,6 +26,8 @@ public class MenuBar {
         menuBar.add(menuFile);
         menuBar.add(menuEdit);
         menuBar.add(menuCompilator);
+
+        fileManager = new FileManager();
     }
 
     private JMenu getMenuFile() {
@@ -78,19 +83,33 @@ public class MenuBar {
 
     //File Functions
     public void newAction(){
-
+        if(fileManager.newFile(editArea.getText())){
+            editArea.setText(fileManager.getFileInitialState());
+        }
     }
     public void openAction(){
-
+        try {
+            if(fileManager.openFile(editArea.getText())) {
+                editArea.setText(fileManager.getFileInitialState());
+            }
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null,
+                    "Erro ao abrir arquivo: " + ex.getMessage(),
+                    "Erro",
+                    JOptionPane.ERROR_MESSAGE);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null,
+                    "Erro inesperado: " + ex.getMessage(),
+                    "Erro",
+                    JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
     }
     public void saveAction(){
-
+        fileManager.save(editArea.getText());
     }
     public void saveAsAction(){
-
-    }
-    public void exitAction(){
-
+        fileManager.saveAs(editArea.getText());
     }
 
     //Edit Functions
@@ -108,5 +127,8 @@ public class MenuBar {
     public void buildAction(){
     }
     public void runAction(){
+    }
+    public void exitAction(){
+
     }
 }

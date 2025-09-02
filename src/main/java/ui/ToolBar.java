@@ -19,9 +19,12 @@ public class ToolBar {
         toolBar = new JToolBar();
         this.menuBar = menuBar;
 
-        JButton fileButton   = new JButton(loadIcon("icons/addFile.png", iconSize, iconSize));
-        JButton folderButton = new JButton(loadIcon("icons/folder.png", iconSize, iconSize));
+        JButton newFileButton   = new JButton(loadIcon("icons/addFile.png", iconSize, iconSize));
+        newFileButton.addActionListener(e -> {menuBar.newAction();});
+        JButton openFileButton = new JButton(loadIcon("icons/folder.png", iconSize, iconSize));
+        openFileButton.addActionListener(e -> {menuBar.openAction();});
         JButton saveButton   = new JButton(loadIcon("icons/save.png", iconSize, iconSize));
+        saveButton.addActionListener(e -> {menuBar.saveAction();});
         JButton cutButton    = new JButton(loadIcon("icons/cut.png", iconSize, iconSize));
         cutButton.addActionListener(e -> menuBar.cutAction());
         JButton copyButton   = new JButton(loadIcon("icons/copy.png", iconSize, iconSize));
@@ -29,11 +32,13 @@ public class ToolBar {
         JButton pasteButton  = new JButton(loadIcon("icons/paste.png", iconSize, iconSize));
         pasteButton.addActionListener(e -> menuBar.pasteAction());
         JButton buildButton  = new JButton(loadIcon("icons/hammer.png", iconSize, iconSize));
+        buildButton.addActionListener(e -> menuBar.buildAction());
         JButton runButton    = new JButton(loadIcon("icons/play.png", iconSize, iconSize));
+        runButton.addActionListener(e -> menuBar.runAction());
         JButton sosButton    = new JButton(loadIcon("icons/sos.png", iconSize, iconSize));
 
-        toolBar.add(fileButton);
-        toolBar.add(folderButton);
+        toolBar.add(newFileButton);
+        toolBar.add(openFileButton);
         toolBar.add(saveButton);
 
         toolBar.addSeparator();
