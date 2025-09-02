@@ -129,6 +129,9 @@ public class MenuBar {
     public void runAction(){
     }
     public void exitAction(){
-
+        if (fileManager.needSavePrompt(editArea.getText()) == FileManager.GuardDecision.ABORT) {
+            return;
+        }
+        System.exit(0);
     }
 }

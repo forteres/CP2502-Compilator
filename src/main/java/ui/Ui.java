@@ -6,6 +6,10 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import static java.lang.System.exit;
 
 public class Ui {
     JFrame screen;
@@ -18,7 +22,7 @@ public class Ui {
 
     public Ui(){
         screen = new JFrame("Compilador");
-        screen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        screen.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         screen.setLayout(new BorderLayout());
         screen.setSize(800,600);
         screen.setLocationRelativeTo(null);
@@ -46,5 +50,12 @@ public class Ui {
         screen.add(splitPane);
 
         screen.setVisible(true);
+
+        screen.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                menuBar.exitAction();
+            }
+        });
     }
 }

@@ -85,7 +85,7 @@ public class FileManager {
 
         JFileChooser fileChooser = new JFileChooser();
         int resultPath = fileChooser.showOpenDialog(null);
-        if (resultPath != JFileChooser.APPROVE_OPTION) return false; // usuário cancelou seleção
+        if (resultPath != JFileChooser.APPROVE_OPTION) return false;
 
         Path path = fileChooser.getSelectedFile().toPath();
         if (!isTxt(path)) {
@@ -94,14 +94,14 @@ public class FileManager {
         }
 
         ccFile = path;
-        fileInitialState = Files.readString(path); // atualiza baseline
+        fileInitialState = Files.readString(path);
         return true;
     }
 
     public boolean newFile(String ccFileState) {
         if (needSavePrompt(ccFileState) == GuardDecision.ABORT) return false;
         ccFile = null;
-        fileInitialState = ""; // baseline do novo
+        fileInitialState = "";
         return true;
     }
 
@@ -123,7 +123,7 @@ public class FileManager {
         );
 
         if (opt == JOptionPane.CANCEL_OPTION || opt == JOptionPane.CLOSED_OPTION) {
-            return GuardDecision.ABORT; // Cancel
+            return GuardDecision.ABORT;
         }
         if (opt == JOptionPane.NO_OPTION) {
             return GuardDecision.PROCEED;
