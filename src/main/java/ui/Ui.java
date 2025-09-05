@@ -9,15 +9,13 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import static java.lang.System.exit;
-
 public class Ui {
     JFrame screen;
     MenuBar menuBar;
     ToolBar toolBar;
     RSyntaxTextArea editArea;
     RTextScrollPane scrollArea;
-    JTextField resultArea;
+    JTextArea resultArea;
     JSplitPane splitPane;
 
     public Ui(){
@@ -34,8 +32,16 @@ public class Ui {
 
         scrollArea = new RTextScrollPane(editArea);
 
-        resultArea = new JTextField();
+        RSyntaxTextArea resultArea = new RSyntaxTextArea(20, 60);
+        resultArea.setSyntaxEditingStyle(RSyntaxTextArea.SYNTAX_STYLE_NONE);
+        resultArea.setCodeFoldingEnabled(true);
         resultArea.setEditable(false);
+        resultArea.setHighlightCurrentLine(false);
+        resultArea.setLineWrap(true);
+        resultArea.setWrapStyleWord(true);
+        resultArea.setText("");
+
+        RTextScrollPane resultAreaScrollPane = new RTextScrollPane(resultArea);
 
         menuBar = new MenuBar(editArea, resultArea);
         screen.setJMenuBar(menuBar.menuBar);
@@ -43,7 +49,7 @@ public class Ui {
         toolBar = new ToolBar(menuBar);
         screen.add(toolBar.toolBar, BorderLayout.NORTH);
 
-        splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollArea, resultArea);
+        splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollArea, resultAreaScrollPane);
         splitPane.setResizeWeight(0.7);
         splitPane.setOneTouchExpandable(true);
         splitPane.setDividerSize(10);

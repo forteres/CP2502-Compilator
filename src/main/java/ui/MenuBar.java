@@ -1,18 +1,22 @@
 package ui;
 
 import app.FileManager;
+import app.Linguagem20252;
+import app.ParseException;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 import javax.swing.*;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class MenuBar {
     JMenuBar menuBar;
     RSyntaxTextArea editArea;
-    JTextField resultArea;
+    JTextArea resultArea;
     FileManager fileManager;
 
-    public MenuBar(RSyntaxTextArea editArea, JTextField resultArea) {
+    public MenuBar(RSyntaxTextArea editArea, JTextArea resultArea) {
         menuBar = new JMenuBar();
         this.editArea = editArea;
         this.resultArea = resultArea;
@@ -127,6 +131,12 @@ public class MenuBar {
     public void buildAction(){
     }
     public void runAction(){
+        InputStream input = new ByteArrayInputStream(editArea.getText().getBytes());
+        try {
+            this.resultArea.setText(Linguagem20252.analisar(input));
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
     public void exitAction(){
         if (fileManager.needSavePrompt(editArea.getText()) == FileManager.GuardDecision.ABORT) {

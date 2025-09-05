@@ -7,30 +7,37 @@ import java.util.Objects;
 
 public class Linguagem20252 implements Linguagem20252Constants {
 
-    public static void analisar(InputStream input) throws ParseException {
+    public static String analisar(InputStream input) throws ParseException {
         Linguagem20252 lexer = new Linguagem20252(input);
-
-        System.out.println("Iniciando a an\u00c3\u00a1lise l\u00c3\u00a9xica...");
-        System.out.println("------------------------------");
+        StringBuilder resultado = new StringBuilder();
 
         Token t;
         do {
-          t = lexer.getNextToken();
-          String categoria = TokenUtils.getCategory(t.kind);
-          String codigo = "";
-          if (Objects.equals(categoria, "ERRO LÉXICO: símbolo inválido") || Objects.equals(categoria, "ERRO LÉXICO: constante literal não finalizada")){
-            codigo = "-";
-          }else {
-            codigo = String.valueOf(t.kind);
-          }
-          System.out.println("Lexema: " + t.image + " | Categoria: " + TokenUtils.getCategory(t.kind) + " | Codigo: "+ codigo);
+            t = lexer.getNextToken();
+            String categoria = TokenUtils.getCategory(t.kind);
+            String codigo;
+
+            if (Objects.equals(categoria, "ERRO LÉXICO: símbolo inválido") ||
+                    Objects.equals(categoria, "ERRO LÉXICO: constante literal não finalizada")) {
+                codigo = "-";
+            } else {
+                codigo = String.valueOf(t.kind);
+            }
+
+            resultado.append("Lexema: ").append(t.image)
+                    .append(" | Categoria: ").append(categoria)
+                    .append(" | Codigo: ").append(codigo)
+                    .append("\n");
         } while (t.kind != Linguagem20252Constants.EOF);
 
-        System.out.println("------------------------------");
-        System.out.println("An\u00c3\u00a1lise l\u00c3\u00a9xica conclu\u00c3\u00adda.");
-      }
+        resultado.append("------------------------------\n");
+        resultado.append("Análise léxica concluída.");
+
+        return resultado.toString();
+    }
 
       // main só serve para testes no terminal
+    /*
       public static void main(String[] args) throws Exception {
         InputStream input = System.in;
         if (args.length > 0) {
@@ -38,6 +45,8 @@ public class Linguagem20252 implements Linguagem20252Constants {
         }
         analisar(input);
       }
+
+     */
 
   /** Generated Token Manager. */
   public Linguagem20252TokenManager token_source;
