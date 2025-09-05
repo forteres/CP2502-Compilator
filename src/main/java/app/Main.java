@@ -11,12 +11,12 @@ public class Main {
         //Ui screen = new Ui();
 
         String texto = "begin teste\n" +
-                "set a\n" +
+                "       set                  a\n" +
                 "= 10\n" +
-                "show (\n" +
+                "show               (\n" +
                 "3.14 ,cont\n" +
-                "\"abrir\n" +
-                ") @";
+                "               \" abrir\n" +
+                ") @           ";
 
         InputStream input = new ByteArrayInputStream(texto.getBytes(StandardCharsets.UTF_8));
 

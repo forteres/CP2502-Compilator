@@ -16,7 +16,7 @@ public class Linguagem20252 implements Linguagem20252Constants {
     Token t;
     do {
       t = lexer.getNextToken();
-      System.out.println("Token: " + t.kind + " (" + t.image + ")");
+      System.out.println("Lexema: " + t.image + " | Categoria: " + TokenUtils.getCategory(t.kind) + " | Codigo: "+ t.kind);
     } while (t.kind != Linguagem20252Constants.EOF);
 
     System.out.println("------------------------------");
