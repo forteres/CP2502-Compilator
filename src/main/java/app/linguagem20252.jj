@@ -1,0 +1,114 @@
+PARSER_BEGIN(Linguagem20252)
+
+import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
+public class Linguagem20252 {
+
+    public static void main(String args[]) throws ParseException, FileNotFoundException {
+        InputStream input = System.in;
+        if (args.length > 0) {
+          input = new FileInputStream(args);
+        }
+
+        // Cria uma instância do analisador léxico gerado
+        Linguagem20252 lexer = new Linguagem20252(input);
+
+        Token t;
+        System.out.println("Iniciando a análise léxica...");
+        System.out.println("------------------------------");
+        do {
+          t = lexer.getNextToken(); // Pega o próximo token
+          System.out.println("Token: " + t.kind + " (" + t.image + ")");
+        } while (t.kind != Linguagem20252Constants.EOF); // Continua até o fim do arquivo
+
+        System.out.println("------------------------------");
+        System.out.println("Análise léxica concluída.");
+      }
+
+}
+
+
+PARSER_END(Linguagem20252)
+
+
+
+SKIP:
+{
+< BLANK_SPACE: " ">
+| <END_OF_LINE: "\n">
+| <NEW_LINE:"\r">
+| <TABULATION:"\t">
+| <SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+| <BLOCK_COMMENT: "/*" (~[] | "*")* "*/">
+}
+
+TOKEN: {
+        // LITERAIS ------------------------------------------
+        < NUMBER: (["0"-"9"])+ >
+        | < REAL: (["0"-"9"])+ "." (["0"-"9"])+>
+        | < LETTER: (["a"-"z","A"-"Z"])>
+        | < TEXT: "\"" ( ["\u0000"-"\u007F"] ) "\"" | "'" ( ["\u0000"-"\u007F"] ) "'" >
+
+        // SIMBOLOS ESPECIAIS --------------------------------
+
+        | < ASSIGN: "=" >
+        | < EQUAL: "==" >
+        | < NOT_EQUAL: "!=" >
+        | < SEMICOLON: ";" >
+        | < COLON: ":" >
+        | < COMMA: "," >
+        | < DOT: "." >
+        | < LBRACE: "{" >
+        | < RBRACE: "}" >
+        | < LBRACKET: "[" >
+        | < RBRACKET: "]" >
+        | < LPAREN: "(" >
+        | < RPAREN: ")" >
+        | < PLUS: "+" >
+        | < MINUS: "-" >
+        | < STAR: "*" >
+        | < SLASH: "/" >
+        | < PERCENT: "%" >
+        | < POWER: "**" >
+        | < DOUBLE_PERCENT: "%%" >
+        | < SHIFT_LEFT: "<<" >
+        | < SHIFT_RIGHT: ">>" >
+        | < SHIFT_LEFT_ASSIGN: "<<=" >
+        | < SHIFT_RIGHT_ASSIGN: ">>=" >
+        | < EXCLAMATION: "!" >
+        | < PIPE: "|" >
+        | < AMPERSAND: "&" >
+
+        // TIPOS PRIMITIVOS ----------------------------------
+
+        | < TYPE_NUM: "num">
+        | < TYPE_REAL: "real">
+        | < TYPE_TEXT: "text">
+        | < TYPE_FLAG: "flag">
+
+        // PALAVRAS RESERVADAS -------------------------------
+
+        | < BEGIN: "begin">
+        | < DEFINE: "define">
+        | < START: "start">
+        | < END: "end">
+        | < SET: "set">
+        | < READ: "read">
+        | < SHOW: "show">
+        | < IF: "if">
+        | < THEN: "then">
+        | < ELSE: "else">
+        | < LOOP: "loop" >
+        | < WHILE: "while" >
+
+        // FLAG ----------------------------------------------
+
+        | < TRUE: "true">
+        | < FALSE: "false">
+
+        // IDENTIFICADOR -------------------------------------
+
+        | < IDENTIFIER: ["a"-"z","A"-"Z","_"] ( ["a"-"z","A"-"Z","_","0"-"9"] )* >
+    }
