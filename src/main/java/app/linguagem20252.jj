@@ -1,3 +1,7 @@
+options {
+    STATIC = false;
+}
+
 PARSER_BEGIN(Linguagem20252)
 
 import java.io.InputStream;
