@@ -20,8 +20,6 @@ public class Main {
 
         InputStream input = new ByteArrayInputStream(texto.getBytes(StandardCharsets.UTF_8));
 
-        Linguagem20252 lexer = new Linguagem20252(input);
-
         try {
             Linguagem20252.analisar(input);
         } catch (ParseException e) {

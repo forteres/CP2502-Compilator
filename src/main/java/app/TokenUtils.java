@@ -71,11 +71,17 @@ public class TokenUtils {
 
         categories.put(Linguagem20252Constants.IDENTIFIER, "IDENTIFICADOR");
 
+        // ERROS
+
+        categories.put(Linguagem20252Constants.ERROR, "ERRO LÉXICO: símbolo inválido");
+        categories.put(Linguagem20252Constants.UNCLOSED_STRING, "ERRO LÉXICO: constante literal não finalizada");
+        categories.put(Linguagem20252Constants.UNCLOSED_QUOTE, "ERRO LÉXICO: constante literal não finalizada");
+
 
     }
 
     public static String getCategory(int kind) {
-        return categories.getOrDefault(kind, "ERRO LÉXICO: símbolo inválido");
+        return categories.getOrDefault(kind, " --- ");
     }
 
 }

@@ -10,25 +10,29 @@ import java.io.FileNotFoundException;
 
 public class Linguagem20252 {
 
-    public static void main(String args[]) throws ParseException, FileNotFoundException {
-        InputStream input = System.in;
-        if (args.length > 0) {
-          input = new FileInputStream(args);
-        }
-
-        // Cria uma instância do analisador léxico gerado
+    public static void analisar(InputStream input) throws ParseException {
         Linguagem20252 lexer = new Linguagem20252(input);
 
-        Token t;
         System.out.println("Iniciando a análise léxica...");
         System.out.println("------------------------------");
+
+        Token t;
         do {
-          t = lexer.getNextToken(); // Pega o próximo token
-          System.out.println("Token: " + t.kind + " (" + t.image + ")");
-        } while (t.kind != Linguagem20252Constants.EOF); // Continua até o fim do arquivo
+          t = lexer.getNextToken();
+          System.out.println("Lexema: " + t.image + " | Categoria: " + TokenUtils.getCategory(t.kind) + " | Codigo: "+ t.kind);
+        } while (t.kind != Linguagem20252Constants.EOF);
 
         System.out.println("------------------------------");
         System.out.println("Análise léxica concluída.");
+      }
+
+      // main só serve para testes no terminal
+      public static void main(String[] args) throws Exception {
+        InputStream input = System.in;
+        if (args.length > 0) {
+          input = new FileInputStream(args[0]);
+        }
+        analisar(input);
       }
 
 }
@@ -54,6 +58,8 @@ TOKEN: {
         | < REAL: (["0"-"9"])+ "." (["0"-"9"])+>
         | < LETTER: (["a"-"z","A"-"Z"])>
         | < TEXT: "\"" ( ["\u0000"-"\u007F"] ) "\"" | "'" ( ["\u0000"-"\u007F"] ) "'" >
+        | < UNCLOSED_STRING: "\"" ( (~["\"","\\","\n","\r"]) | ("\\" ~[]) )+ >
+        | < UNCLOSED_QUOTE: "\"" >
 
         // SIMBOLOS ESPECIAIS --------------------------------
 
@@ -115,4 +121,8 @@ TOKEN: {
         // IDENTIFICADOR -------------------------------------
 
         | < IDENTIFIER: ["a"-"z","A"-"Z","_"] ( ["a"-"z","A"-"Z","_","0"-"9"] )* >
+
+        // ERRO ----------------------------------------------
+
+        | < ERROR: ~[]>
     }
