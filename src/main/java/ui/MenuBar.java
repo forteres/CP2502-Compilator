@@ -15,11 +15,13 @@ public class MenuBar {
     RSyntaxTextArea editArea;
     JTextArea resultArea;
     FileManager fileManager;
+    JLabel fileNameStatus;
 
-    public MenuBar(RSyntaxTextArea editArea, JTextArea resultArea) {
+    public MenuBar(RSyntaxTextArea editArea, JTextArea resultArea, JLabel fileNameStatus) {
         menuBar = new JMenuBar();
         this.editArea = editArea;
         this.resultArea = resultArea;
+        this.fileNameStatus = fileNameStatus;
 
         JMenu menuFile = getMenuFile();
 
@@ -89,12 +91,20 @@ public class MenuBar {
     public void newAction(){
         if(fileManager.newFile(editArea.getText())){
             editArea.setText(fileManager.getFileInitialState());
+            if(!fileManager.getFileName().isEmpty()){
+                fileNameStatus.setText(fileManager.getFileName());
+            }else{
+                fileNameStatus.setText("Arquivo novo");
+            }
         }
     }
     public void openAction(){
         try {
             if(fileManager.openFile(editArea.getText())) {
                 editArea.setText(fileManager.getFileInitialState());
+                if(!fileManager.getFileName().isEmpty()){
+                    fileNameStatus.setText(fileManager.getFileName());
+                }
             }
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(null,
@@ -111,9 +121,15 @@ public class MenuBar {
     }
     public void saveAction(){
         fileManager.save(editArea.getText());
+        if(!fileManager.getFileName().isEmpty()){
+            fileNameStatus.setText(fileManager.getFileName());
+        }
     }
     public void saveAsAction(){
         fileManager.saveAs(editArea.getText());
+        if(!fileManager.getFileName().isEmpty()){
+            fileNameStatus.setText(fileManager.getFileName());
+        }
     }
 
     //Edit Functions
@@ -129,14 +145,18 @@ public class MenuBar {
 
     //Compilator Functions
     public void buildAction(){
+        if(!editArea.getText().isEmpty()) {
+            InputStream input = new ByteArrayInputStream(editArea.getText().getBytes());
+            try {
+                this.resultArea.setText(Linguagem20252.analisar(input));
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+        }else{
+            this.resultArea.setText("Nada a Compilar"); // talvez tirar
+        }
     }
     public void runAction(){
-        InputStream input = new ByteArrayInputStream(editArea.getText().getBytes());
-        try {
-            this.resultArea.setText(Linguagem20252.analisar(input));
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
     }
     public void exitAction(){
         if (fileManager.needSavePrompt(editArea.getText()) == FileManager.GuardDecision.ABORT) {

@@ -1,6 +1,8 @@
 package app;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -16,7 +18,7 @@ public class FileManager {
     public FileManager(){}
 
     public boolean saveAs(String ccFileState) {
-        JFileChooser fileChooser = new JFileChooser();
+        JFileChooser fileChooser = new JFileChooser(new File(System.getProperty("user.dir")));
         if (ccFile != null) {
             fileChooser.setSelectedFile(ccFile.toFile());
         } else {
@@ -83,19 +85,24 @@ public class FileManager {
     public boolean openFile(String ccFileState) throws IOException {
         if (needSavePrompt(ccFileState) == GuardDecision.ABORT) return false;
 
-        JFileChooser fileChooser = new JFileChooser();
+        JFileChooser fileChooser = new JFileChooser(new File(System.getProperty("user.dir")));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Arquivos de Texto (*.txt)", "txt"));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Arquivos Java (*.java)", "java"));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Arquivos JSON (*.json)", "json"));
+        fileChooser.setAcceptAllFileFilterUsed(true);
         int resultPath = fileChooser.showOpenDialog(null);
         if (resultPath != JFileChooser.APPROVE_OPTION) return false;
 
         Path path = fileChooser.getSelectedFile().toPath();
-        if (!isTxt(path)) {
-            JOptionPane.showMessageDialog(null, "Selecione apenas arquivos .txt!");
+
+        try {
+            ccFile = path;
+            fileInitialState = Files.readString(path);
+            return true;
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Erro ao ler o arquivo:\n" + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-
-        ccFile = path;
-        fileInitialState = Files.readString(path);
-        return true;
     }
 
     public boolean newFile(String ccFileState) {
@@ -132,11 +139,6 @@ public class FileManager {
         boolean ok = (ccFile != null) ? save(ccFileState) : saveAs(ccFileState);
         return ok ? GuardDecision.PROCEED : GuardDecision.ABORT;
     }
-
-    public static boolean isTxt(Path p) {
-        String name = p.getFileName().toString().toLowerCase();
-        return name.endsWith(".txt");
-    }
-
     public String getFileInitialState() {return fileInitialState;}
+    public String getFileName(){return (this.ccFile == null) ? "" : this.ccFile.getFileName().toString();}
 }
