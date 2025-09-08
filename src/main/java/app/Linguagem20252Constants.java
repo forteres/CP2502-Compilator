@@ -31,107 +31,109 @@ public interface Linguagem20252Constants {
   /** RegularExpression Id. */
   int NUMBER = 10;
   /** RegularExpression Id. */
-  int TEXT = 11;
+  int TEXT_DOUBLE = 11;
   /** RegularExpression Id. */
-  int UNCLOSED_STRING = 12;
+  int TEXT_SINGLE = 12;
   /** RegularExpression Id. */
-  int UNCLOSED_QUOTE = 13;
+  int UNCLOSED_STRING = 13;
   /** RegularExpression Id. */
-  int ASSIGN = 14;
+  int UNCLOSED_QUOTE = 14;
   /** RegularExpression Id. */
-  int EQUAL = 15;
+  int ASSIGN = 15;
   /** RegularExpression Id. */
-  int NOT_EQUAL = 16;
+  int EQUAL = 16;
   /** RegularExpression Id. */
-  int SEMICOLON = 17;
+  int NOT_EQUAL = 17;
   /** RegularExpression Id. */
-  int COLON = 18;
+  int SEMICOLON = 18;
   /** RegularExpression Id. */
-  int COMMA = 19;
+  int COLON = 19;
   /** RegularExpression Id. */
-  int DOT = 20;
+  int COMMA = 20;
   /** RegularExpression Id. */
-  int LBRACE = 21;
+  int DOT = 21;
   /** RegularExpression Id. */
-  int RBRACE = 22;
+  int LBRACE = 22;
   /** RegularExpression Id. */
-  int LBRACKET = 23;
+  int RBRACE = 23;
   /** RegularExpression Id. */
-  int RBRACKET = 24;
+  int LBRACKET = 24;
   /** RegularExpression Id. */
-  int LPAREN = 25;
+  int RBRACKET = 25;
   /** RegularExpression Id. */
-  int RPAREN = 26;
+  int LPAREN = 26;
   /** RegularExpression Id. */
-  int PLUS = 27;
+  int RPAREN = 27;
   /** RegularExpression Id. */
-  int MINUS = 28;
+  int PLUS = 28;
   /** RegularExpression Id. */
-  int STAR = 29;
+  int MINUS = 29;
   /** RegularExpression Id. */
-  int SLASH = 30;
+  int STAR = 30;
   /** RegularExpression Id. */
-  int PERCENT = 31;
+  int SLASH = 31;
   /** RegularExpression Id. */
-  int POWER = 32;
+  int PERCENT = 32;
   /** RegularExpression Id. */
-  int DOUBLE_PERCENT = 33;
+  int POWER = 33;
   /** RegularExpression Id. */
-  int SHIFT_LEFT = 34;
+  int DOUBLE_PERCENT = 34;
   /** RegularExpression Id. */
-  int SHIFT_RIGHT = 35;
+  int SHIFT_LEFT = 35;
   /** RegularExpression Id. */
-  int SHIFT_LEFT_ASSIGN = 36;
+  int SHIFT_RIGHT = 36;
   /** RegularExpression Id. */
-  int SHIFT_RIGHT_ASSIGN = 37;
+  int SHIFT_LEFT_ASSIGN = 37;
   /** RegularExpression Id. */
-  int EXCLAMATION = 38;
+  int SHIFT_RIGHT_ASSIGN = 38;
   /** RegularExpression Id. */
-  int PIPE = 39;
+  int EXCLAMATION = 39;
   /** RegularExpression Id. */
-  int AMPERSAND = 40;
+  int PIPE = 40;
   /** RegularExpression Id. */
-  int TYPE_NUM = 41;
+  int AMPERSAND = 41;
   /** RegularExpression Id. */
-  int TYPE_REAL = 42;
+  int TYPE_NUM = 42;
   /** RegularExpression Id. */
-  int TYPE_TEXT = 43;
+  int TYPE_REAL = 43;
   /** RegularExpression Id. */
-  int TYPE_FLAG = 44;
+  int TYPE_TEXT = 44;
   /** RegularExpression Id. */
-  int BEGIN = 45;
+  int TYPE_FLAG = 45;
   /** RegularExpression Id. */
-  int DEFINE = 46;
+  int BEGIN = 46;
   /** RegularExpression Id. */
-  int START = 47;
+  int DEFINE = 47;
   /** RegularExpression Id. */
-  int END = 48;
+  int START = 48;
   /** RegularExpression Id. */
-  int SET = 49;
+  int END = 49;
   /** RegularExpression Id. */
-  int READ = 50;
+  int SET = 50;
   /** RegularExpression Id. */
-  int SHOW = 51;
+  int READ = 51;
   /** RegularExpression Id. */
-  int IF = 52;
+  int SHOW = 52;
   /** RegularExpression Id. */
-  int THEN = 53;
+  int IF = 53;
   /** RegularExpression Id. */
-  int ELSE = 54;
+  int THEN = 54;
   /** RegularExpression Id. */
-  int LOOP = 55;
+  int ELSE = 55;
   /** RegularExpression Id. */
-  int WHILE = 56;
+  int LOOP = 56;
   /** RegularExpression Id. */
-  int TRUE = 57;
+  int WHILE = 57;
   /** RegularExpression Id. */
-  int FALSE = 58;
+  int TRUE = 58;
   /** RegularExpression Id. */
-  int MALFORMED_IDENTIFIER = 59;
+  int FALSE = 59;
   /** RegularExpression Id. */
-  int IDENTIFIER = 60;
+  int MALFORMED_IDENTIFIER = 60;
   /** RegularExpression Id. */
-  int INVALID_SIMBOL = 61;
+  int IDENTIFIER = 61;
+  /** RegularExpression Id. */
+  int INVALID_SIMBOL = 62;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -149,7 +151,8 @@ public interface Linguagem20252Constants {
     "<REAL>",
     "<MALFORMED_NUMBER>",
     "<NUMBER>",
-    "<TEXT>",
+    "<TEXT_DOUBLE>",
+    "<TEXT_SINGLE>",
     "<UNCLOSED_STRING>",
     "<UNCLOSED_QUOTE>",
     "\"=\"",
