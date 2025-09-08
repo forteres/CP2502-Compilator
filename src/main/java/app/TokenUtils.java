@@ -11,7 +11,6 @@ public class TokenUtils {
         // CONSTANTES
         categories.put(Linguagem20252Constants.NUMBER, "CONSTANTE NUMERICA INTEIRA");
         categories.put(Linguagem20252Constants.REAL, "CONSTANTE NUMERICA REAL");
-        categories.put(Linguagem20252Constants.LETTER, "CONSTANTE LITERAL LETRA");
         categories.put(Linguagem20252Constants.TEXT, "CONSTANTE LITERAL DE TEXTO");
         categories.put(Linguagem20252Constants.TRUE, "CONSTANTE LOGICA");
         categories.put(Linguagem20252Constants.FALSE, "CONSTANTE LOGICA");
@@ -70,12 +69,20 @@ public class TokenUtils {
         // IDENTIFICADOR
 
         categories.put(Linguagem20252Constants.IDENTIFIER, "IDENTIFICADOR");
+        
+        // COMENTARIO
+        
+        categories.put(Linguagem20252Constants.BLOCK_COMMENT, "COMENTARIO_BLOCO");
 
         // ERROS
 
-        categories.put(Linguagem20252Constants.ERROR, "ERRO LÉXICO: símbolo inválido");
+        categories.put(Linguagem20252Constants.INVALID_SIMBOL, "ERRO LÉXICO: símbolo inválido");
         categories.put(Linguagem20252Constants.UNCLOSED_STRING, "ERRO LÉXICO: constante literal não finalizada");
         categories.put(Linguagem20252Constants.UNCLOSED_QUOTE, "ERRO LÉXICO: constante literal não finalizada");
+        categories.put(Linguagem20252Constants.MALFORMED_NUMBER, "ERRO LÉXICO: numero inteiro mal formado");
+        categories.put(Linguagem20252Constants.MALFORMED_REAL, "ERRO LÉXICO: numero real mal formado");
+        categories.put(Linguagem20252Constants.MALFORMED_IDENTIFIER, "ERRO LÉXICO: identificador mal formado");
+        //categories.put(Linguagem20252Constants.UNCLOSED_BLOCK_COMMENT, "ERRO LÉXICO: comentario de bloco não fechado");
 
 
     }

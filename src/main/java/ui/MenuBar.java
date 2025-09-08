@@ -1,15 +1,13 @@
 package ui;
 
-import app.FileManager;
-import app.Linguagem20252;
-import app.ParseException;
-import app.TokenStringBuilder;
+import app.*;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 import javax.swing.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 public class MenuBar {
     JMenuBar menuBar;
@@ -149,7 +147,8 @@ public class MenuBar {
         if(!editArea.getText().isEmpty()) {
             InputStream input = new ByteArrayInputStream(editArea.getText().getBytes());
             try {
-                this.resultArea.setText(TokenStringBuilder.formatTokenToString(Linguagem20252.analisar(input)));
+                List<Token> tokens = (List<Token>) Linguagem20252.analisar(input);
+                this.resultArea.setText(TokenStringBuilder.formatTokenToString(tokens));
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }

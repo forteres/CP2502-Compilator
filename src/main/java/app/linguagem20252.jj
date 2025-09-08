@@ -3,37 +3,28 @@ options {
 }
 
 PARSER_BEGIN(Linguagem20252)
+package app;
 
 import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class Linguagem20252 {
 
-    public static void analisar(InputStream input) throws ParseException {
-        Linguagem20252 lexer = new Linguagem20252(input);
+    public static java.util.ArrayList analisar(InputStream input) throws ParseException {
+            Linguagem20252 lexer = new Linguagem20252(input);
+            java.util.ArrayList tokens = new java.util.ArrayList();
+            Token token;
+            do {
+                token = lexer.getNextToken();
+                tokens.add(token);
+            } while (token.kind != Linguagem20252Constants.EOF);
 
-        System.out.println("Iniciando a análise léxica...");
-        System.out.println("------------------------------");
-
-        Token t;
-        do {
-          t = lexer.getNextToken();
-          System.out.println("Lexema: " + t.image + " | Categoria: " + TokenUtils.getCategory(t.kind) + " | Codigo: "+ t.kind);
-        } while (t.kind != Linguagem20252Constants.EOF);
-
-        System.out.println("------------------------------");
-        System.out.println("Análise léxica concluída.");
-      }
-
-      // main só serve para testes no terminal
-      public static void main(String[] args) throws Exception {
-        InputStream input = System.in;
-        if (args.length > 0) {
-          input = new FileInputStream(args[0]);
+            return tokens;
         }
-        analisar(input);
-      }
 
 }
 
@@ -48,18 +39,25 @@ SKIP:
 | <END_OF_LINE: "\n">
 | <NEW_LINE:"\r">
 | <TABULATION:"\t">
-| <SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
-| <BLOCK_COMMENT: "/*" (~[] | "*")* "*/">
+}
+
+SPECIAL_TOKEN :
+{
+    < SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+    | < BLOCK_COMMENT: "/*" (~["*"] | "*" (~["/"]))* "*/">
+    
 }
 
 TOKEN: {
         // LITERAIS ------------------------------------------
-        < NUMBER: (["0"-"9"])+ >
+         < MALFORMED_REAL: (["0"-"9"])+ "." (["0"-"9"])* (["a"-"z","A"-"Z","_"])+ (["0"-"9","a"-"z","A"-"Z","_"])* >
         | < REAL: (["0"-"9"])+ "." (["0"-"9"])+>
-        | < LETTER: (["a"-"z","A"-"Z"])>
-        | < TEXT: "\"" ( ["\u0000"-"\u007F"] ) "\"" | "'" ( ["\u0000"-"\u007F"] ) "'" >
-        | < UNCLOSED_STRING: "\"" ( (~["\"","\\","\n","\r"]) | ("\\" ~[]) )+ >
-        | < UNCLOSED_QUOTE: "\"" >
+        | < MALFORMED_NUMBER: (["0"-"9"])+ (["a"-"z","A"-"Z","_"])+ (["0"-"9"])*>
+        | < NUMBER: (["0"-"9"])+>
+        | < TEXT:  "\"" ( (~["\"","\\","\n","\r"]) | ("\\" ~[]) )* "\""
+                        | "'"  ( (~["'","\\","\n","\r"])  | ("\\" ~[]) )* "'" >
+        | < UNCLOSED_STRING: ("\"" | "\'") ( (~["\"","\\","\n","\r"]) | ("\\" ~[]) )+ >
+        | < UNCLOSED_QUOTE: ("\"" | "\'") >
 
         // SIMBOLOS ESPECIAIS --------------------------------
 
@@ -93,36 +91,37 @@ TOKEN: {
 
         // TIPOS PRIMITIVOS ----------------------------------
 
-        | < TYPE_NUM: "num">
-        | < TYPE_REAL: "real">
-        | < TYPE_TEXT: "text">
-        | < TYPE_FLAG: "flag">
+        | < TYPE_NUM:  (("n"|"N")("u"|"U")("m"|"M")) >
+        | < TYPE_REAL: (("r"|"R")("e"|"E")("a"|"A")("l"|"L")) >
+        | < TYPE_TEXT: (("t"|"T")("e"|"E")("x"|"X")("t"|"T")) >
+        | < TYPE_FLAG: (("f"|"F")("l"|"L")("a"|"A")("g"|"G")) >
 
-        // PALAVRAS RESERVADAS -------------------------------
+        // PALAVRAS RESERVADAS -----------------------------------
+        | < BEGIN:   (("b"|"B")("e"|"E")("g"|"G")("i"|"I")("n"|"N")) >
+        | < DEFINE:  (("d"|"D")("e"|"E")("f"|"F")("i"|"I")("n"|"N")("e"|"E")) >
+        | < START:   (("s"|"S")("t"|"T")("a"|"A")("r"|"R")("t"|"T")) >
+        | < END:     (("e"|"E")("n"|"N")("d"|"D")) >
+        | < SET:     (("s"|"S")("e"|"E")("t"|"T")) >
+        | < READ:    (("r"|"R")("e"|"E")("a"|"A")("d"|"D")) >
+        | < SHOW:    (("s"|"S")("h"|"H")("o"|"O")("w"|"W")) >
+        | < IF:      (("i"|"I")("f"|"F")) >
+        | < THEN:    (("t"|"T")("h"|"H")("e"|"E")("n"|"N")) >
+        | < ELSE:    (("e"|"E")("l"|"L")("s"|"S")("e"|"E")) >
+        | < LOOP:    (("l"|"L")("o"|"O")("o"|"O")("p"|"P")) >
+        | < WHILE:   (("w"|"W")("h"|"H")("i"|"I")("l"|"L")("e"|"E")) >
 
-        | < BEGIN: "begin">
-        | < DEFINE: "define">
-        | < START: "start">
-        | < END: "end">
-        | < SET: "set">
-        | < READ: "read">
-        | < SHOW: "show">
-        | < IF: "if">
-        | < THEN: "then">
-        | < ELSE: "else">
-        | < LOOP: "loop" >
-        | < WHILE: "while" >
-
-        // FLAG ----------------------------------------------
-
-        | < TRUE: "true">
-        | < FALSE: "false">
+        // FLAG --------------------------------------------------
+        | < TRUE:  (("t"|"T")("r"|"R")("u"|"U")("e"|"E")) >
+        | < FALSE: (("f"|"F")("a"|"A")("l"|"L")("s"|"S")("e"|"E")) >
 
         // IDENTIFICADOR -------------------------------------
-
-        | < IDENTIFIER: ["a"-"z","A"-"Z","_"] ( ["a"-"z","A"-"Z","_","0"-"9"] )* >
+        | < MALFORMED_IDENTIFIER:
+            (["a"-"z","A"-"Z","_"]) (((["a"-"z","A"-"Z","_"])* (["0"-"9"](["0"-"9"])+) (["a"-"z","A"-"Z","_"])*)+
+            | (((["a"-"z","A"-"Z","_"])* (["0"-"9"] ["a"-"z","A"-"Z","_"])*)* ["0"-"9"]))
+        >
+        | < IDENTIFIER: ["a"-"z","A"-"Z","_"] ((["a"-"z","A"-"Z","_"])* (["0"-"9"] ["a"-"z","A"-"Z","_"])*)* >
 
         // ERRO ----------------------------------------------
 
-        | < ERROR: ~[]>
+        | < INVALID_SIMBOL: ~[]>
     }

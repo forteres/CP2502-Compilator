@@ -6,7 +6,7 @@ public abstract class TokenStringBuilder {
     public static String formatTokenToString(List<Token> tokens) {
         StringBuilder formattedOutput = new StringBuilder();
 
-        formattedOutput.append(String.format("%-12s %-7s %-7s %-40s %-7s\n",
+        formattedOutput.append(String.format("%-12s %-7s %-7s %-50s %-7s\n",
                 "Lexema", "Linha", "Coluna", "Categoria", "Código"));
 
         for (Token token : tokens) {
@@ -17,7 +17,7 @@ public abstract class TokenStringBuilder {
             String categoria = TokenUtils.getCategory(token.kind);
             String codigo = (categoria.startsWith("ERRO LÉXICO")) ? "-" : String.valueOf(token.kind);
 
-            formattedOutput.append(String.format("%-12s %-7d %-7d %-40s %-7s\n",
+            formattedOutput.append(String.format("%-12s %-7d %-7d %-50s %-7s\n",
                     token.image,
                     token.beginLine,
                     token.beginColumn,
