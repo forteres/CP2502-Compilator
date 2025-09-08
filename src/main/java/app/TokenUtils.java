@@ -11,7 +11,8 @@ public class TokenUtils {
         // CONSTANTES
         categories.put(Linguagem20252Constants.NUMBER, "CONSTANTE NUMERICA INTEIRA");
         categories.put(Linguagem20252Constants.REAL, "CONSTANTE NUMERICA REAL");
-        categories.put(Linguagem20252Constants.TEXT, "CONSTANTE LITERAL DE TEXTO");
+        categories.put(Linguagem20252Constants.TEXT_DOUBLE, "CONSTANTE LITERAL DE TEXTO");
+        categories.put(Linguagem20252Constants.TEXT_SINGLE, "CONSTANTE LITERAL DE TEXTO");
         categories.put(Linguagem20252Constants.TRUE, "CONSTANTE LOGICA");
         categories.put(Linguagem20252Constants.FALSE, "CONSTANTE LOGICA");
 
