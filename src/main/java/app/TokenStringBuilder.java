@@ -10,6 +10,10 @@ public abstract class TokenStringBuilder {
                 "Lexema", "Linha", "Coluna", "Categoria", "Código"));
 
         for (Token token : tokens) {
+            if (token.kind == Linguagem20252Constants.EOF) {
+                continue;
+            }
+
             String categoria = TokenUtils.getCategory(token.kind);
             String codigo = (categoria.startsWith("ERRO LÉXICO")) ? "-" : String.valueOf(token.kind);
 

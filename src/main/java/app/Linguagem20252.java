@@ -12,12 +12,11 @@ public class Linguagem20252 implements Linguagem20252Constants {
     public static List<Token> analisar(InputStream input) throws ParseException {
         Linguagem20252 lexer = new Linguagem20252(input);
         List<Token> tokens = new ArrayList<>();
-        Token t = lexer.getNextToken();
-
-        while (t.kind != Linguagem20252Constants.EOF) {
-            tokens.add(t);
-            t = lexer.getNextToken();
-        }
+        Token token;
+        do {
+            token = lexer.getNextToken();
+            tokens.add(token);
+        } while (token.kind != Linguagem20252Constants.EOF);
 
         return tokens;
     }
