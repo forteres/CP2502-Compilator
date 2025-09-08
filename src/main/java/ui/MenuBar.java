@@ -3,6 +3,7 @@ package ui;
 import app.FileManager;
 import app.Linguagem20252;
 import app.ParseException;
+import app.TokenStringBuilder;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 import javax.swing.*;
@@ -148,7 +149,7 @@ public class MenuBar {
         if(!editArea.getText().isEmpty()) {
             InputStream input = new ByteArrayInputStream(editArea.getText().getBytes());
             try {
-                this.resultArea.setText(Linguagem20252.analisar(input));
+                this.resultArea.setText(TokenStringBuilder.formatTokenToString(Linguagem20252.analisar(input)));
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }

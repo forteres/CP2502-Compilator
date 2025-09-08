@@ -3,50 +3,24 @@ package app;
 import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Linguagem20252 implements Linguagem20252Constants {
 
-    public static String analisar(InputStream input) throws ParseException {
+    public static List<Token> analisar(InputStream input) throws ParseException {
         Linguagem20252 lexer = new Linguagem20252(input);
-        StringBuilder resultado = new StringBuilder();
+        List<Token> tokens = new ArrayList<>();
+        Token t = lexer.getNextToken();
 
-        Token t;
-        do {
+        while (t.kind != Linguagem20252Constants.EOF) {
+            tokens.add(t);
             t = lexer.getNextToken();
-            String categoria = TokenUtils.getCategory(t.kind);
-            String codigo;
-
-            if (Objects.equals(categoria, "ERRO LÉXICO: símbolo inválido") ||
-                    Objects.equals(categoria, "ERRO LÉXICO: constante literal não finalizada")) {
-                codigo = "-";
-            } else {
-                codigo = String.valueOf(t.kind);
-            }
-
-            resultado.append("Lexema: ").append(t.image)
-                    .append(" | Categoria: ").append(categoria)
-                    .append(" | Codigo: ").append(codigo)
-                    .append("\n");
-        } while (t.kind != Linguagem20252Constants.EOF);
-
-        resultado.append("------------------------------\n");
-        resultado.append("Análise léxica concluída.");
-
-        return resultado.toString();
-    }
-
-      // main só serve para testes no terminal
-    /*
-      public static void main(String[] args) throws Exception {
-        InputStream input = System.in;
-        if (args.length > 0) {
-          input = new FileInputStream(args[0]);
         }
-        analisar(input);
-      }
 
-     */
+        return tokens;
+    }
 
   /** Generated Token Manager. */
   public Linguagem20252TokenManager token_source;
