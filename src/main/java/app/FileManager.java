@@ -13,12 +13,13 @@ import java.util.Objects;
 
 public class FileManager {
     private Path ccFile = null;
+    private File lastDirectory = new File(System.getProperty("user.dir"));
     private String fileInitialState = "";
     public enum GuardDecision { PROCEED, ABORT }
     public FileManager(){}
 
     public boolean saveAs(String ccFileState) {
-        JFileChooser fileChooser = new JFileChooser(new File(System.getProperty("user.dir")));
+        JFileChooser fileChooser = new JFileChooser(lastDirectory);
         if (ccFile != null) {
             fileChooser.setSelectedFile(ccFile.toFile());
         } else {
@@ -31,6 +32,7 @@ public class FileManager {
         }
 
         Path newFilePath = fileChooser.getSelectedFile().toPath();
+        lastDirectory = newFilePath.getParent().toFile();
         if (!newFilePath.toString().toLowerCase().endsWith(".txt")) {
             newFilePath = Paths.get(newFilePath.toString() + ".txt");
         }
@@ -85,13 +87,15 @@ public class FileManager {
     public boolean openFile(String ccFileState) throws IOException {
         if (needSavePrompt(ccFileState) == GuardDecision.ABORT) return false;
 
-        JFileChooser fileChooser = new JFileChooser(new File(System.getProperty("user.dir")));
+        JFileChooser fileChooser = new JFileChooser(lastDirectory);
         fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Arquivos de Texto (*.txt)", "txt"));
         fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Arquivos Java (*.java)", "java"));
         fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Arquivos JSON (*.json)", "json"));
         fileChooser.setAcceptAllFileFilterUsed(true);
         int resultPath = fileChooser.showOpenDialog(null);
         if (resultPath != JFileChooser.APPROVE_OPTION) return false;
+
+        lastDirectory = fileChooser.getSelectedFile().getParentFile();
 
         Path path = fileChooser.getSelectedFile().toPath();
 

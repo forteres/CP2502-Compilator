@@ -94,6 +94,7 @@ public class MenuBar {
                 fileNameStatus.setText(fileManager.getFileName());
             }else{
                 fileNameStatus.setText("Arquivo novo");
+                //limpar caixa de saida
             }
         }
     }
