@@ -59,13 +59,10 @@ public class TokenUtils {
         categories.put(Linguagem20252Constants.ELSE, "PALAVRA RESERVADA");
         categories.put(Linguagem20252Constants.LOOP, "PALAVRA RESERVADA");
         categories.put(Linguagem20252Constants.WHILE, "PALAVRA RESERVADA");
-
-        // TIPOS DE VARIAVEL
-
-        categories.put(Linguagem20252Constants.TYPE_FLAG, "TIPO");
-        categories.put(Linguagem20252Constants.TYPE_NUM, "TIPO");
-        categories.put(Linguagem20252Constants.TYPE_REAL, "TIPO");
-        categories.put(Linguagem20252Constants.TYPE_TEXT, "TIPO");
+        categories.put(Linguagem20252Constants.TYPE_FLAG, "PALAVRA RESERVADA");
+        categories.put(Linguagem20252Constants.TYPE_NUM, "PALAVRA RESERVADA");
+        categories.put(Linguagem20252Constants.TYPE_REAL, "PALAVRA RESERVADA");
+        categories.put(Linguagem20252Constants.TYPE_TEXT, "PALAVRA RESERVADA");
 
         // IDENTIFICADOR
 
@@ -80,9 +77,9 @@ public class TokenUtils {
         categories.put(Linguagem20252Constants.INVALID_SIMBOL, "ERRO LÉXICO: símbolo inválido");
         categories.put(Linguagem20252Constants.UNCLOSED_STRING, "ERRO LÉXICO: constante literal não finalizada");
         categories.put(Linguagem20252Constants.UNCLOSED_QUOTE, "ERRO LÉXICO: constante literal não finalizada");
-        categories.put(Linguagem20252Constants.MALFORMED_NUMBER, "ERRO LÉXICO: numero inteiro mal formado");
-        categories.put(Linguagem20252Constants.MALFORMED_REAL, "ERRO LÉXICO: numero real mal formado");
-        categories.put(Linguagem20252Constants.MALFORMED_IDENTIFIER, "ERRO LÉXICO: identificador mal formado");
+        categories.put(Linguagem20252Constants.MALFORMED_NUMBER, "ERRO LÉXICO: numero inteiro inválido");
+        categories.put(Linguagem20252Constants.MALFORMED_REAL, "ERRO LÉXICO: numero real inválido");
+        categories.put(Linguagem20252Constants.MALFORMED_IDENTIFIER, "ERRO LÉXICO: identificador inválido");
         //categories.put(Linguagem20252Constants.UNCLOSED_BLOCK_COMMENT, "ERRO LÉXICO: comentario de bloco não fechado");
 
 
