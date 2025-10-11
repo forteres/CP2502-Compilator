@@ -14,6 +14,8 @@ import java.util.Objects;
 
 public class Linguagem20252 {
 
+    static int errosLexicos = 0;
+
     public static java.util.ArrayList analisar(InputStream input) throws ParseException {
             Linguagem20252 lexer = new Linguagem20252(input);
             java.util.ArrayList tokens = new java.util.ArrayList();
@@ -21,6 +23,15 @@ public class Linguagem20252 {
             do {
                 token = lexer.getNextToken();
                 tokens.add(token);
+                if(t.kind == Linguagem20252Constants.MALFORMED_IDENTIFIER
+                    || t.kind == Linguagem20252Constants.MALFORMED_NUMBER
+                    || t.kind == Linguagem20252Constants.MALFORMED_REAL
+                    || t.kind == Linguagem20252Constants.INVALID_SIMBOL
+                    || t.kind == Linguagem20252Constants.UNCLOSED_QUOTE
+                    || t.kind == Linguagem20252Constants.UNCLOSED_STRING
+                    || t.kind == Linguagem20252Constants.UNCLOSED_BLOCK_COMMENT){
+                    errosLexicos++;
+                }
             } while (token.kind != Linguagem20252Constants.EOF);
 
             return tokens;

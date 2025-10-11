@@ -149,6 +149,7 @@ public class MenuBar {
             InputStream input = new ByteArrayInputStream(editArea.getText().getBytes());
             try {
                 List<Token> tokens = (List<Token>) Linguagem20252.analisar(input);
+                if()
                 this.resultArea.setText(TokenStringBuilder.formatTokenToString(tokens));
             } catch (ParseException e) {
                 throw new RuntimeException(e);
