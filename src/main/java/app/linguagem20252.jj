@@ -16,6 +16,7 @@ public class Linguagem20252 {
 
     public static int errosSintaticosCount = 0;
     public static int errosLexicosCount = 0;
+    public static StringBuilder errosSintaticos = new StringBuilder();
 
     public String getListaTokensEsperados(int[][] conjuntoDeTokensEsperados){
         StringBuilder listaTokens = new StringBuilder();
@@ -28,18 +29,19 @@ public class Linguagem20252 {
     }
 
     public static java.util.ArrayList analiseLexica(InputStream input) throws ParseException {
+            errosLexicosCount = 0;
             Linguagem20252 lexer = new Linguagem20252(input);
             java.util.ArrayList tokens = new java.util.ArrayList();
             Token token;
             do {
                 token = lexer.getNextToken();
-                if(t.kind == Linguagem20252Constants.MALFORMED_IDENTIFIER
-                    || t.kind == Linguagem20252Constants.MALFORMED_NUMBER
-                    || t.kind == Linguagem20252Constants.MALFORMED_REAL
-                    || t.kind == Linguagem20252Constants.INVALID_SIMBOL
-                    || t.kind == Linguagem20252Constants.UNCLOSED_QUOTE
-                    || t.kind == Linguagem20252Constants.UNCLOSED_STRING
-                    || t.kind == Linguagem20252Constants.UNCLOSED_BLOCK_COMMENT){
+                if(token.kind == Linguagem20252Constants.MALFORMED_IDENTIFIER
+                    || token.kind == Linguagem20252Constants.MALFORMED_NUMBER
+                    || token.kind == Linguagem20252Constants.MALFORMED_REAL
+                    || token.kind == Linguagem20252Constants.INVALID_SIMBOL
+                    || token.kind == Linguagem20252Constants.UNCLOSED_QUOTE
+                    || token.kind == Linguagem20252Constants.UNCLOSED_STRING
+                    || token.kind == Linguagem20252Constants.UNCLOSED_BLOCK_COMMENT){
                     tokens.add(token);
                 }
             } while (token.kind != Linguagem20252Constants.EOF);
@@ -47,12 +49,11 @@ public class Linguagem20252 {
             return tokens;
         }
 
-    public static java.util.ArrayList analiseSintatica(InputStream input) throws ParseException {
+    public static StringBuilder analiseSintatica(InputStream input) throws ParseException {
             Linguagem20252 parser = new Linguagem20252(input);
-            StringBuilder errosSintaticos = new StringBuilder();
-
+            errosSintaticos = 0;
+            errosSintaticos = new StringBuilder();
             parser.Programa();
-
             return errosSintaticos;
     }
 }
@@ -162,16 +163,16 @@ void Programa() :
         <BEGIN> NomeDoPrograma() BlocoDefine() <START> ListaDeComandos() <END> <DOT>
     } catch (ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
         if (tokensEsperados.contains("BEGIN")){
-            errosSintaticos.append("Erro sintático: Programa deve iniciar com 'BEGIN'").append("\n\n")
+            errosSintaticos.append("Erro sintático: Programa deve iniciar com 'BEGIN'").append("\n\n");
         }else if (tokensEsperados.contains("START")){
-            errosSintaticos.append("Erro sintático: Seção de comandos deve iniciar com 'START'").append("\n\n")
+            errosSintaticos.append("Erro sintático: Seção de comandos deve iniciar com 'START'").append("\n\n");
         }else if (tokensEsperados.contains("END") || tokensEsperados.contains("DOT")) {
-            errosSintaticos.append("Erro sintático: Programa deve acabar com 'END.'").append("\n\n")
+            errosSintaticos.append("Erro sintático: Programa deve acabar com 'END.'").append("\n\n");
         }
     }
 }
@@ -181,9 +182,9 @@ void NomeDoPrograma() :
 {
     try{
         (<IDENTIFIER>)?
-    } catch (ParserException e){
+    } catch (ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
@@ -200,7 +201,7 @@ void Expressao() :
         ExpressaoAritmeticaOuLogica() ExpressaoAux()
     }catch (ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
     }
@@ -220,7 +221,7 @@ void ExpressaoAux() :
         )?
     }catch (ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
@@ -239,7 +240,7 @@ void ExpressaoAritmeticaOuLogica() :
         Termo2() MenorPrioridade()
     }catch (ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
     }
@@ -256,7 +257,7 @@ void MenorPrioridade() :
         )?
     }catch (ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
@@ -273,7 +274,7 @@ void Termo2() :
         Termo1() MediaPrioridade()
     }catch (ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
     }
@@ -292,7 +293,7 @@ void MediaPrioridade() :
         )?
     }catch (ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
@@ -311,7 +312,7 @@ void Termo1() :
         Elemento() MaiorPrioridade()
     }catch (ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
     }
@@ -326,7 +327,7 @@ void MaiorPrioridade() :
         )?
     }catch (ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
@@ -350,18 +351,18 @@ void Elemento() :
       | <EXCLAMATION> <LPAREN> Expressao() <RPAREN>
     }catch (ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
         if (tokensEsperados.contains("IDENTIFIER") || tokensEsperados.contains("NUMBER") || tokensEsperados.contains("REAL") || tokensEsperados.contains("TEXT_DOUBLE")
             || tokensEsperados.contains("TEXT_SINGLE") || tokensEsperados.contains("TRUE") || tokensEsperados.contains("FALSE"))
         {
-            errosSintaticos.append("Erro sintático: Elemento deve pertencer ao conjunto: {'Identificador', 'Constante numérica', 'Constante numérica real', 'Constante literal', 'TRUE' ou 'FALSE'}").append("\n\n")
+            errosSintaticos.append("Erro sintático: Elemento deve pertencer ao conjunto: {'Identificador', 'Constante numérica', 'Constante numérica real', 'Constante literal', 'TRUE' ou 'FALSE'}").append("\n\n");
         }else if (tokensEsperados.contains("LPAREN") || tokensEsperados.contains("RPAREN")){
-            errosSintaticos.append("Erro sintático: Elemento deve estar entre '(' e ')'").append("\n\n")
-        }else if (tokensEsperados.contains("EXCLAMATION"){
-            errosSintaticos.append("Erro sintático: Elemento deve estar entre '!(' e ')'").append("\n\n")
+            errosSintaticos.append("Erro sintático: Elemento deve estar entre '(' e ')'").append("\n\n");
+        }else if (tokensEsperados.contains("EXCLAMATION")){
+            errosSintaticos.append("Erro sintático: Elemento deve estar entre '!(' e ')'").append("\n\n");
         }
     }
 }
@@ -373,7 +374,7 @@ void ListaDeElementos() :
         Elemento() ListaDeElementosAux()
     }catch (ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
     }
@@ -388,7 +389,7 @@ void ListaDeElementosAux() : // pode ter erro aqui
         )?
     }catch (ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
@@ -405,7 +406,7 @@ void ListaIdentificadores() :
         <IDENTIFIER> ListaIdentificadoresAux()
     }catch (ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
@@ -424,7 +425,7 @@ void ListaIdentificadoresAux() :
         )?
     }catch (ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
@@ -443,7 +444,7 @@ void Variavel() :
         ListaIdentificadores() <COLON> DeclaracaoTipo() <SEMICOLON>
     }catch (ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
@@ -465,7 +466,7 @@ void Tipo() :
         | <TYPE_FLAG>
     }catch (ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
@@ -482,7 +483,7 @@ void DeclaracaoTipo() :
         Tipo() SufixoDoTipo()
     }catch (ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
     // sai fora ow
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
     }
@@ -496,9 +497,9 @@ void SufixoDoTipo() :
         <ASSIGN> Elemento()
       | DeclaracaoArray()
     )?
-    }catch(ParserException e){
+    }catch(ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
@@ -513,9 +514,9 @@ void DeclaracaoArray() : // Talvez esses erros sejam tratados lá no Delcaraçã
 {
     try{
         <LBRACKET> <NUMBER> <RBRACKET> DeclaracaoValoresArray()
-    }catch(ParserException e){
+    }catch(ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
@@ -532,9 +533,9 @@ void DeclaracaoValoresArray() : // Talvez contains("=") seja na DeclaraçãoArra
     (
         <ASSIGN> <LBRACE> ListaDeElementos() <RBRACE>
     )?
-    }catch(ParserException e){
+    }catch(ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
@@ -552,9 +553,9 @@ void ListaDeVariaveis() :
 {
     try{
         Variavel() <SEMICOLON> ListaDeVariaveisAux()
-    }catch(ParserException e){
+    }catch(ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
@@ -571,9 +572,9 @@ void ListaDeVariaveisAux() :
     (
         ListaDeVariaveis()
     )?
-    }catch(ParserException e){
+    }catch(ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
     }
@@ -586,9 +587,9 @@ void BlocoDefine() :
     (
         <DEFINE> ListaDeVariaveis()
     )?
-    }catch(ParserException e){
+    }catch(ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
     }
@@ -599,9 +600,9 @@ void Atribuicao() :
 {
     try{
         <SET> <IDENTIFIER> SufixoDaAtribuicao()
-    }catch(ParserException e){
+    }catch(ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
     }
@@ -613,9 +614,9 @@ void SufixoDaAtribuicao() : // talvez o contains("=") e o contains("[") sejam na
     try{
         <ASSIGN> Expressao()
       | <LBRACKET> Expressao() <RBRACKET> <ASSIGN> Expressao()
-    }catch(ParserException e){
+    }catch(ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
@@ -634,9 +635,9 @@ void EntradaDeDados() :
 {
     try{
         <READ> <LPAREN> <IDENTIFIER> SufixoIdentificador() <RPAREN>
-    }catch(ParserException e){
+    }catch(ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
@@ -653,9 +654,9 @@ void SufixoIdentificador() : // talvez o contains("[") seja no Entrada de dados
         (
             <LBRACKET> Expressao() <RBRACKET>
         )?
-    }catch(ParserException e){
+    }catch(ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
@@ -670,16 +671,15 @@ void SaidaDeDados() :
 {
     try{
         <SHOW> <LPAREN> ListaDeElementos() <RPAREN>
-    }catch(ParserException e){
+    }catch(ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
         if(tokensEsperados.contains("(") || tokensEsperados.contains(")")){
             errosSintaticos.append("Erro Sintatico: O conteudo a ser mostrado deve estar entre '(' e ')'").append("\n\n");
         }
-        if(tokensEsper)
     }
 }
 
@@ -688,9 +688,9 @@ void Selecao() :
 {
     try{
         <IF> Expressao() <THEN> ListaDeComandos() Else() <END>
-    }catch(ParserException e){
+    }catch(ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
@@ -707,9 +707,9 @@ void Else() :
         (
             <ELSE> ListaDeComandos()
         )?
-    }catch(ParserException e){
+    }catch(ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
@@ -724,9 +724,9 @@ void Repeticao() :
 {
     try{
         <LOOP> <WHILE> Expressao() ListaDeComandos() <END>
-    }catch(ParserException e){
+    }catch(ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
@@ -745,9 +745,9 @@ void Comando() :
       | SaidaDeDados()
       | Selecao()
       | Repeticao()
-    } catch(ParserException e){
+    } catch(ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
@@ -762,9 +762,9 @@ void ListaDeComandos() :
 {
     try{
         Comando() <SEMICOLON> ListaDeComandosAux()
-    } catch (ParserException e){
+    } catch (ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
         if (tokensEsperados.contains(";")){
@@ -780,9 +780,9 @@ void ListaDeComandosAux() :
     (
         ListaDeComandos()
     )?
-    } catch (ParserException e){
+    } catch (ParseException e){
         errosSintaticosCount++;
-        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
     }

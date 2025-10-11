@@ -153,7 +153,7 @@ public class MenuBar {
                     this.resultArea.setText(TokenStringBuilder.formatTokenToString(tokens));
                 }else{
                     StringBuilder errosSintaticos = Linguagem20252.analiseSintatica(input);
-                    if(Linguagem20252.errosSintaticoCount > 0) {
+                    if(Linguagem20252.errosSintaticosCount > 0) {
                         this.resultArea.setText(errosSintaticos.toString());
                     }else {
                         System.out.println("Programa compilado com sucesso!");
