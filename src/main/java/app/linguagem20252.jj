@@ -125,4 +125,275 @@ TOKEN: {
         // ERRO ----------------------------------------------
 
         | < INVALID_SIMBOL: ~[]>
-    }
+}
+
+void Programa() :
+{}
+{
+    <BEGIN> NomeDoPrograma() BlocoDefine() <START> ListaDeComandos() <END> <DOT>
+}
+
+void NomeDoPrograma() :
+{}
+{
+    (<IDENTIFIER>)?
+}
+
+void Expressao() :
+{}
+{
+    ExpressaoAritmeticaOuLogica() ExpressaoAux()
+}
+
+void ExpressaoAux() :
+{}
+{
+    (
+        <EQUAL> ExpressaoAritmeticaOuLogica()
+      | <NOT_EQUAL> ExpressaoAritmeticaOuLogica()
+      | <SHIFT_LEFT> ExpressaoAritmeticaOuLogica()
+      | <SHIFT_RIGHT> ExpressaoAritmeticaOuLogica()
+      | <SHIFT_LEFT_ASSIGN> ExpressaoAritmeticaOuLogica()
+      | <SHIFT_RIGHT_ASSIGN> ExpressaoAritmeticaOuLogica()
+    )?
+}
+
+void ExpressaoAritmeticaOuLogica() :
+{}
+{
+    Termo2() MenorPrioridade()
+}
+
+void MenorPrioridade() :
+{}
+{
+    (
+        <PLUS> Termo2() MenorPrioridade()
+      | <MINUS> Termo2() MenorPrioridade()
+      | <PIPE> Termo2() MenorPrioridade()
+    )?
+}
+
+void Termo2() :
+{}
+{
+    Termo1() MediaPrioridade()
+}
+
+void MediaPrioridade() :
+{}
+{
+    (
+        <STAR> Termo1() MediaPrioridade()
+      | <SLASH> Termo1() MediaPrioridade()
+      | <PERCENT> Termo1() MediaPrioridade()
+      | <DOUBLE_PERCENT> Termo1() MediaPrioridade()
+      | <AMPERSAND> Termo1() MediaPrioridade()
+    )?
+}
+
+void Termo1() :
+{}
+{
+    Elemento() MaiorPrioridade()
+}
+
+void MaiorPrioridade() :
+{}
+{
+    (
+        <POWER> Elemento() MaiorPrioridade()
+    )?
+}
+
+void Elemento() :
+{}
+{
+
+        <IDENTIFIER>
+      | <NUMBER>
+      | <REAL>
+      | <TEXT_DOUBLE> | <TEXT_SINGLE>  // constante literal com "" e com ''
+      | <TRUE>
+      | <FALSE>
+      | <LPAREN> Expressao() <RPAREN>
+      | <EXCLAMATION> <LPAREN> Expressao() <RPAREN>
+
+}
+
+void ListaDeElementos() :
+{}
+{
+    Elemento() ListaDeElementosAux()
+}
+
+void ListaDeElementosAux() :
+{}
+{
+    (
+        <COMMA> ListaDeElementos()
+    )?
+}
+
+void ListaIdentificadores() :
+{}
+{
+    <IDENTIFIER> ListaIdentificadoresAux()
+}
+
+void ListaIdentificadoresAux() :
+{}
+{
+    (
+        <COMMA> <IDENTIFIER> ListaIdentificadores()
+    )?
+}
+
+void Variavel() :
+{}
+{
+    ListaIdentificadores() <COLON> DeclaracaoTipo() <SEMICOLON>
+}
+
+void Tipo() :
+{}
+{
+
+        <TYPE_NUM>
+      | <TYPE_REAL>
+      | <TYPE_TEXT>
+      | <TYPE_FLAG>
+
+}
+
+void DeclaracaoTipo() :
+{}
+{
+    Tipo() SufixoDoTipo()
+}
+
+void SufixoDoTipo() :
+{}
+{
+    (
+        <ASSIGN> Elemento()
+      | DeclaracaoArray()
+    )?
+}
+
+void DeclaracaoArray() :
+{}
+{
+    <LBRACKET> <NUMBER> <RBRACKET> DeclaracaoValoresArray()
+}
+
+void DeclaracaoValoresArray() :
+{}
+{
+    (
+        <ASSIGN> <LBRACE> ListaDeElementos() <RBRACE>
+    )?
+}
+
+void ListaDeVariaveis() :
+{}
+{
+    Variavel() ListaDeVariaveisAux()
+}
+
+void ListaDeVariaveisAux() :
+{}
+{
+    (
+        ListaDeVariaveis()
+    )?
+}
+
+void BlocoDefine() :
+{}
+{
+    (
+        <DEFINE> ListaDeVariaveis()
+    )?
+}
+
+void Atribuicao() :
+{}
+{
+    <SET> <IDENTIFIER> SufixoDaAtribuicao() <SEMICOLON>
+}
+
+void SufixoDaAtribuicao() :
+{}
+{
+
+        <ASSIGN> Expressao()
+      | <LBRACKET> Expressao() <RBRACKET> <ASSIGN> Expressao()
+
+}
+
+void EntradaDeDados() :
+{}
+{
+    <READ> <LPAREN> <IDENTIFIER> SufixoIdentificador() <RPAREN> <SEMICOLON>
+}
+
+void SufixoIdentificador() :
+{}
+{
+    (
+        <LBRACKET> Expressao() <RBRACKET>
+    )?
+}
+
+void SaidaDeDados() :
+{}
+{
+    <SHOW> <LPAREN> ListaDeElementos() <RPAREN> <SEMICOLON>
+}
+
+void Selecao() :
+{}
+{
+    <IF> Expressao() <THEN> ListaDeComandos() Else() <END> <SEMICOLON>
+}
+
+void Else() :
+{}
+{
+    (
+        <ELSE> ListaDeComandos()
+    )?
+}
+
+void Repeticao() :
+{}
+{
+    <LOOP> <WHILE> Expressao() ListaDeComandos() <END> <SEMICOLON>
+}
+
+void Comando() :
+{}
+{
+
+        Atribuicao()
+      | EntradaDeDados()
+      | SaidaDeDados()
+      | Selecao()
+      | Repeticao()
+
+}
+
+void ListaDeComandos() :
+{}
+{
+    Comando() ListaDeComandosAux()
+}
+
+void ListaDeComandosAux() :
+{}
+{
+    (
+        ListaDeComandos()
+    )?
+}
