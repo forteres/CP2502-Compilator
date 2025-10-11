@@ -35,5 +35,10 @@ public abstract class TokenStringBuilder {
 
         return formattedOutput.toString();
     }
+    public static StringBuilder formatErroSintaticoToString(ParseException e, StringBuilder format, String tokensEsperados) {
+        format.append("Linha ").append(e.currentToken.next.beginLine).append(", Coluna ").append(e.currentToken.next.beginColumn).append(System.lineSeparator())
+                .append("Encontrou: ").append(e.currentToken.next.image).append(" Esperava: ").append(tokensEsperados).append(System.lineSeparator());
+        return format;
+    }
 }
 

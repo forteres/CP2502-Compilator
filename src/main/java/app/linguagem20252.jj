@@ -14,15 +14,25 @@ import java.util.Objects;
 
 public class Linguagem20252 {
 
-    static int errosLexicos = 0;
+    public static int errosSintaticosCount = 0;
+    public static int errosLexicosCount = 0;
 
-    public static java.util.ArrayList analisar(InputStream input) throws ParseException {
+    public String getListaTokensEsperados(int[][] conjuntoDeTokensEsperados){
+        StringBuilder listaTokens = new StringBuilder();
+        for (int[] conjunto : conjuntoDeTokensEsperados){
+            for (int token : conjunto){
+                listaTokens.append(tokenImage[token]).append(" ");
+            }
+        }
+        return listaTokens.toString().trim();
+    }
+
+    public static java.util.ArrayList analiseLexica(InputStream input) throws ParseException {
             Linguagem20252 lexer = new Linguagem20252(input);
             java.util.ArrayList tokens = new java.util.ArrayList();
             Token token;
             do {
                 token = lexer.getNextToken();
-                tokens.add(token);
                 if(t.kind == Linguagem20252Constants.MALFORMED_IDENTIFIER
                     || t.kind == Linguagem20252Constants.MALFORMED_NUMBER
                     || t.kind == Linguagem20252Constants.MALFORMED_REAL
@@ -30,15 +40,22 @@ public class Linguagem20252 {
                     || t.kind == Linguagem20252Constants.UNCLOSED_QUOTE
                     || t.kind == Linguagem20252Constants.UNCLOSED_STRING
                     || t.kind == Linguagem20252Constants.UNCLOSED_BLOCK_COMMENT){
-                    errosLexicos++;
+                    tokens.add(token);
                 }
             } while (token.kind != Linguagem20252Constants.EOF);
 
             return tokens;
         }
 
-}
+    public static java.util.ArrayList analiseSintatica(InputStream input) throws ParseException {
+            Linguagem20252 parser = new Linguagem20252(input);
+            StringBuilder errosSintaticos = new StringBuilder();
 
+            parser.Programa();
+
+            return errosSintaticos;
+    }
+}
 
 PARSER_END(Linguagem20252)
 
@@ -141,86 +158,188 @@ TOKEN: {
 void Programa() :
 {}
 {
-    <BEGIN> NomeDoPrograma() BlocoDefine() <START> ListaDeComandos() <END> <DOT>
+    try{
+        <BEGIN> NomeDoPrograma() BlocoDefine() <START> ListaDeComandos() <END> <DOT>
+    } catch (ParseException e){
+        errosSintaticosCount++;
+        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+
+        if (tokensEsperados.contains("BEGIN")){
+            errosSintaticos.append("Erro sintático: Programa deve iniciar com 'BEGIN'").append("\n\n")
+        }else if (tokensEsperados.contains("START")){
+            errosSintaticos.append("Erro sintático: Seção de comandos deve iniciar com 'START'").append("\n\n")
+        }else if (tokensEsperados.contains("END") || tokensEsperados.contains("DOT")) {
+            errosSintaticos.append("Erro sintático: Programa deve acabar com 'END.'").append("\n\n")
+        }
+    }
 }
 
 void NomeDoPrograma() :
 {}
 {
-    (<IDENTIFIER>)?
+    try{
+        (<IDENTIFIER>)?
+    } catch (ParserException e){
+        errosSintaticosCount++;
+        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+
+        if (tokensEsperados.contains("IDENTIFIER")){
+                errosSintaticos.append("Erro sintático: Nome do Programa deve ser um 'IDENTIFICADOR'").append("\n\n");
+        }
+    }
 }
 
 void Expressao() :
 {}
 {
-    ExpressaoAritmeticaOuLogica() ExpressaoAux()
+    try{
+        ExpressaoAritmeticaOuLogica() ExpressaoAux()
+    }catch (ParseException e){
+        errosSintaticosCount++;
+        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+    }
 }
 
 void ExpressaoAux() :
 {}
 {
+    try{
     (
         <EQUAL> ExpressaoAritmeticaOuLogica()
-      | <NOT_EQUAL> ExpressaoAritmeticaOuLogica()
-      | <SHIFT_LEFT> ExpressaoAritmeticaOuLogica()
-      | <SHIFT_RIGHT> ExpressaoAritmeticaOuLogica()
-      | <SHIFT_LEFT_ASSIGN> ExpressaoAritmeticaOuLogica()
-      | <SHIFT_RIGHT_ASSIGN> ExpressaoAritmeticaOuLogica()
-    )?
+        | <NOT_EQUAL> ExpressaoAritmeticaOuLogica()
+        | <SHIFT_LEFT> ExpressaoAritmeticaOuLogica()
+        | <SHIFT_RIGHT> ExpressaoAritmeticaOuLogica()
+        | <SHIFT_LEFT_ASSIGN> ExpressaoAritmeticaOuLogica()
+        | <SHIFT_RIGHT_ASSIGN> ExpressaoAritmeticaOuLogica()
+        )?
+    }catch (ParseException e){
+        errosSintaticosCount++;
+        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+
+        if(tokensEsperados.contains("EQUAL") || tokensEsperados.contains("NOT_EQUAL") || tokensEsperados.contains("SHIFT_LEFT")
+            || tokensEsperados.contains("SHIFT_RIGHT") || tokensEsperados.contains("SHIFT_LEFT_ASSIGN") || tokensEsperados.contains("SHIFT_RIGHT_ASSIGN"))
+        {
+            errosSintaticos.append("Erro sintático: A Expressão deve conter um operador lógico").append("\n\n");
+        }
+    }
 }
 
 void ExpressaoAritmeticaOuLogica() :
 {}
 {
-    Termo2() MenorPrioridade()
+    try{
+        Termo2() MenorPrioridade()
+    }catch (ParseException e){
+        errosSintaticosCount++;
+        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+    }
 }
 
 void MenorPrioridade() :
 {}
 {
-    (
-        <PLUS> Termo2() MenorPrioridade()
-      | <MINUS> Termo2() MenorPrioridade()
-      | <PIPE> Termo2() MenorPrioridade()
-    )?
+    try{
+        (
+            <PLUS> Termo2() MenorPrioridade()
+            | <MINUS> Termo2() MenorPrioridade()
+            | <PIPE> Termo2() MenorPrioridade()
+        )?
+    }catch (ParseException e){
+        errosSintaticosCount++;
+        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+
+        if(tokensEsperados.contains("PLUS") || tokensEsperados.contains("MINUS") || tokensEsperados.contains("PIPE")){
+            errosSintaticos.append("Erro sintático: A Expressão deve conter um operador aritmético").append("\n\n");
+        }
+    }
 }
 
 void Termo2() :
 {}
 {
-    Termo1() MediaPrioridade()
+    try{
+        Termo1() MediaPrioridade()
+    }catch (ParseException e){
+        errosSintaticosCount++;
+        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+    }
 }
 
 void MediaPrioridade() :
 {}
 {
-    (
-        <STAR> Termo1() MediaPrioridade()
-      | <SLASH> Termo1() MediaPrioridade()
-      | <PERCENT> Termo1() MediaPrioridade()
-      | <DOUBLE_PERCENT> Termo1() MediaPrioridade()
-      | <AMPERSAND> Termo1() MediaPrioridade()
-    )?
+    try{
+        (
+            <STAR> Termo1() MediaPrioridade()
+          | <SLASH> Termo1() MediaPrioridade()
+          | <PERCENT> Termo1() MediaPrioridade()
+          | <DOUBLE_PERCENT> Termo1() MediaPrioridade()
+          | <AMPERSAND> Termo1() MediaPrioridade()
+        )?
+    }catch (ParseException e){
+        errosSintaticosCount++;
+        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+
+        if(tokensEsperados.contains("STAR") || tokensEsperados.contains("SLASH") || tokensEsperados.contains("PERCENT")
+            || tokensEsperados.contains("DOUBLE_PERCENT") || tokensEsperados.contains("AMPERSAND"))
+        {
+            errosSintaticos.append("Erro sintático: A Expressão deve conter um operador aritmético").append("\n\n");
+        }
+    }
 }
 
 void Termo1() :
 {}
 {
-    Elemento() MaiorPrioridade()
+    try{
+        Elemento() MaiorPrioridade()
+    }catch (ParseException e){
+        errosSintaticosCount++;
+        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+    }
 }
 
 void MaiorPrioridade() :
 {}
 {
-    (
-        <POWER> Elemento() MaiorPrioridade()
-    )?
+    try{
+        (
+            <POWER> Elemento() MaiorPrioridade()
+        )?
+    }catch (ParseException e){
+        errosSintaticosCount++;
+        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+
+        if(tokensEsperados.contains("POWER")){
+             errosSintaticos.append("Erro sintático: A Expressão deve conter o operador '**'").append("\n\n");
+        }
+    }
 }
 
 void Elemento() :
 {}
 {
-
+    try{
         <IDENTIFIER>
       | <NUMBER>
       | <REAL>
@@ -229,182 +348,442 @@ void Elemento() :
       | <FALSE>
       | <LPAREN> Expressao() <RPAREN>
       | <EXCLAMATION> <LPAREN> Expressao() <RPAREN>
+    }catch (ParseException e){
+        errosSintaticosCount++;
+        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
 
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+
+        if (tokensEsperados.contains("IDENTIFIER") || tokensEsperados.contains("NUMBER") || tokensEsperados.contains("REAL") || tokensEsperados.contains("TEXT_DOUBLE")
+            || tokensEsperados.contains("TEXT_SINGLE") || tokensEsperados.contains("TRUE") || tokensEsperados.contains("FALSE"))
+        {
+            errosSintaticos.append("Erro sintático: Elemento deve pertencer ao conjunto: {'Identificador', 'Constante numérica', 'Constante numérica real', 'Constante literal', 'TRUE' ou 'FALSE'}").append("\n\n")
+        }else if (tokensEsperados.contains("LPAREN") || tokensEsperados.contains("RPAREN")){
+            errosSintaticos.append("Erro sintático: Elemento deve estar entre '(' e ')'").append("\n\n")
+        }else if (tokensEsperados.contains("EXCLAMATION"){
+            errosSintaticos.append("Erro sintático: Elemento deve estar entre '!(' e ')'").append("\n\n")
+        }
+    }
 }
 
 void ListaDeElementos() :
 {}
 {
-    Elemento() ListaDeElementosAux()
+    try{
+        Elemento() ListaDeElementosAux()
+    }catch (ParseException e){
+        errosSintaticosCount++;
+        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+    }
 }
 
-void ListaDeElementosAux() :
+void ListaDeElementosAux() : // pode ter erro aqui
 {}
 {
-    (
-        <COMMA> ListaDeElementos()
-    )?
+    try{
+        (
+            <COMMA> ListaDeElementos()
+        )?
+    }catch (ParseException e){
+        errosSintaticosCount++;
+        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+
+        if(tokensEsperados.contains("COMMA")){
+             errosSintaticos.append("Erro sintático: Elementos devem estar separados por ','").append("\n\n");
+        }
+    }
 }
 
 void ListaIdentificadores() :
 {}
 {
-    <IDENTIFIER> ListaIdentificadoresAux()
+    try{
+        <IDENTIFIER> ListaIdentificadoresAux()
+    }catch (ParseException e){
+        errosSintaticosCount++;
+        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+
+        if(tokensEsperados.contains("IDENTIFIER")){
+             errosSintaticos.append("Erro sintático: Deve conter ao menos um 'Identificador'").append("\n\n");
+        }
+    }
 }
 
 void ListaIdentificadoresAux() :
 {}
 {
-    (
-        <COMMA> <IDENTIFIER> ListaIdentificadores()
-    )?
+    try{
+        (
+            <COMMA> <IDENTIFIER> ListaIdentificadores()
+        )?
+    }catch (ParseException e){
+        errosSintaticosCount++;
+        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+
+        if(tokensEsperados.contains("COMMA")){
+             errosSintaticos.append("Erro sintático: Elementos devem estar separados por ','").append("\n\n");
+        }else if(tokensEsperados.contains("IDENTIFIER")){
+            errosSintaticos.append("Erro sintático: Deve conter ao menos um 'Identificador' após a ','").append("\n\n");
+        }
+    }
 }
 
 void Variavel() :
 {}
 {
-    ListaIdentificadores() <COLON> DeclaracaoTipo() <SEMICOLON>
+    try{
+        ListaIdentificadores() <COLON> DeclaracaoTipo() <SEMICOLON>
+    }catch (ParseException e){
+        errosSintaticosCount++;
+        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+
+        if(tokensEsperados.contains("COLON")){
+             errosSintaticos.append("Erro sintático: Declaração de variável deve conter ':' após a lista de variáveis").append("\n\n");
+        }else if(tokensEsperados.contains("SEMICOLON")){
+            errosSintaticos.append("Erro sintático: Declaração da variável deve terminar com ';' após especificação do tipo").append("\n\n");
+        }
+    }
 }
 
 void Tipo() :
 {}
 {
+    try{
+         <TYPE_NUM>
+        | <TYPE_REAL>
+        | <TYPE_TEXT>
+        | <TYPE_FLAG>
+    }catch (ParseException e){
+        errosSintaticosCount++;
+        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
 
-        <TYPE_NUM>
-      | <TYPE_REAL>
-      | <TYPE_TEXT>
-      | <TYPE_FLAG>
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
+        if(tokensEsperados.contains("TYPE_NUM") || tokensEsperados.contains("TYPE_REAL") || tokensEsperados.contains("TYPE_TEXT") || tokensEsperados.contains("TYPE_FLAG")){
+             errosSintaticos.append("Erro sintático: Tipo declarado deve pertencer ao conjunto: {'NUM', 'REAL' 'TEXT' 'FLAG'}").append("\n\n");
+        }
+    }
 }
 
 void DeclaracaoTipo() :
 {}
 {
-    Tipo() SufixoDoTipo()
+    try{
+        Tipo() SufixoDoTipo()
+    }catch (ParseException e){
+        errosSintaticosCount++;
+        String tokensEsperados getListaTokensEsperados(e.expectedTokenSequences));
+    // sai fora ow
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+    }
 }
 
 void SufixoDoTipo() :
 {}
 {
+    try{
     (
         <ASSIGN> Elemento()
       | DeclaracaoArray()
     )?
+    }catch(ParserException e){
+        errosSintaticosCount++;
+        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+
+        if(tokensEsperados.contains("=")){
+            errosSintaticos.append("Erro sintático: Atribuições devem ser feitas a partir do simbolo '='").append("\n\n");
+        }
+    }
 }
 
-void DeclaracaoArray() :
+void DeclaracaoArray() : // Talvez esses erros sejam tratados lá no Delcaração Tipo
 {}
 {
-    <LBRACKET> <NUMBER> <RBRACKET> DeclaracaoValoresArray()
+    try{
+        <LBRACKET> <NUMBER> <RBRACKET> DeclaracaoValoresArray()
+    }catch(ParserException e){
+        errosSintaticosCount++;
+        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+
+        if(tokensEsperados.contains("[") || tokensEsperados.contains("]")){
+            errosSintaticos.append("Erro sintático: Declaração de tamanho do array deve ser feita entre '[' e ']'").append("\n\n");
+        }
+    }
 }
 
-void DeclaracaoValoresArray() :
+void DeclaracaoValoresArray() : // Talvez contains("=") seja na DeclaraçãoArray
 {}
 {
+    try{
     (
         <ASSIGN> <LBRACE> ListaDeElementos() <RBRACE>
     )?
+    }catch(ParserException e){
+        errosSintaticosCount++;
+        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+
+        if(tokensEsperados.contains("=")){
+            errosSintaticos.append("Erro sintático: Atribuições devem ser feitas a partir do simbolo '='").append("\n\n");
+        }
+        if(tokensEsperados.contains("{") || tokensEsperados.contains("}")){
+            errosSintaticos.append("Erro sintático: Declarações de valores dentro de arrays devem ser feitas entre '{' e '}'").append("\n\n");
+        }
+    }
 }
 
 void ListaDeVariaveis() :
 {}
 {
-    Variavel() ListaDeVariaveisAux()
+    try{
+        Variavel() <SEMICOLON> ListaDeVariaveisAux()
+    }catch(ParserException e){
+        errosSintaticosCount++;
+        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+
+        if(tokensEsperados.contains(";")){
+            errosSintaticos.append("Erro sintático: Declarações de variáveis devem ser separadas por ';'").append("\n\n");
+        }
+    }
 }
 
 void ListaDeVariaveisAux() :
 {}
 {
+    try{
     (
         ListaDeVariaveis()
     )?
+    }catch(ParserException e){
+        errosSintaticosCount++;
+        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+    }
 }
 
 void BlocoDefine() :
 {}
 {
+    try{
     (
         <DEFINE> ListaDeVariaveis()
     )?
+    }catch(ParserException e){
+        errosSintaticosCount++;
+        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+    }
 }
 
 void Atribuicao() :
 {}
 {
-    <SET> <IDENTIFIER> SufixoDaAtribuicao() <SEMICOLON>
+    try{
+        <SET> <IDENTIFIER> SufixoDaAtribuicao()
+    }catch(ParserException e){
+        errosSintaticosCount++;
+        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+    }
 }
 
-void SufixoDaAtribuicao() :
+void SufixoDaAtribuicao() : // talvez o contains("=") e o contains("[") sejam na atribuição
 {}
 {
-
+    try{
         <ASSIGN> Expressao()
       | <LBRACKET> Expressao() <RBRACKET> <ASSIGN> Expressao()
+    }catch(ParserException e){
+        errosSintaticosCount++;
+        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+
+         if(tokensEsperados.contains("=")){
+            errosSintaticos.append("Erro sintático: Atribuições devem ser feitas a partir do simbolo '='").append("\n\n");
+         }
+         if(tokensEsperados.contains("[") || tokensEsperados.contains("]")){
+            errosSintaticos.append("Erro sintático: Para atribuir um valor a uma posição de um array, deve se seguir o formato <variavel>[<indice>] = <valor atribuido>").append("\n\n");
+         }
+    }
 
 }
 
 void EntradaDeDados() :
 {}
 {
-    <READ> <LPAREN> <IDENTIFIER> SufixoIdentificador() <RPAREN> <SEMICOLON>
+    try{
+        <READ> <LPAREN> <IDENTIFIER> SufixoIdentificador() <RPAREN>
+    }catch(ParserException e){
+        errosSintaticosCount++;
+        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+
+        if(tokensEsperados.contains("(") || tokensEsperados.contains(")")){
+            errosSintaticos.append("Erro sintático: A variavel destino da entrada de dados deve ser especificada entre '(' e')')").append("\n\n");
+        }
+    }
 }
 
-void SufixoIdentificador() :
+void SufixoIdentificador() : // talvez o contains("[") seja no Entrada de dados
 {}
 {
-    (
-        <LBRACKET> Expressao() <RBRACKET>
-    )?
+    try{
+        (
+            <LBRACKET> Expressao() <RBRACKET>
+        )?
+    }catch(ParserException e){
+        errosSintaticosCount++;
+        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+
+        if(tokensEsperados.contains("[") || tokensEsperados.contains("]")){
+            errosSintaticos.append("Erro sintático: Indices de vetores devem ser explicitos entre '[' e ']' ").append("\n\n");
+        }
+    }
 }
 
 void SaidaDeDados() :
 {}
 {
-    <SHOW> <LPAREN> ListaDeElementos() <RPAREN> <SEMICOLON>
+    try{
+        <SHOW> <LPAREN> ListaDeElementos() <RPAREN>
+    }catch(ParserException e){
+        errosSintaticosCount++;
+        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+
+        if(tokensEsperados.contains("(") || tokensEsperados.contains(")")){
+            errosSintaticos.append("Erro Sintatico: O conteudo a ser mostrado deve estar entre '(' e ')'").append("\n\n");
+        }
+        if(tokensEsper)
+    }
 }
 
 void Selecao() :
 {}
 {
-    <IF> Expressao() <THEN> ListaDeComandos() Else() <END> <SEMICOLON>
+    try{
+        <IF> Expressao() <THEN> ListaDeComandos() Else() <END>
+    }catch(ParserException e){
+        errosSintaticosCount++;
+        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+
+        if(tokensEsperados.contains("IF") || tokensEsperados.contains("THEN") || tokensEsperados.contains("END")){
+            errosSintaticos.append("Erro sintático: Comandos de seleção devem ter seguir o formato 'IF <condição> THEN <comandos> END'").append("\n\n");
+        }
+    }
 }
 
 void Else() :
 {}
 {
-    (
-        <ELSE> ListaDeComandos()
-    )?
+    try{
+        (
+            <ELSE> ListaDeComandos()
+        )?
+    }catch(ParserException e){
+        errosSintaticosCount++;
+        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+
+        if(tokensEsperados.contains("ELSE")){
+            errosSintaticos.append("Erro sintático: O comando 'Se não' se inicia através de comando 'ELSE'").append("\n\n");
+        }
+    }
 }
 
 void Repeticao() :
 {}
 {
-    <LOOP> <WHILE> Expressao() ListaDeComandos() <END> <SEMICOLON>
+    try{
+        <LOOP> <WHILE> Expressao() ListaDeComandos() <END>
+    }catch(ParserException e){
+        errosSintaticosCount++;
+        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+
+        if(tokensEsperados.contains("LOOP") || tokensEsperados.contains("WHILE") || tokensEsperados.contains("END")){
+            errosSintaticos.append("Erro sintático: Comandos de repetição devem seguir o formato 'LOOP WHILE <comandos> END").append("\n\n");
+        }
+    }
 }
 
 void Comando() :
 {}
 {
-
+    try{
         Atribuicao()
       | EntradaDeDados()
       | SaidaDeDados()
       | Selecao()
       | Repeticao()
+    } catch(ParserException e){
+        errosSintaticosCount++;
+        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
 
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+
+        if(tokensEsperados.contains("SET") || tokensEsperados.contains("READ") || tokensEsperados.contains("SHOW") || tokensEsperados.contains("IF") ||  tokensEsperados.contains("LOOP")){
+            errosSintaticos.append("Erro sintático: Comando não especificado ou especificado errado, os comandos são: SET, READ, SHOW, IF, LOOP").append("\n\n");
+        }
+    }
 }
 
 void ListaDeComandos() :
 {}
 {
-    Comando() ListaDeComandosAux()
+    try{
+        Comando() <SEMICOLON> ListaDeComandosAux()
+    } catch (ParserException e){
+        errosSintaticosCount++;
+        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+        if (tokensEsperados.contains(";")){
+            errosSintaticos.append("Erro sintático: Todo comando deve ser finalizado com ';'").append("\n\n");
+        }
+    }
 }
 
 void ListaDeComandosAux() :
 {}
 {
+    try{
     (
         ListaDeComandos()
     )?
+    } catch (ParserException e){
+        errosSintaticosCount++;
+        String tokensEsperados = criaListaEsperados(e.expectedTokenSequences);
+
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+    }
 }

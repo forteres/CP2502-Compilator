@@ -148,9 +148,18 @@ public class MenuBar {
         if(!editArea.getText().isEmpty()) {
             InputStream input = new ByteArrayInputStream(editArea.getText().getBytes());
             try {
-                List<Token> tokens = (List<Token>) Linguagem20252.analisar(input);
-                if()
-                this.resultArea.setText(TokenStringBuilder.formatTokenToString(tokens));
+                List<Token> tokens = (List<Token>) Linguagem20252.analiseLexica(input);
+                if(Linguagem20252.errosLexicosCount > 0){
+                    this.resultArea.setText(TokenStringBuilder.formatTokenToString(tokens));
+                }else{
+                    StringBuilder errosSintaticos = Linguagem20252.analiseSintatica(input);
+                    if(Linguagem20252.errosSintaticoCount > 0) {
+                        this.resultArea.setText(errosSintaticos.toString());
+                    }else {
+                        System.out.println("Programa compilado com sucesso!");
+                    }
+                }
+
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }
