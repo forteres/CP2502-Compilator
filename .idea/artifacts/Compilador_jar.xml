@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Compilador:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Compilador_jar</output-path>
+    <root id="archive" name="Compilador.jar">
+      <element id="module-output" name="Compilador" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/fifesoft/rsyntaxtextarea/3.3.3/rsyntaxtextarea-3.3.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/net/java/dev/javacc/javacc/7.0.13/javacc-7.0.13.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/junit/junit/3.8.1/junit-3.8.1.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
