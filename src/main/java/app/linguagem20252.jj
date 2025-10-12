@@ -43,6 +43,7 @@ public class Linguagem20252 {
                     || token.kind == Linguagem20252Constants.UNCLOSED_STRING
                     || token.kind == Linguagem20252Constants.UNCLOSED_BLOCK_COMMENT){
                     tokens.add(token);
+                    errosLexicosCount++;
                 }
             } while (token.kind != Linguagem20252Constants.EOF);
 
@@ -51,7 +52,7 @@ public class Linguagem20252 {
 
     public static StringBuilder analiseSintatica(InputStream input) throws ParseException {
             Linguagem20252 parser = new Linguagem20252(input);
-            errosSintaticos = 0;
+            errosSintaticosCount = 0;
             errosSintaticos = new StringBuilder();
             parser.Programa();
             return errosSintaticos;

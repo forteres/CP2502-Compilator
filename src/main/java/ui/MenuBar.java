@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MenuBar {
@@ -146,13 +147,14 @@ public class MenuBar {
     //Compilator Functions
     public void buildAction(){
         if(!editArea.getText().isEmpty()) {
-            InputStream input = new ByteArrayInputStream(editArea.getText().getBytes());
+            InputStream inputLexico = new ByteArrayInputStream(editArea.getText().getBytes());
             try {
-                List<Token> tokens = (List<Token>) Linguagem20252.analiseLexica(input);
+                List<Token> tokens = (List<Token>) Linguagem20252.analiseLexica(inputLexico);
                 if(Linguagem20252.errosLexicosCount > 0){
                     this.resultArea.setText(TokenStringBuilder.formatTokenToString(tokens));
                 }else{
-                    StringBuilder errosSintaticos = Linguagem20252.analiseSintatica(input);
+                    InputStream inputSintatico = new ByteArrayInputStream(editArea.getText().getBytes());
+                    StringBuilder errosSintaticos = Linguagem20252.analiseSintatica(inputSintatico);
                     if(Linguagem20252.errosSintaticosCount > 0) {
                         this.resultArea.setText(errosSintaticos.toString());
                     }else {
