@@ -158,7 +158,7 @@ public class MenuBar {
                     if(Linguagem20252.errosSintaticosCount > 0) {
                         this.resultArea.setText(errosSintaticos.toString());
                     }else {
-                        System.out.println("Programa compilado com sucesso!");
+                        this.resultArea.setText("Programa compilado com sucesso!");
                     }
                 }
 

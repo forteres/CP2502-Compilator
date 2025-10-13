@@ -59,7 +59,7 @@ public class Linguagem20252 {
             return errosSintaticos;
     }
 
-    public static Token skipToSynchronizingToken(int... synchronizingKinds) {
+    public Token skipToSynchronizingToken(int... synchronizingKinds) {
         Token t = getToken(0);
 
         while (t.kind != EOF && !isSynchronizingToken(t, synchronizingKinds)) {
