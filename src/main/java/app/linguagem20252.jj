@@ -57,6 +57,23 @@ public class Linguagem20252 {
             parser.Programa();
             return errosSintaticos;
     }
+
+    public static Token skipToSynchronizingToken(int... synchronizingKinds) {
+        Token t = getToken(0);
+
+        while (t.kind != EOF && !isSynchronizingToken(t, synchronizingKinds)) {
+            t = getNextToken();
+        }
+
+        return t;
+    }
+
+    private static boolean isSynchronizingToken(Token t, int... synchronizingKinds) {
+        for (int kind : synchronizingKinds) {
+            if (t.kind == kind) return true;
+        }
+        return false;
+    }
 }
 
 PARSER_END(Linguagem20252)
@@ -176,15 +193,7 @@ void Programa() :
             errosSintaticos.append("Erro sintático: Programa deve acabar com 'END.'").append("\n\n");
         }
         // RECUPERAÇÃO DE ERROS
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, START, DEFINE);
     }
 }
 
@@ -202,15 +211,7 @@ void NomeDoPrograma() :
         if (tokensEsperados.contains("IDENTIFIER")){
                 errosSintaticos.append("Erro sintático: Nome do Programa deve ser um 'IDENTIFICADOR'").append("\n\n");
         }
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, BEGIN);
     }
 }
 
@@ -224,17 +225,7 @@ void Expressao() :
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.RPAREN
-                && t.kind != Linguagem20252Constants.RBRACKET
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, BEGIN, START, RPAREN, RBRACKET);
     }
 }
 
@@ -261,17 +252,7 @@ void ExpressaoAux() :
         {
             errosSintaticos.append("Erro sintático: A Expressão deve conter um operador lógico").append("\n\n");
         }
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.RPAREN
-                && t.kind != Linguagem20252Constants.RBRACKET
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, RPAREN, RBRACKET, START);
     }
 }
 
@@ -285,17 +266,7 @@ void ExpressaoAritmeticaOuLogica() :
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.RPAREN
-                && t.kind != Linguagem20252Constants.RBRACKET
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, RPAREN, RBRACKET, START);
     }
 }
 
@@ -317,17 +288,7 @@ void MenorPrioridade() :
         if(tokensEsperados.contains("PLUS") || tokensEsperados.contains("MINUS") || tokensEsperados.contains("PIPE")){
             errosSintaticos.append("Erro sintático: A Expressão deve conter um operador aritmético").append("\n\n");
         }
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.RPAREN
-                && t.kind != Linguagem20252Constants.RBRACKET
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, START, RPAREN, RBRACKET);
     }
 }
 
@@ -341,17 +302,7 @@ void Termo2() :
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.RPAREN
-                && t.kind != Linguagem20252Constants.RBRACKET
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, START, RPAREN, RBRACKET);
     }
 }
 
@@ -377,17 +328,7 @@ void MediaPrioridade() :
         {
             errosSintaticos.append("Erro sintático: A Expressão deve conter um operador aritmético").append("\n\n");
         }
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.RPAREN
-                && t.kind != Linguagem20252Constants.RBRACKET
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, START, RPAREN, RBRACKET);
     }
 }
 
@@ -401,17 +342,7 @@ void Termo1() :
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.RPAREN
-                && t.kind != Linguagem20252Constants.RBRACKET
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, START, RPAREN, RBRACKET);
     }
 }
 
@@ -431,17 +362,7 @@ void MaiorPrioridade() :
         if(tokensEsperados.contains("POWER")){
              errosSintaticos.append("Erro sintático: A Expressão deve conter o operador '**'").append("\n\n");
         }
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.RPAREN
-                && t.kind != Linguagem20252Constants.RBRACKET
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, START, RPAREN, RBRACKET);
     }
 }
 
@@ -472,19 +393,7 @@ void Elemento() :
         }else if (tokensEsperados.contains("EXCLAMATION")){
             errosSintaticos.append("Erro sintático: Elemento deve estar entre '!(' e ')'").append("\n\n");
         }
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.RPAREN
-                && t.kind != Linguagem20252Constants.RBRACKET
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START
-                && t.kind != Linguagem20252Constants.LPAREN
-                && t.kind != Linguagem20252Constants.LBRACKET
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, START, RPAREN, RBRACKET, LPAREN, LBRACKET);
     }
 }
 
@@ -498,18 +407,7 @@ void ListaDeElementos() :
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.RPAREN
-                && t.kind != Linguagem20252Constants.RBRACKET
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START
-                && t.kind != Linguagem20252Constants.COMMA
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, START, RPAREN, RBRACKET, COMMA);
     }
 }
 
@@ -529,18 +427,7 @@ void ListaDeElementosAux() : // pode ter erro aqui
         if(tokensEsperados.contains("COMMA")){
              errosSintaticos.append("Erro sintático: Elementos devem estar separados por ','").append("\n\n");
         }
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.RPAREN
-                && t.kind != Linguagem20252Constants.RBRACKET
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START
-                && t.kind != Linguagem20252Constants.COMMA
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, START, RPAREN, RBRACKET, COMMA);
     }
 }
 
@@ -558,16 +445,7 @@ void ListaIdentificadores() :
         if(tokensEsperados.contains("IDENTIFIER")){
              errosSintaticos.append("Erro sintático: Deve conter ao menos um 'Identificador'").append("\n\n");
         }
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START
-                && t.kind != Linguagem20252Constants.COMMA
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, START, COMMA);
     }
 }
 
@@ -589,16 +467,7 @@ void ListaIdentificadoresAux() :
         }else if(tokensEsperados.contains("IDENTIFIER")){
             errosSintaticos.append("Erro sintático: Deve conter ao menos um 'Identificador' após a ','").append("\n\n");
         }
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START
-                && t.kind != Linguagem20252Constants.COMMA
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, START, COMMA);
     }
 }
 
@@ -618,15 +487,7 @@ void Variavel() :
         }else if(tokensEsperados.contains("SEMICOLON")){
             errosSintaticos.append("Erro sintático: Declaração da variável deve terminar com ';' após especificação do tipo").append("\n\n");
         }
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, START);
     }
 }
 
@@ -647,16 +508,7 @@ void Tipo() :
         if(tokensEsperados.contains("TYPE_NUM") || tokensEsperados.contains("TYPE_REAL") || tokensEsperados.contains("TYPE_TEXT") || tokensEsperados.contains("TYPE_FLAG")){
              errosSintaticos.append("Erro sintático: Tipo declarado deve pertencer ao conjunto: {'NUM', 'REAL' 'TEXT' 'FLAG'}").append("\n\n");
         }
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START
-                && t.kind != Linguagem20252Constants.COLON
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, START, COLON);
     }
 }
 
@@ -669,16 +521,7 @@ void DeclaracaoTipo() :
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START
-                && t.kind != Linguagem20252Constants.ASSIGN
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, START, ASSIGN);
     }
 }
 
@@ -699,15 +542,7 @@ void SufixoDoTipo() :
         if(tokensEsperados.contains("=")){
             errosSintaticos.append("Erro sintático: Atribuições devem ser feitas a partir do simbolo '='").append("\n\n");
         }
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, START);
     }
 }
 
@@ -725,16 +560,7 @@ void DeclaracaoArray() : // Talvez esses erros sejam tratados lá no Delcaraçã
         if(tokensEsperados.contains("[") || tokensEsperados.contains("]")){
             errosSintaticos.append("Erro sintático: Declaração de tamanho do array deve ser feita entre '[' e ']'").append("\n\n");
         }
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START
-                && t.kind != Linguagem20252Constants.RBRACKET
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, START, RBRACKET);
     }
 }
 
@@ -757,16 +583,7 @@ void DeclaracaoValoresArray() : // Talvez contains("=") seja na DeclaraçãoArra
         if(tokensEsperados.contains("{") || tokensEsperados.contains("}")){
             errosSintaticos.append("Erro sintático: Declarações de valores dentro de arrays devem ser feitas entre '{' e '}'").append("\n\n");
         }
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START
-                && t.kind != Linguagem20252Constants.RBRACE
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, START, RBRACE);
     }
 }
 
@@ -784,15 +601,7 @@ void ListaDeVariaveis() :
         if(tokensEsperados.contains(";")){
             errosSintaticos.append("Erro sintático: Declarações de variáveis devem ser separadas por ';'").append("\n\n");
         }
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, START);
     }
 }
 
@@ -808,15 +617,7 @@ void ListaDeVariaveisAux() :
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, START);
     }
 }
 
@@ -832,15 +633,7 @@ void BlocoDefine() :
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, START);
     }
 }
 
@@ -854,18 +647,7 @@ void Atribuicao() :
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.READ
-                && t.kind != Linguagem20252Constants.SHOW
-                && t.kind != Linguagem20252Constants.IF
-                && t.kind != Linguagem20252Constants.LOOP
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP);
     }
 }
 
@@ -887,19 +669,7 @@ void SufixoDaAtribuicao() : // talvez o contains("=") e o contains("[") sejam na
          if(tokensEsperados.contains("[") || tokensEsperados.contains("]")){
             errosSintaticos.append("Erro sintático: Para atribuir um valor a uma posição de um array, deve se seguir o formato <variavel>[<indice>] = <valor atribuido>").append("\n\n");
          }
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.READ
-                && t.kind != Linguagem20252Constants.SHOW
-                && t.kind != Linguagem20252Constants.IF
-                && t.kind != Linguagem20252Constants.LOOP
-                && t.kind != Linguagem20252Constants.RBRACKET
-                && t.kind != Linguagem20252Constants.EOF
-        );
+         skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP, RBRACKET);
     }
 
 }
@@ -918,19 +688,7 @@ void EntradaDeDados() :
         if(tokensEsperados.contains("(") || tokensEsperados.contains(")")){
             errosSintaticos.append("Erro sintático: A variavel destino da entrada de dados deve ser especificada entre '(' e')')").append("\n\n");
         }
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.READ
-                && t.kind != Linguagem20252Constants.SHOW
-                && t.kind != Linguagem20252Constants.IF
-                && t.kind != Linguagem20252Constants.LOOP
-                && t.kind != Linguagem20252Constants.RPAREN
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP, RPAREN);
     }
 }
 
@@ -950,19 +708,7 @@ void SufixoIdentificador() : // talvez o contains("[") seja no Entrada de dados
         if(tokensEsperados.contains("[") || tokensEsperados.contains("]")){
             errosSintaticos.append("Erro sintático: Indices de vetores devem ser explicitos entre '[' e ']' ").append("\n\n");
         }
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.READ
-                && t.kind != Linguagem20252Constants.SHOW
-                && t.kind != Linguagem20252Constants.IF
-                && t.kind != Linguagem20252Constants.LOOP
-                && t.kind != Linguagem20252Constants.RBRACKET
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP, RBRACKET);
     }
 }
 
@@ -980,19 +726,7 @@ void SaidaDeDados() :
         if(tokensEsperados.contains("(") || tokensEsperados.contains(")")){
             errosSintaticos.append("Erro Sintatico: O conteudo a ser mostrado deve estar entre '(' e ')'").append("\n\n");
         }
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.READ
-                && t.kind != Linguagem20252Constants.SHOW
-                && t.kind != Linguagem20252Constants.IF
-                && t.kind != Linguagem20252Constants.LOOP
-                && t.kind != Linguagem20252Constants.RPAREN
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP, RPAREN);
     }
 }
 
@@ -1010,19 +744,7 @@ void Selecao() :
         if(tokensEsperados.contains("IF") || tokensEsperados.contains("THEN") || tokensEsperados.contains("END")){
             errosSintaticos.append("Erro sintático: Comandos de seleção devem ter seguir o formato 'IF <condição> THEN <comandos> END'").append("\n\n");
         }
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.READ
-                && t.kind != Linguagem20252Constants.SHOW
-                && t.kind != Linguagem20252Constants.IF
-                && t.kind != Linguagem20252Constants.LOOP
-                && t.kind != Linguagem20252Constants.THEN
-                && t.kind != Linguagem20252Constants.EOF
-        );
+        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP, THEN);
     }
 }
 
@@ -1042,17 +764,7 @@ void Else() :
         if(tokensEsperados.contains("ELSE")){
             errosSintaticos.append("Erro sintático: O comando 'Se não' se inicia através de comando 'ELSE'").append("\n\n");
         }
-        Token t;
-        do {
-            t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.READ
-                && t.kind != Linguagem20252Constants.SHOW
-                && t.kind != Linguagem20252Constants.IF
-                && t.kind != Linguagem20252Constants.LOOP
-                && t.kind != Linguagem20252Constants.THEN
-                && t.kind != Linguagem20252Constants.EOF);
+        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP, THEN);
     }
 }
 
@@ -1070,17 +782,7 @@ void Repeticao() :
         if(tokensEsperados.contains("LOOP") || tokensEsperados.contains("WHILE") || tokensEsperados.contains("END")){
             errosSintaticos.append("Erro sintático: Comandos de repetição devem seguir o formato 'LOOP WHILE <comandos> END").append("\n\n");
         }
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.READ
-                && t.kind != Linguagem20252Constants.SHOW
-                && t.kind != Linguagem20252Constants.IF
-                && t.kind != Linguagem20252Constants.LOOP
-                && t.kind != Linguagem20252Constants.EOF);
+        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP);
     }
 }
 
@@ -1102,16 +804,7 @@ void Comando() :
         if(tokensEsperados.contains("SET") || tokensEsperados.contains("READ") || tokensEsperados.contains("SHOW") || tokensEsperados.contains("IF") ||  tokensEsperados.contains("LOOP")){
             errosSintaticos.append("Erro sintático: Comando não especificado ou especificado errado, os comandos são: SET, READ, SHOW, IF, LOOP").append("\n\n");
         }
-        Token t;
-        do {
-            t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.READ
-                && t.kind != Linguagem20252Constants.SHOW
-                && t.kind != Linguagem20252Constants.IF
-                && t.kind != Linguagem20252Constants.LOOP
-                && t.kind != Linguagem20252Constants.EOF);
+        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP);
     }
 }
 
@@ -1128,17 +821,7 @@ void ListaDeComandos() :
         if (tokensEsperados.contains(";")){
             errosSintaticos.append("Erro sintático: Todo comando deve ser finalizado com ';'").append("\n\n");
         }
-        Token t;
-        do {
-            t = getNextToken();
-        } while (
-                t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.READ
-                && t.kind != Linguagem20252Constants.SHOW
-                && t.kind != Linguagem20252Constants.IF
-                && t.kind != Linguagem20252Constants.LOOP
-                && t.kind != Linguagem20252Constants.EOF);
+        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP);
     }
 }
 
@@ -1154,15 +837,6 @@ void ListaDeComandosAux() :
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-        Token t;
-        do {
-            t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON
-                && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.READ
-                && t.kind != Linguagem20252Constants.SHOW
-                && t.kind != Linguagem20252Constants.IF
-                && t.kind != Linguagem20252Constants.LOOP
-                && t.kind != Linguagem20252Constants.EOF);
+        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP);
     }
 }
