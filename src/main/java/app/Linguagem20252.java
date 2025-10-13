@@ -80,8 +80,12 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.DEFINE
-                && t.kind != Linguagem20252Constants.START && t.kind != Linguagem20252Constants.EOF );
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.START
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -107,8 +111,12 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.DEFINE
-                && t.kind != Linguagem20252Constants.START && t.kind != Linguagem20252Constants.EOF );
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.START
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -124,9 +132,14 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START && t.kind != Linguagem20252Constants.RBRACKET
-                 && t.kind != Linguagem20252Constants.RPAREN && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.RPAREN
+                && t.kind != Linguagem20252Constants.RBRACKET
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.START
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -188,9 +201,14 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START && t.kind != Linguagem20252Constants.RBRACKET
-                 && t.kind != Linguagem20252Constants.RPAREN && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.RPAREN
+                && t.kind != Linguagem20252Constants.RBRACKET
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.START
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -206,9 +224,14 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START && t.kind != Linguagem20252Constants.RBRACKET
-                 && t.kind != Linguagem20252Constants.RPAREN && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.RPAREN
+                && t.kind != Linguagem20252Constants.RBRACKET
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.START
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -256,9 +279,14 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START && t.kind != Linguagem20252Constants.RBRACKET
-                 && t.kind != Linguagem20252Constants.RPAREN && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.RPAREN
+                && t.kind != Linguagem20252Constants.RBRACKET
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.START
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -274,9 +302,14 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START && t.kind != Linguagem20252Constants.RBRACKET
-                 && t.kind != Linguagem20252Constants.RPAREN && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.RPAREN
+                && t.kind != Linguagem20252Constants.RBRACKET
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.START
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -338,9 +371,14 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START && t.kind != Linguagem20252Constants.RBRACKET
-                 && t.kind != Linguagem20252Constants.RPAREN && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.RPAREN
+                && t.kind != Linguagem20252Constants.RBRACKET
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.START
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -356,9 +394,14 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START && t.kind != Linguagem20252Constants.RBRACKET
-                 && t.kind != Linguagem20252Constants.RPAREN && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.RPAREN
+                && t.kind != Linguagem20252Constants.RBRACKET
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.START
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -386,9 +429,14 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START && t.kind != Linguagem20252Constants.RBRACKET
-                 && t.kind != Linguagem20252Constants.RPAREN && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.RPAREN
+                && t.kind != Linguagem20252Constants.RBRACKET
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.START
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -397,6 +445,7 @@ public class Linguagem20252 implements Linguagem20252Constants {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case IDENTIFIER:
         jj_consume_token(IDENTIFIER);
+        SufixoIdentificador();
         break;
       case NUMBER:
         jj_consume_token(NUMBER);
@@ -450,9 +499,16 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START && t.kind != Linguagem20252Constants.RBRACKET
-                 && t.kind != Linguagem20252Constants.RPAREN && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.RPAREN
+                && t.kind != Linguagem20252Constants.RBRACKET
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.START
+                && t.kind != Linguagem20252Constants.LPAREN
+                && t.kind != Linguagem20252Constants.LBRACKET
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -468,10 +524,15 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START && t.kind != Linguagem20252Constants.RBRACKET
-                 && t.kind != Linguagem20252Constants.RPAREN && t.kind != Linguagem20252Constants.COMMA
-                 && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.RPAREN
+                && t.kind != Linguagem20252Constants.RBRACKET
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.START
+                && t.kind != Linguagem20252Constants.COMMA
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -499,10 +560,15 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START && t.kind != Linguagem20252Constants.RBRACKET
-                 && t.kind != Linguagem20252Constants.RPAREN && t.kind != Linguagem20252Constants.COMMA
-                 && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.RPAREN
+                && t.kind != Linguagem20252Constants.RBRACKET
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.START
+                && t.kind != Linguagem20252Constants.COMMA
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -522,10 +588,13 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START && t.kind != Linguagem20252Constants.RBRACKET
-                 && t.kind != Linguagem20252Constants.RPAREN && t.kind != Linguagem20252Constants.COMMA
-                 && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.START
+                && t.kind != Linguagem20252Constants.COMMA
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -555,10 +624,13 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START && t.kind != Linguagem20252Constants.RBRACKET
-                 && t.kind != Linguagem20252Constants.RPAREN && t.kind != Linguagem20252Constants.COMMA
-                 && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.START
+                && t.kind != Linguagem20252Constants.COMMA
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -582,10 +654,12 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START && t.kind != Linguagem20252Constants.RBRACKET
-                 && t.kind != Linguagem20252Constants.RPAREN && t.kind != Linguagem20252Constants.COMMA
-                 && t.kind != Linguagem20252Constants.COLON && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.START
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -621,9 +695,13 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START && t.kind != Linguagem20252Constants.ASSIGN
-                && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.START
+                && t.kind != Linguagem20252Constants.COLON
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -638,9 +716,13 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START && t.kind != Linguagem20252Constants.ASSIGN
-                && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.START
+                && t.kind != Linguagem20252Constants.ASSIGN
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -679,8 +761,12 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.START
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -702,9 +788,13 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START && t.kind != Linguagem20252Constants.ASSIGN
-                && t.kind != Linguagem20252Constants.RBRACKET && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.START
+                && t.kind != Linguagem20252Constants.RBRACKET
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -736,9 +826,13 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START && t.kind != Linguagem20252Constants.RBRACE
-                && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.START
+                && t.kind != Linguagem20252Constants.RBRACE
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -758,9 +852,12 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START && t.kind != Linguagem20252Constants.COMMA
-                && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.START
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -783,9 +880,12 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START && t.kind != Linguagem20252Constants.COMMA
-                && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.START
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -808,9 +908,12 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.START && t.kind != Linguagem20252Constants.COLON
-                && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.START
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -827,10 +930,15 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.READ && t.kind != Linguagem20252Constants.ASSIGN
-                && t.kind != Linguagem20252Constants.SHOW && t.kind != Linguagem20252Constants.IF
-                && t.kind != Linguagem20252Constants.LOOP && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.READ
+                && t.kind != Linguagem20252Constants.SHOW
+                && t.kind != Linguagem20252Constants.IF
+                && t.kind != Linguagem20252Constants.LOOP
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -868,11 +976,16 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.READ && t.kind != Linguagem20252Constants.ASSIGN
-                && t.kind != Linguagem20252Constants.SHOW && t.kind != Linguagem20252Constants.IF
-                && t.kind != Linguagem20252Constants.LOOP && t.kind != Linguagem20252Constants.RBRACKET
-                && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.READ
+                && t.kind != Linguagem20252Constants.SHOW
+                && t.kind != Linguagem20252Constants.IF
+                && t.kind != Linguagem20252Constants.LOOP
+                && t.kind != Linguagem20252Constants.RBRACKET
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -895,11 +1008,16 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.READ && t.kind != Linguagem20252Constants.ASSIGN
-                && t.kind != Linguagem20252Constants.SHOW && t.kind != Linguagem20252Constants.IF
-                && t.kind != Linguagem20252Constants.LOOP && t.kind != Linguagem20252Constants.RPAREN
-                && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.READ
+                && t.kind != Linguagem20252Constants.SHOW
+                && t.kind != Linguagem20252Constants.IF
+                && t.kind != Linguagem20252Constants.LOOP
+                && t.kind != Linguagem20252Constants.RPAREN
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -927,11 +1045,16 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.READ && t.kind != Linguagem20252Constants.ASSIGN
-                && t.kind != Linguagem20252Constants.SHOW && t.kind != Linguagem20252Constants.IF
-                && t.kind != Linguagem20252Constants.LOOP && t.kind != Linguagem20252Constants.RBRACKET
-                && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.READ
+                && t.kind != Linguagem20252Constants.SHOW
+                && t.kind != Linguagem20252Constants.IF
+                && t.kind != Linguagem20252Constants.LOOP
+                && t.kind != Linguagem20252Constants.RBRACKET
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -953,11 +1076,16 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.READ && t.kind != Linguagem20252Constants.ASSIGN
-                && t.kind != Linguagem20252Constants.SHOW && t.kind != Linguagem20252Constants.IF
-                && t.kind != Linguagem20252Constants.LOOP && t.kind != Linguagem20252Constants.RPAREN
-                && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.READ
+                && t.kind != Linguagem20252Constants.SHOW
+                && t.kind != Linguagem20252Constants.IF
+                && t.kind != Linguagem20252Constants.LOOP
+                && t.kind != Linguagem20252Constants.RPAREN
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -981,11 +1109,16 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.READ && t.kind != Linguagem20252Constants.ASSIGN
-                && t.kind != Linguagem20252Constants.SHOW && t.kind != Linguagem20252Constants.IF
-                && t.kind != Linguagem20252Constants.LOOP && t.kind != Linguagem20252Constants.THEN
-                && t.kind != Linguagem20252Constants.ELSE && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.READ
+                && t.kind != Linguagem20252Constants.SHOW
+                && t.kind != Linguagem20252Constants.IF
+                && t.kind != Linguagem20252Constants.LOOP
+                && t.kind != Linguagem20252Constants.THEN
+                && t.kind != Linguagem20252Constants.EOF
+        );
     }
   }
 
@@ -1012,10 +1145,14 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.READ && t.kind != Linguagem20252Constants.ASSIGN
-                && t.kind != Linguagem20252Constants.SHOW && t.kind != Linguagem20252Constants.IF
-                && t.kind != Linguagem20252Constants.LOOP && t.kind != Linguagem20252Constants.EOF);
+        } while (t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.READ
+                && t.kind != Linguagem20252Constants.SHOW
+                && t.kind != Linguagem20252Constants.IF
+                && t.kind != Linguagem20252Constants.LOOP
+                && t.kind != Linguagem20252Constants.THEN
+                && t.kind != Linguagem20252Constants.EOF);
     }
   }
 
@@ -1038,10 +1175,14 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.READ && t.kind != Linguagem20252Constants.ASSIGN
-                && t.kind != Linguagem20252Constants.SHOW && t.kind != Linguagem20252Constants.IF
-                && t.kind != Linguagem20252Constants.LOOP && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.READ
+                && t.kind != Linguagem20252Constants.SHOW
+                && t.kind != Linguagem20252Constants.IF
+                && t.kind != Linguagem20252Constants.LOOP
+                && t.kind != Linguagem20252Constants.EOF);
     }
   }
 
@@ -1080,10 +1221,13 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.READ && t.kind != Linguagem20252Constants.ASSIGN
-                && t.kind != Linguagem20252Constants.SHOW && t.kind != Linguagem20252Constants.IF
-                && t.kind != Linguagem20252Constants.LOOP && t.kind != Linguagem20252Constants.EOF);
+        } while (t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.READ
+                && t.kind != Linguagem20252Constants.SHOW
+                && t.kind != Linguagem20252Constants.IF
+                && t.kind != Linguagem20252Constants.LOOP
+                && t.kind != Linguagem20252Constants.EOF);
     }
   }
 
@@ -1103,10 +1247,14 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.READ && t.kind != Linguagem20252Constants.ASSIGN
-                && t.kind != Linguagem20252Constants.SHOW && t.kind != Linguagem20252Constants.IF
-                && t.kind != Linguagem20252Constants.LOOP && t.kind != Linguagem20252Constants.EOF);
+        } while (
+                t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.READ
+                && t.kind != Linguagem20252Constants.SHOW
+                && t.kind != Linguagem20252Constants.IF
+                && t.kind != Linguagem20252Constants.LOOP
+                && t.kind != Linguagem20252Constants.EOF);
     }
   }
 
@@ -1134,10 +1282,13 @@ public class Linguagem20252 implements Linguagem20252Constants {
         Token t;
         do {
             t = getNextToken();
-        } while (t.kind != Linguagem20252Constants.SEMICOLON && t.kind != Linguagem20252Constants.END
-                && t.kind != Linguagem20252Constants.READ && t.kind != Linguagem20252Constants.ASSIGN
-                && t.kind != Linguagem20252Constants.SHOW && t.kind != Linguagem20252Constants.IF
-                && t.kind != Linguagem20252Constants.LOOP && t.kind != Linguagem20252Constants.EOF);
+        } while (t.kind != Linguagem20252Constants.SEMICOLON
+                && t.kind != Linguagem20252Constants.END
+                && t.kind != Linguagem20252Constants.READ
+                && t.kind != Linguagem20252Constants.SHOW
+                && t.kind != Linguagem20252Constants.IF
+                && t.kind != Linguagem20252Constants.LOOP
+                && t.kind != Linguagem20252Constants.EOF);
     }
   }
 

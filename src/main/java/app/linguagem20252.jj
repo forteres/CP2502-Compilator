@@ -1021,7 +1021,7 @@ void Selecao() :
                 && t.kind != Linguagem20252Constants.IF
                 && t.kind != Linguagem20252Constants.LOOP
                 && t.kind != Linguagem20252Constants.THEN
-                && t.kind != Linguagem20252Constants.EOF);
+                && t.kind != Linguagem20252Constants.EOF
         );
     }
 }
