@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import static app.Linguagem20252Constants.*;
 
 /** Token Manager. */
 public class Linguagem20252TokenManager implements Linguagem20252Constants
