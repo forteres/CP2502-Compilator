@@ -201,11 +201,11 @@ void Programa() :
         skipToSynchronizingToken(END, START, DEFINE);
         Token t = getToken(1);
         if (t.kind == END){
-            BlocoEnd()
+            BlocoEnd();
         }else if (t.kind == START){
-            BlocoStart() BlocoEnd() // talvez try catch em cada um, acho que nao
+            BlocoStart(); BlocoEnd();// talvez try catch em cada um, acho que nao
         }else if (t.kind == DEFINE){
-            BlocoDefine() BlocoStart() BlocoEnd()
+            BlocoDefine(); BlocoStart(); BlocoEnd();
         }
     }
 }
@@ -260,9 +260,9 @@ void BlocoStart() :
         }
 
         skipToSynchronizingToken(SET, READ, SHOW, IF, LOOP, END);
-        token t = getToken(1);
+        Token t = getToken(1);
         if (t.kind != END){ // se achar END, desempilha
-            ListaDeComandos() /* semantica*/ // talvez try catch? nao acho que precisa
+            ListaDeComandos() /* semantica*/; // talvez try catch? nao acho que precisa
         }
     }
 }
