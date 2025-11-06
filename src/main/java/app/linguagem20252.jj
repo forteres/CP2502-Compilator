@@ -289,35 +289,15 @@ void BlocoEnd() :
 void ListaDeVariaveis() :
 {}
 {
-    try{
-        Variavel() ListaDeVariaveisAux()
-    }catch(ParseException e){
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-
-        if(tokensEsperados.contains(";")){
-            errosSintaticos.append("Erro sintático: Declarações de variáveis devem ser separadas por ';'").append("\n\n"); // eu acho que nunca vai acontecer
-        }
-        skipToSynchronizingToken(SEMICOLON, END, START);
-    }
+    Variavel() ListaDeVariaveisAux()
 }
 
 void ListaDeVariaveisAux() :
 {}
 {
-    try{
     (
         Variavel() ListaDeVariaveisAux()
     )?
-    }catch(ParseException e){
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-        skipToSynchronizingToken(SEMICOLON, END, START);
-    }
 }
 
 void Variavel() :
@@ -401,7 +381,7 @@ void Tipo() :
     }
 }
 
-void DeclaracaoArray() : // Talvez esses erros sejam tratados lá no Delcaração Tipo
+void DeclaracaoArray() :
 {}
 {
     try{
@@ -466,15 +446,7 @@ void DeclaracaoValoresEscalar() :
 void ListaDeValoresVetor() :
 {}
 {
-    try{
-        Valor() /* semantica*/ ListaDeValoresVetorAux()
-    }catch (ParseException e){
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-        skipToSynchronizingToken(SEMICOLON, END, START, RPAREN, RBRACE, COMMA);
-    }
+    Valor() /* semantica*/ ListaDeValoresVetorAux()
 }
 
 void ListaDeValoresVetorAux() :
@@ -526,53 +498,25 @@ void Valor() :
 void ListaDeComandos() :
 {}
 {
-    try{
-        Comando() ListaDeComandosAux()
-    } catch (ParseException e){ // acho que nunca vai acontecer
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP);
-    }
+    Comando() ListaDeComandosAux()
 }
 
 void ListaDeComandosAux() :
 {}
 {
-    try{
     (
         Comando() ListaDeComandosAux()
     )?
-    } catch (ParseException e){ // tambem nunca vai acontecer
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP);
-    }
 }
 
 void Comando() :
 {}
 {
-    try{
         Atribuicao()
       | EntradaDeDados()
       | SaidaDeDados()
       | Selecao()
       | Repeticao()
-    } catch(ParseException e){ // provavelmente nunca vai acontecer
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-
-        if(tokensEsperados.contains("SET") || tokensEsperados.contains("READ") || tokensEsperados.contains("SHOW") || tokensEsperados.contains("IF") ||  tokensEsperados.contains("LOOP")){
-            errosSintaticos.append("Erro sintático: Comando não especificado ou especificado errado, os comandos são: SET, READ, SHOW, IF, LOOP").append("\n\n");
-        }
-        skipToSynchronizingToken(SEMICOLON, END, SET,READ, SHOW, IF, LOOP);
-    }
 }
 
 void Atribuicao() :
@@ -644,19 +588,7 @@ void SaidaDeDados() :
 void ListaDeSaida() :
 {}
 {
-    try{
-        Item() ListaDeSaidaAux() // talvez mudar
-    }catch(ParseException e){ //melhorar e nunca vai acontecer
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-
-        if(tokensEsperados.contains("(") || tokensEsperados.contains(")")){
-            errosSintaticos.append("Erro Sintatico: O conteudo a ser mostrado deve estar entre '(' e ')'").append("\n\n");
-        }
-        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP, RPAREN);
-    }
+    Item() ListaDeSaidaAux()
 }
 
 void ListaDeSaidaAux() :
@@ -756,15 +688,7 @@ void Repeticao() :
 void Expressao() :
 {}
 {
-    try{
-        ExpressaoAritmeticaOuLogica() ExpressaoAux()
-    }catch (ParseException e){ // acho que nunca vai acontecer
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-        skipToSynchronizingToken(SEMICOLON, END, BEGIN, START, RPAREN, RBRACKET);
-    }
+    ExpressaoAritmeticaOuLogica() ExpressaoAux()
 }
 
 void ExpressaoAux() :
@@ -797,15 +721,7 @@ void ExpressaoAux() :
 void ExpressaoAritmeticaOuLogica() :
 {}
 {
-    try{
-        Termo2() MenorPrioridade()
-    }catch (ParseException e){ // nunca vai acontecer
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-        skipToSynchronizingToken(SEMICOLON, END, RPAREN, RBRACKET, START);
-    }
+    Termo2() MenorPrioridade()
 }
 
 void MenorPrioridade() :
@@ -833,15 +749,7 @@ void MenorPrioridade() :
 void Termo2() :
 {}
 {
-    try{
-        Termo1() MediaPrioridade()
-    }catch (ParseException e){ // nunca vai rolar
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-        skipToSynchronizingToken(SEMICOLON, END, START, RPAREN, RBRACKET);
-    }
+    Termo1() MediaPrioridade()
 }
 
 void MediaPrioridade() :
@@ -873,15 +781,7 @@ void MediaPrioridade() :
 void Termo1() :
 {}
 {
-    try{
-        Elemento() MaiorPrioridade()
-    }catch (ParseException e){ // nao vai
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-        skipToSynchronizingToken(SEMICOLON, END, START, RPAREN, RBRACKET);
-    }
+    Elemento() MaiorPrioridade()
 }
 
 void MaiorPrioridade() :
