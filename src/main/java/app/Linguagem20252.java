@@ -19,7 +19,12 @@ public class Linguagem20252 implements Linguagem20252Constants {
         StringBuilder listaTokens = new StringBuilder();
         for (int[] conjunto : conjuntoDeTokensEsperados){
             for (int token : conjunto){
-                listaTokens.append(tokenImage[token]).append(" ");
+                String descricao = OutputDictionary.getCategory(token);
+
+                if (descricao.isEmpty()) {
+                    descricao = tokenImage[token];
+                }
+                listaTokens.append(descricao).append(" ");
             }
         }
         return listaTokens.toString().trim();
