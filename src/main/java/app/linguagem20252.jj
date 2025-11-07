@@ -441,21 +441,9 @@ void DeclaracaoValoresArray() :
 void DeclaracaoValoresEscalar() :
 {}
 {
-    try{
-        (
-            <ASSIGN> Valor() /* semantica*/
-        )?
-        }catch(ParseException e){
-            errosSintaticosCount++;
-            String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-            TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-
-            if(tokensEsperados.contains("=")){
-                errosSintaticos.append("Erro sintático: Atribuições devem ser feitas a partir do simbolo '='").append("\n\n");
-            }
-            skipToSynchronizingToken(IDENTIFIER, START);
-        }
+    (
+        <ASSIGN> Valor() /* semantica*/
+    )?
 }
 
 void ListaDeValoresVetor() :
@@ -467,29 +455,9 @@ void ListaDeValoresVetor() :
 void ListaDeValoresVetorAux() :
 {}
 {
-    try{
-        (
-            <COMMA> Valor() /* semantica*/ ListaDeValoresVetorAux()
-        )?
-    }catch (ParseException e){ // nao sei se acontece?
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-
-        if(tokensEsperados.contains(",")){
-             errosSintaticos.append("Erro sintático: Elementos devem estar separados por ','").append("\n\n");
-        }
-        skipToSynchronizingToken(START, COMMA, RBRACE);
-
-        errosSintaticos.append("BANANA").append("\n\n"); // teste | testar se precisar de catch aqui?
-
-        Token t = getToken(1);
-        if(t.kind == COMMA){
-            ListaDeValoresVetorAux();
-        }
-        // testar se precisar de if pra START
-    }
+    (
+        <COMMA> Valor() /* semantica*/ ListaDeValoresVetorAux()
+    )?
 }
 
 void Valor() :
@@ -547,12 +515,16 @@ void Atribuicao() :
 {
     try{
         <SET> <IDENTIFIER> /* semantica*/ Indice() /* semantica*/ <ASSIGN> Expressao() /* semantica*/ <SEMICOLON>
-    }catch(ParseException e){ //melhorar bastante
+    }catch(ParseException e){
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP);
+
+        errosSintaticos.append("Erro sintático: Comando de atribuição deve seguir a sintaxe: 'set identificador[indice]/identificador = (valor ou expressão);'").append("\n\n");
+
+        skipToSynchronizingToken(SET, READ, SHOW, IF, LOOP);
+
     }
 }
 
@@ -563,12 +535,15 @@ void Indice() :
     (
         <LBRACKET> Expressao()  /* semantica*/ <RBRACKET>
     )?
-    }catch(ParseException e){ //melhorar
+    }catch(ParseException e){
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP);
+
+        errosSintaticos.append("Erro sintático: Indice deve estar entre '[' e ']'").append("\n\n");
+
+        skipToSynchronizingToken(SET, READ, SHOW, IF, LOOP);
     }
 }
 
@@ -577,16 +552,15 @@ void EntradaDeDados() :
 {
     try{
         <READ> <LPAREN> <IDENTIFIER> /* semantica*/ Indice() /* semantica*/<RPAREN> <SEMICOLON>
-    }catch(ParseException e){ //melhorar
+    }catch(ParseException e){
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
-        if(tokensEsperados.contains("(") || tokensEsperados.contains(")")){
-            errosSintaticos.append("Erro sintático: A variavel destino da entrada de dados deve ser especificada entre '(' e')')").append("\n\n");
-        }
-        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP, RPAREN);
+        errosSintaticos.append("Erro sintático: Comando de entrada de dados deve seguir a sintaxe: 'READ(identificador/identificador[indice]);'").append("\n\n");
+
+        skipToSynchronizingToken(SET, READ, SHOW, IF, LOOP);
     }
 }
 
@@ -594,17 +568,16 @@ void SaidaDeDados() :
 {}
 {
     try{
-        <SHOW> <LPAREN> ListaDeSaida() <RPAREN> <SEMICOLON> // talvez mudar
-    }catch(ParseException e){ //melhorar
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
+        <SHOW> <LPAREN> ListaDeSaida() <RPAREN> <SEMICOLON>
+    }catch(ParseException e){
+            errosSintaticosCount++;
+            String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+            TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
-        if(tokensEsperados.contains("(") || tokensEsperados.contains(")")){
-            errosSintaticos.append("Erro Sintatico: O conteudo a ser mostrado deve estar entre '(' e ')'").append("\n\n");
-        }
-        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP, RPAREN);
+            errosSintaticos.append("Erro Sintatico: Comando de saida de dados deve seguir a sintaxe: 'SHOW(identificador/identificador[indice]);' ou\n\t 'SHOW(valor/valor,valor)'").append("\n\n");
+
+            skipToSynchronizingToken(SET, READ, SHOW, IF, LOOP);
     }
 }
 
@@ -617,21 +590,9 @@ void ListaDeSaida() :
 void ListaDeSaidaAux() :
 {}
 {
-    try{
     (
-        <COMMA> Item() ListaDeSaidaAux() // talvez mudar
+        <COMMA> Item() ListaDeSaidaAux()
     )?
-    }catch(ParseException e){ //melhorar e nunca vai acontecer
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-
-        if(tokensEsperados.contains("(") || tokensEsperados.contains(")")){
-            errosSintaticos.append("Erro Sintatico: O conteudo a ser mostrado deve estar entre '(' e ')'").append("\n\n");
-        }
-        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP, RPAREN);
-    }
 }
 
 void Item() :
@@ -642,11 +603,13 @@ void Item() :
         | <NUMBER> /* semantica*/
         | <REAL> /* semantica*/
         | <TEXT_DOUBLE> /* semantica*/ | <TEXT_SINGLE> /* semantica*/
-    }catch(ParseException e){ // melhorar bastante
+    }catch(ParseException e){
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+
+        skipToSynchronizingToken(SET, READ, SHOW, IF, LOOP, COMMA, RPAREN);
     }
 }
 
@@ -661,31 +624,18 @@ void Selecao() :
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
-        if(tokensEsperados.contains("if") || tokensEsperados.contains("then") || tokensEsperados.contains("end")){
-            errosSintaticos.append("Erro sintático: Comandos de seleção devem ter seguir o formato 'IF <condição> THEN <comandos> END'").append("\n\n");
-        }
-        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP, THEN);
+        errosSintaticos.append("Erro sintático: Comando de seleção deve seguir a sintaxe: 'IF <condição> THEN <comandos> END'").append("\n\n");
+
+        skipToSynchronizingToken(SET, READ, SHOW, IF, LOOP);
     }
 }
 
 void Else() :
 {}
 {
-    try{
-        (
-            <ELSE> /* semantica*/ ListaDeComandos()
-        )?
-    }catch(ParseException e){
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-
-        if(tokensEsperados.contains("else")){
-            errosSintaticos.append("Erro sintático: O comando 'Se não' se inicia através de comando 'ELSE'").append("\n\n"); // melhorar
-        }
-        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP, THEN);
-    }
+    (
+        <ELSE> /* semantica*/ ListaDeComandos()
+    )?
 }
 
 void Repeticao() :
@@ -700,9 +650,9 @@ void Repeticao() :
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
         if(tokensEsperados.contains("loop") || tokensEsperados.contains("while") || tokensEsperados.contains("end")){
-            errosSintaticos.append("Erro sintático: Comandos de repetição devem seguir o formato 'LOOP WHILE <comandos> END").append("\n\n");
+            errosSintaticos.append("Erro sintático: Comando de repetição devem a sintaxe: 'LOOP WHILE <comandos> END").append("\n\n");
         }
-        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP);
+        skipToSynchronizingToken(SET, READ, SHOW, IF, LOOP);
     }
 }
 
@@ -717,28 +667,14 @@ void Expressao() :
 void ExpressaoAux() :
 {}
 {
-    try{
     (
-        <EQUAL> ExpressaoAritmeticaOuLogica() /* semantica*/
+          <EQUAL> ExpressaoAritmeticaOuLogica() /* semantica*/
         | <NOT_EQUAL> ExpressaoAritmeticaOuLogica() /* semantica*/
         | <SHIFT_LEFT> ExpressaoAritmeticaOuLogica() /* semantica*/
         | <SHIFT_RIGHT> ExpressaoAritmeticaOuLogica() /* semantica*/
         | <SHIFT_LEFT_ASSIGN> ExpressaoAritmeticaOuLogica() /* semantica*/
         | <SHIFT_RIGHT_ASSIGN> ExpressaoAritmeticaOuLogica() /* semantica*/
-        )?
-    }catch (ParseException e){
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-
-        if(tokensEsperados.contains("==") || tokensEsperados.contains("!=") || tokensEsperados.contains("<<")
-            || tokensEsperados.contains(">>") || tokensEsperados.contains("<<=") || tokensEsperados.contains(">>="))
-        {
-            errosSintaticos.append("Erro sintático: A Expressão deve conter um operador lógico").append("\n\n");
-        }
-        skipToSynchronizingToken(SEMICOLON, END, RPAREN, RBRACKET, START);
-    }
+    )?
 }
 
 void ExpressaoAritmeticaOuLogica() :
@@ -750,23 +686,11 @@ void ExpressaoAritmeticaOuLogica() :
 void MenorPrioridade() :
 {}
 {
-    try{
-        (
-            <PLUS> Termo2() /* semantica*/ MenorPrioridade()
-            | <MINUS> Termo2() /* semantica*/ MenorPrioridade()
-            | <PIPE> Termo2() /* semantica*/ MenorPrioridade()
-        )?
-    }catch (ParseException e){
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-
-        if(tokensEsperados.contains("+") || tokensEsperados.contains("-") || tokensEsperados.contains("|")){
-            errosSintaticos.append("Erro sintático: A Expressão deve conter um operador aritmético").append("\n\n"); // ou logico neh
-        }
-        skipToSynchronizingToken(SEMICOLON, END, START, RPAREN, RBRACKET);
-    }
+    (
+          <PLUS> Termo2() /* semantica*/ MenorPrioridade()
+        | <MINUS> Termo2() /* semantica*/ MenorPrioridade()
+        | <PIPE> Termo2() /* semantica*/ MenorPrioridade()
+    )?
 }
 
 void Termo2() :
@@ -778,27 +702,13 @@ void Termo2() :
 void MediaPrioridade() :
 {}
 {
-    try{
-        (
-            <STAR> Termo1() /* semantica*/ MediaPrioridade()
-          | <SLASH> Termo1() /* semantica*/ MediaPrioridade()
-          | <PERCENT> Termo1() /* semantica*/ MediaPrioridade()
-          | <DOUBLE_PERCENT> Termo1() /* semantica*/ MediaPrioridade()
-          | <AMPERSAND> Termo1() /* semantica*/ MediaPrioridade()
-        )?
-    }catch (ParseException e){
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-
-        if(tokensEsperados.contains("*") || tokensEsperados.contains("/") || tokensEsperados.contains("%")
-            || tokensEsperados.contains("%%") || tokensEsperados.contains("&"))
-        {
-            errosSintaticos.append("Erro sintático: A Expressão deve conter um operador aritmético").append("\n\n"); // ou logico?
-        }
-        skipToSynchronizingToken(SEMICOLON, END, START, RPAREN, RBRACKET);
-    }
+    (
+        <STAR> Termo1() /* semantica*/ MediaPrioridade()
+      | <SLASH> Termo1() /* semantica*/ MediaPrioridade()
+      | <PERCENT> Termo1() /* semantica*/ MediaPrioridade()
+      | <DOUBLE_PERCENT> Termo1() /* semantica*/ MediaPrioridade()
+      | <AMPERSAND> Termo1() /* semantica*/ MediaPrioridade()
+    )?
 }
 
 void Termo1() :
@@ -810,21 +720,9 @@ void Termo1() :
 void MaiorPrioridade() :
 {}
 {
-    try{
-        (
-            <POWER> Elemento() /* semantica*/ MaiorPrioridade()
-        )?
-    }catch (ParseException e){
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-
-        if(tokensEsperados.contains("**")){
-             errosSintaticos.append("Erro sintático: A Expressão deve conter o operador '**'").append("\n\n");
-        }
-        skipToSynchronizingToken(SEMICOLON, END, START, RPAREN, RBRACKET);
-    }
+    (
+        <POWER> Elemento() /* semantica*/ MaiorPrioridade()
+    )?
 }
 
 void Elemento() :
@@ -854,6 +752,6 @@ void Elemento() :
         }else if (tokensEsperados.contains("!")){
             errosSintaticos.append("Erro sintático: Elemento deve estar entre '!(' e ')'").append("\n\n");
         }
-        skipToSynchronizingToken(SEMICOLON, END, START, RPAREN, RBRACKET, LPAREN, LBRACKET);
+        skipToSynchronizingToken(RPAREN, RBRACKET, SET, READ, SHOW, IF, LOOP, THEN, SEMICOLON);
     }
 }
