@@ -19,6 +19,25 @@ public class Linguagem20252 {
     public static int errosLexicosCount = 0;
     public static StringBuilder errosSintaticos = new StringBuilder();
 
+    private TabelaSimbolos tabelaSimbolos;
+    private GeradorCodigo geradorCodigo;
+
+    private static int errosSemanticosCount = 0;
+    private static StringBuilder errosSemanticos = new StringBuilder();
+
+    private void initSemantica() {
+        this.tabelaSimbolos = new TabelaSimbolos();
+        this.geradorCodigo  = new GeradorCodigo();
+        VariaveisControle.resetarTudo();
+        errosSemanticosCount = 0;
+        errosSemanticos = new StringBuilder();
+    }
+
+    private void adicionarErroSemantico(String msg) {
+        errosSemanticosCount++;
+        errosSemanticos.append(msg).append("\n");
+    }
+
     public String getListaTokensEsperados(int[][] conjuntoDeTokensEsperados){
         StringBuilder listaTokens = new StringBuilder();
         for (int[] conjunto : conjuntoDeTokensEsperados){
@@ -29,49 +48,85 @@ public class Linguagem20252 {
         return listaTokens.toString().trim();
     }
 
-    public static java.util.ArrayList analiseLexica(InputStream input) throws ParseException {
+    public static java.util.ArrayList<Token> analiseLexica(InputStream input) throws ParseException {
             errosLexicosCount = 0;
+
             Linguagem20252 lexer = new Linguagem20252(input);
-            java.util.ArrayList tokens = new java.util.ArrayList();
-            Token token;
+            java.util.ArrayList<Token> tokens = new java.util.ArrayList<>();
+            Token t;
+
             do {
-                token = lexer.getNextToken();
-                if(token.kind == Linguagem20252Constants.MALFORMED_IDENTIFIER
-                    || token.kind == Linguagem20252Constants.MALFORMED_NUMBER
-                    || token.kind == Linguagem20252Constants.MALFORMED_REAL
-                    || token.kind == Linguagem20252Constants.INVALID_SIMBOL
-                    || token.kind == Linguagem20252Constants.UNCLOSED_QUOTE
-                    || token.kind == Linguagem20252Constants.UNCLOSED_STRING
-                    || token.kind == Linguagem20252Constants.UNCLOSED_BLOCK_COMMENT){
-                    tokens.add(token);
+                t = lexer.getNextToken();
+
+                if(t.kind == Linguagem20252Constants.MALFORMED_IDENTIFIER
+                    || t.kind == Linguagem20252Constants.MALFORMED_NUMBER
+                    || t.kind == Linguagem20252Constants.MALFORMED_REAL
+                    || t.kind == Linguagem20252Constants.INVALID_SIMBOL
+                    || t.kind == Linguagem20252Constants.UNCLOSED_QUOTE
+                    || t.kind == Linguagem20252Constants.UNCLOSED_STRING
+                    || t.kind == Linguagem20252Constants.UNCLOSED_BLOCK_COMMENT){
                     errosLexicosCount++;
                 }
-            } while (token.kind != Linguagem20252Constants.EOF);
+
+                tokens.add(t);
+            } while (t.kind != Linguagem20252Constants.EOF);
 
             return tokens;
         }
 
     public static StringBuilder analiseSintatica(InputStream input) throws ParseException {
-            Linguagem20252 parser = new Linguagem20252(input);
+            // Reset de erros sintáticos antes de analisar
             errosSintaticosCount = 0;
             errosSintaticos = new StringBuilder();
+            Linguagem20252 parser = new Linguagem20252(input);
+            parser.initSemantica();
             parser.Programa();
+            // Retorna somente os erros sintáticos coletados
             return errosSintaticos;
     }
 
     public Token skipToSynchronizingToken(int... synchronizingKinds) {
-        Token t = getToken(0);
 
-        while (t.kind != EOF && !isSynchronizingToken(t, synchronizingKinds)) {
-            t = getNextToken();
+        if (synchronizingKinds == null || synchronizingKinds.length == 0) {
+            synchronizingKinds = new int[] {SEMICOLON, END}; //Se não passar em nada, sincroniza em ';' e 'end'
         }
 
-        return t;
+        Token t = getToken(0);
+        int parenDepth = 0; //profundidade de ()
+        int bracketDepth = 0; //profundidade de []
+
+        while (true) {
+            t = getNextToken();
+
+            if (t.kind == EOF) {
+                return t;
+            }
+
+            //Atualiza profundidade
+            if (t.kind == LPAREN) {
+                parenDepth++;
+            } else if (t.kind == RPAREN) {
+                if (parenDepth > 0) parenDepth--;
+            } else if (t.kind == LBRACKET) {
+                bracketDepth++;
+            } else if (t.kind == RBRACKET) {
+                if (bracketDepth > 0) bracketDepth--;
+            }
+
+            //Se a profundidade de () e [] for 0 e o token for um dos sincronizadores, retorna o token
+            if (parenDepth == 0 && bracketDepth == 0 && isSynchronizingToken(t, synchronizingKinds)) {
+                return t;
+            }
+        }
     }
 
     private static boolean isSynchronizingToken(Token t, int... synchronizingKinds) {
-        for (int kind : synchronizingKinds) {
-            if (t.kind == kind) return true;
+        if (t == null || synchronizingKinds == null || synchronizingKinds.length == 0) {
+            return false;
+        }
+        int kind = t.kind;
+        for (int sk : synchronizingKinds) {
+            if (kind == sk) return true;
         }
         return false;
     }
@@ -180,36 +235,35 @@ void Programa() :
 {}
 {
     try{
-        <BEGIN> NomeDoPrograma() BlocoDefine() <START> ListaDeComandos() <END> <DOT>
+        <BEGIN> NomeDoPrograma() BlocoDefine() <START> ListaDeComandos()
+        {
+            geradorCodigo.gerarInstrucao("STP", 0);
+        }
+        <END> <DOT>
     } catch (ParseException e){
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-
-        if (tokensEsperados.contains("BEGIN")){
-            errosSintaticos.append("Erro sintático: Programa deve iniciar com 'BEGIN'").append("\n\n");
-        }else if (tokensEsperados.contains("START")){
-            errosSintaticos.append("Erro sintático: Seção de comandos deve iniciar com 'START'").append("\n\n");
-        }else if (tokensEsperados.contains("END") || tokensEsperados.contains("DOT")) {
-            errosSintaticos.append("Erro sintático: Programa deve acabar com 'END.'").append("\n\n");
-        }
-        // RECUPERAÇÃO DE ERROS
-        skipToSynchronizingToken(SEMICOLON, END, START, DEFINE);
+        skipToSynchronizingToken(SEMICOLON, END, BEGIN, DEFINE);
     }
 }
 
 void NomeDoPrograma() :
-{}
+{
+    Token t = null;
+}
 {
     try{
-        (<IDENTIFIER>)?
+        (
+            t = <IDENTIFIER>
+            {
+                tabelaSimbolos.inserir(t.image, 0, 0, "–");
+            }
+        )?
     } catch (ParseException e){
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-
         if (tokensEsperados.contains("IDENTIFIER")){
                 errosSintaticos.append("Erro sintático: Nome do Programa deve ser um 'IDENTIFICADOR'").append("\n\n");
         }
@@ -493,15 +547,20 @@ void Variavel() :
     }
 }
 
+//<tipo> ::= num #T | real #T | text #T | flag #T
+//#T — categoriaAtual ← 1/2/3/4.
+
 void Tipo() :
 {}
 {
     try{
-         <TYPE_NUM>
-        | <TYPE_REAL>
-        | <TYPE_TEXT>
-        | <TYPE_FLAG>
-    }catch (ParseException e){
+        (
+            <TYPE_NUM> { VariaveisControle.categoriaAtual = 1; }
+            | <TYPE_REAL> { VariaveisControle.categoriaAtual = 2; }
+            | <TYPE_TEXT> { VariaveisControle.categoriaAtual = 3; }
+            | <TYPE_FLAG> { VariaveisControle.categoriaAtual = 4; }
+        )
+    } catch (ParseException e){
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
@@ -640,10 +699,25 @@ void BlocoDefine() :
 }
 
 void Atribuicao() :
-{}
+{
+    Token t = null;
+}
 {
     try{
-        <SET> <IDENTIFIER> SufixoDaAtribuicao()
+        <SET> t = <IDENTIFIER>
+        {
+            TabelaSimbolos.Simbolo simbolo = tabelaSimbolos.buscar(t.image);
+            if(simbolo == null){
+                adicionarErroSemantico("Identificador não declarado: " + t.image);
+            } else {
+                VariaveisControle.identificadorAtual = t.image;
+                VariaveisControle.categoriaAtual_id = simbolo.categoria;
+                VariaveisControle.baseAtual = simbolo.base;
+                VariaveisControle.tamanhoAtual = simbolo.tamanho;
+                VariaveisControle.temIndice = false;
+            }
+        }
+        SufixoDaAtribuicao()
     }catch(ParseException e){
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
@@ -653,12 +727,44 @@ void Atribuicao() :
     }
 }
 
-void SufixoDaAtribuicao() : // talvez o contains("=") e o contains("[") sejam na atribuição
+void SufixoDaAtribuicao() :
 {}
 {
     try{
         <ASSIGN> Expressao()
-      | <LBRACKET> Expressao() <RBRACKET> <ASSIGN> Expressao()
+        {
+            boolean isVetor = !VariaveisControle.tamanhoAtual.equals("–");
+            if (!isVetor && VariaveisControle.temIndice) {
+                adicionarErroSemantico("Escalar não aceita índice: " + VariaveisControle.identificadorAtual);
+            } else if (isVetor && !VariaveisControle.temIndice) {
+                adicionarErroSemantico("Vetor exige índice: " + VariaveisControle.identificadorAtual);
+            }
+
+            if (VariaveisControle.tamanhoAtual.equals("–")) {
+                geradorCodigo.gerarInstrucao("STR", VariaveisControle.baseAtual);
+            } else {
+                geradorCodigo.gerarInstrucao("STX", 0);
+            }
+        }
+    | <LBRACKET> Expressao()
+        {
+            VariaveisControle.temIndice = true;
+            geradorCodigo.gerarInstrucao("LDI", VariaveisControle.baseAtual - 1);
+            geradorCodigo.gerarInstrucao("ADD", 0);
+        }
+        <RBRACKET> <ASSIGN> Expressao()
+        {
+            boolean isVetor = !VariaveisControle.tamanhoAtual.equals("–");
+            if (!isVetor && VariaveisControle.temIndice) {
+                adicionarErroSemantico("Escalar não aceita índice: " + VariaveisControle.identificadorAtual);
+            } else if (isVetor && !VariaveisControle.temIndice) {
+                adicionarErroSemantico("Vetor exige índice: " + VariaveisControle.identificadorAtual);
+            }
+
+            geradorCodigo.gerarInstrucao("STX", 0);
+
+        }
+
     }catch(ParseException e){
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
