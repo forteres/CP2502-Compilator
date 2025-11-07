@@ -61,7 +61,7 @@ public class Linguagem20252 implements Linguagem20252Constants {
     }
 
     public Token skipToSynchronizingToken(int... synchronizingKinds) {
-        Token t = getToken(0);
+        Token t = getToken(1);
 
         while (t.kind != EOF && !isSynchronizingToken(t, synchronizingKinds)) {
             t = getNextToken();
@@ -219,9 +219,9 @@ public class Linguagem20252 implements Linguagem20252Constants {
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
-        if(tokensEsperados.contains("COLON")){
+        if(tokensEsperados.contains(":")){
              errosSintaticos.append("Erro sint\u00e1tico: Declara\u00e7\u00e3o de vari\u00e1vel deve conter ':' ap\u00f3s a lista de vari\u00e1veis").append("\n\n");
-        }else if(tokensEsperados.contains("SEMICOLON")){
+        }else if(tokensEsperados.contains(";")){
             errosSintaticos.append("Erro sint\u00e1tico: Declara\u00e7\u00e3o da vari\u00e1vel deve terminar com ';' ap\u00f3s especifica\u00e7\u00e3o do tipo").append("\n\n");
         }
         skipToSynchronizingToken(SEMICOLON, END, START);
