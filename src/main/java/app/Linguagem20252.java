@@ -67,7 +67,7 @@ public class Linguagem20252 implements Linguagem20252Constants {
             t = getNextToken();
         }
 
-        return t;
+        return getToken(1);
     }
 
     private static boolean isSynchronizingToken(Token t, int... synchronizingKinds) {
@@ -91,7 +91,7 @@ public class Linguagem20252 implements Linguagem20252Constants {
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
-        if (tokensEsperados.contains("BEGIN")){
+        if (tokensEsperados.contains("begin")){
             errosSintaticos.append("Erro sint\u00e1tico: Programa deve iniciar com 'BEGIN'").append("\n\n");
         }
         // RECUPERAÇÃO DE ERROS
@@ -123,7 +123,7 @@ public class Linguagem20252 implements Linguagem20252Constants {
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
-        if (tokensEsperados.contains("IDENTIFIER")){
+        if (tokensEsperados.contains("identificador")){
                 errosSintaticos.append("Erro sint\u00e1tico: Nome do Programa deve ser um 'IDENTIFICADOR'").append("\n\n");
         }
         skipToSynchronizingToken(DEFINE,START);
@@ -146,7 +146,7 @@ public class Linguagem20252 implements Linguagem20252Constants {
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-        skipToSynchronizingToken(SEMICOLON, END, START);
+        skipToSynchronizingToken(END, START);
     }
   }
 
@@ -160,7 +160,7 @@ public class Linguagem20252 implements Linguagem20252Constants {
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
-        if (tokensEsperados.contains("START")){
+        if (tokensEsperados.contains("start")){
             errosSintaticos.append("Erro sint\u00e1tico: Se\u00e7\u00e3o de comandos deve iniciar com 'START'").append("\n\n");
         }
 
@@ -182,7 +182,7 @@ public class Linguagem20252 implements Linguagem20252Constants {
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
-        if (tokensEsperados.contains("END") || tokensEsperados.contains("DOT")) {
+        if (tokensEsperados.contains("end") || tokensEsperados.contains("DOT")) {
             errosSintaticos.append("Erro sint\u00e1tico: Programa deve acabar com 'END.'").append("\n\n");
         }
     }
@@ -214,17 +214,20 @@ public class Linguagem20252 implements Linguagem20252Constants {
       DeclaracaoArray();
       jj_consume_token(SEMICOLON);
     } catch (ParseException e) {
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
+        Token t = getToken(1);
+        if(t.kind != START | t.kind != IDENTIFIER){
+            errosSintaticosCount++;
+            String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+            TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
-        if(tokensEsperados.contains(":")){
-             errosSintaticos.append("Erro sint\u00e1tico: Declara\u00e7\u00e3o de vari\u00e1vel deve conter ':' ap\u00f3s a lista de vari\u00e1veis").append("\n\n");
-        }else if(tokensEsperados.contains(";")){
-            errosSintaticos.append("Erro sint\u00e1tico: Declara\u00e7\u00e3o da vari\u00e1vel deve terminar com ';' ap\u00f3s especifica\u00e7\u00e3o do tipo").append("\n\n");
+            if(tokensEsperados.contains(":")){
+                 errosSintaticos.append("Erro sint\u00e1tico: Declara\u00e7\u00e3o de vari\u00e1vel deve conter ':' ap\u00f3s a lista de vari\u00e1veis").append("\n\n");
+            }else if(tokensEsperados.contains(";")){
+                errosSintaticos.append("Erro sint\u00e1tico: Declara\u00e7\u00e3o da vari\u00e1vel deve terminar com ';' ap\u00f3s especifica\u00e7\u00e3o do tipo").append("\n\n");
+            }
+            skipToSynchronizingToken(IDENTIFIER, START);
         }
-        skipToSynchronizingToken(SEMICOLON, END, START);
     }
   }
 
@@ -237,11 +240,9 @@ public class Linguagem20252 implements Linguagem20252Constants {
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+        errosSintaticos.append("Erro sint\u00e1tico: O bloco 'Define' deve conter ao menos uma declara\u00e7\u00e3o de vari\u00e1vel (identificador : tipo ;)").append("\n\n");
 
-        if(tokensEsperados.contains("IDENTIFIER")){
-             errosSintaticos.append("Erro sint\u00e1tico: Deve conter ao menos um 'Identificador'").append("\n\n");
-        }
-        skipToSynchronizingToken(SEMICOLON, END, START, COMMA);
+        skipToSynchronizingToken(START, COLON, IDENTIFIER);
     }
   }
 
@@ -263,12 +264,17 @@ public class Linguagem20252 implements Linguagem20252Constants {
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
-        if(tokensEsperados.contains("COMMA")){
-             errosSintaticos.append("Erro sint\u00e1tico: Elementos devem estar separados por ','").append("\n\n");
-        }else if(tokensEsperados.contains("IDENTIFIER")){
+        if(tokensEsperados.contains(",")){
+             errosSintaticos.append("Erro sint\u00e1tico: Elementos declarados devem estar separados por ','").append("\n\n");
+        }else if(tokensEsperados.contains("identificador")){
             errosSintaticos.append("Erro sint\u00e1tico: Deve conter ao menos um 'Identificador' ap\u00f3s a ','").append("\n\n");
         }
-        skipToSynchronizingToken(SEMICOLON, END, START, COMMA);
+        skipToSynchronizingToken(COMMA, START, COLON, IDENTIFIER);
+
+        Token t = getToken(1);
+        if(t.kind == COMMA){
+            ListaIdentificadoresAux();
+        }
     }
   }
 
@@ -298,10 +304,14 @@ public class Linguagem20252 implements Linguagem20252Constants {
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
-        if(tokensEsperados.contains("TYPE_NUM") || tokensEsperados.contains("TYPE_REAL") || tokensEsperados.contains("TYPE_TEXT") || tokensEsperados.contains("TYPE_FLAG")){
-             errosSintaticos.append("Erro sint\u00e1tico: Tipo declarado deve pertencer ao conjunto: {'NUM', 'REAL' 'TEXT' 'FLAG'}").append("\n\n");
+        if(tokensEsperados.contains("numero inteiro") || tokensEsperados.contains("numero real") || tokensEsperados.contains("texto") || tokensEsperados.contains("constante logica")){
+             errosSintaticos.append("Erro sint\u00e1tico: Tipo declarado deve pertencer ao conjunto: {'NUM', 'REAL', 'TEXT', 'TRUE', 'FALSE'}").append("\n\n");
         }
-        skipToSynchronizingToken(SEMICOLON, END, START, COLON);
+        Token t = skipToSynchronizingToken(LBRACKET, START, IDENTIFIER);
+
+        if(t.kind == IDENTIFIER | t.kind == START){
+            {if (true) throw new ParseException("Sincronizado com identificador ou start dentro de Tipo()");}
+        }
     }
   }
 
@@ -328,7 +338,12 @@ public class Linguagem20252 implements Linguagem20252Constants {
             errosSintaticos.append("Erro sint\u00e1tico: Declara\u00e7\u00e3o de tamanho do array deve ser feita entre '[' e ']'").append("\n\n");
         }
         // else aqui para <number>?
-        skipToSynchronizingToken(SEMICOLON, END, START);
+        skipToSynchronizingToken(IDENTIFIER, START, ASSIGN);
+
+        Token t = getToken(1);
+        if(t.kind == ASSIGN) {
+            DeclaracaoValoresArray() /* semantica*/;
+        }
     }
   }
 
@@ -357,31 +372,19 @@ public class Linguagem20252 implements Linguagem20252Constants {
         if(tokensEsperados.contains("{") || tokensEsperados.contains("}")){
             errosSintaticos.append("Erro sint\u00e1tico: Declara\u00e7\u00f5es de valores dentro de arrays devem ser feitas entre '{' e '}'").append("\n\n");
         }
-        skipToSynchronizingToken(SEMICOLON, END, START, RBRACE);
+        skipToSynchronizingToken(START, IDENTIFIER);
     }
   }
 
   final public void DeclaracaoValoresEscalar() throws ParseException {
-    try {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case ASSIGN:
-        jj_consume_token(ASSIGN);
-        Valor();
-        break;
-      default:
-        jj_la1[7] = jj_gen;
-        ;
-      }
-    } catch (ParseException e) {
-            errosSintaticosCount++;
-            String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-            TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-
-            if(tokensEsperados.contains("=")){
-                errosSintaticos.append("Erro sint\u00e1tico: Atribui\u00e7\u00f5es devem ser feitas a partir do simbolo '='").append("\n\n");
-            }
-            skipToSynchronizingToken(SEMICOLON, END, START);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case ASSIGN:
+      jj_consume_token(ASSIGN);
+      Valor();
+      break;
+    default:
+      jj_la1[7] = jj_gen;
+      ;
     }
   }
 
@@ -391,27 +394,15 @@ public class Linguagem20252 implements Linguagem20252Constants {
   }
 
   final public void ListaDeValoresVetorAux() throws ParseException {
-    try {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case COMMA:
-        jj_consume_token(COMMA);
-        Valor();
-        ListaDeValoresVetorAux();
-        break;
-      default:
-        jj_la1[8] = jj_gen;
-        ;
-      }
-    } catch (ParseException e) {
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-
-        if(tokensEsperados.contains("COMMA")){
-             errosSintaticos.append("Erro sint\u00e1tico: Elementos devem estar separados por ','").append("\n\n");
-        }
-        skipToSynchronizingToken(SEMICOLON, END, START, RPAREN, RBRACE, COMMA);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case COMMA:
+      jj_consume_token(COMMA);
+      Valor();
+      ListaDeValoresVetorAux();
+      break;
+    default:
+      jj_la1[8] = jj_gen;
+      ;
     }
   }
 
@@ -447,13 +438,12 @@ public class Linguagem20252 implements Linguagem20252Constants {
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
-        if (tokensEsperados.contains("NUMBER") || tokensEsperados.contains("REAL") || tokensEsperados.contains("TEXT_DOUBLE")
-            || tokensEsperados.contains("TEXT_SINGLE") || tokensEsperados.contains("TRUE") || tokensEsperados.contains("FALSE"))
+        if (tokensEsperados.contains("numero inteiro") || tokensEsperados.contains("numero real") || tokensEsperados.contains("texto")
+           || tokensEsperados.contains("constante logica"))
         {
             errosSintaticos.append("Erro sint\u00e1tico: Elemento deve pertencer ao conjunto: {'Constante num\u00e9rica', 'Constante num\u00e9rica real', 'Constante literal', 'TRUE' ou 'FALSE'}").append("\n\n");
         }
-        skipToSynchronizingToken(COMMA, END, START, RBRACE); //talvez adicionar para que ele recupere na definicao (adicionar identifier)
-
+        skipToSynchronizingToken(COMMA, START, IDENTIFIER);
     }
   }
 
@@ -512,12 +502,14 @@ public class Linguagem20252 implements Linguagem20252Constants {
       Expressao();
       jj_consume_token(SEMICOLON);
     } catch (ParseException e) {
-                              //melhorar bastante
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP);
+
+        errosSintaticos.append("Erro sint\u00e1tico: Comando de atribui\u00e7\u00e3o deve seguir a sintaxe: 'set identificador[indice]/identificador = (valor ou express\u00e3o);'").append("\n\n");
+
+        skipToSynchronizingToken(SET, READ, SHOW, IF, LOOP);
     }
   }
 
@@ -534,12 +526,14 @@ public class Linguagem20252 implements Linguagem20252Constants {
         ;
       }
     } catch (ParseException e) {
-                              //melhorar
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP);
+
+        errosSintaticos.append("Erro sint\u00e1tico: Indice deve estar entre '[' e ']'").append("\n\n");
+
+        skipToSynchronizingToken(SET, READ, SHOW, IF, LOOP);
     }
   }
 
@@ -552,16 +546,14 @@ public class Linguagem20252 implements Linguagem20252Constants {
       jj_consume_token(RPAREN);
       jj_consume_token(SEMICOLON);
     } catch (ParseException e) {
-                              //melhorar
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
-        if(tokensEsperados.contains("(") || tokensEsperados.contains(")")){
-            errosSintaticos.append("Erro sint\u00e1tico: A variavel destino da entrada de dados deve ser especificada entre '(' e')')").append("\n\n");
-        }
-        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP, RPAREN);
+        errosSintaticos.append("Erro sint\u00e1tico: Comando de entrada de dados deve seguir a sintaxe: 'READ(identificador/identificador[indice]);'").append("\n\n");
+
+        skipToSynchronizingToken(SET, READ, SHOW, IF, LOOP);
     }
   }
 
@@ -573,16 +565,14 @@ public class Linguagem20252 implements Linguagem20252Constants {
       jj_consume_token(RPAREN);
       jj_consume_token(SEMICOLON);
     } catch (ParseException e) {
-                              //melhorar
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
+            errosSintaticosCount++;
+            String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+            TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
-        if(tokensEsperados.contains("(") || tokensEsperados.contains(")")){
-            errosSintaticos.append("Erro Sintatico: O conteudo a ser mostrado deve estar entre '(' e ')'").append("\n\n");
-        }
-        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP, RPAREN);
+            errosSintaticos.append("Erro Sintatico: Comando de saida de dados deve seguir a sintaxe: 'SHOW(identificador/identificador[indice]);' ou\n\t 'SHOW(valor/valor,valor)'").append("\n\n");
+
+            skipToSynchronizingToken(SET, READ, SHOW, IF, LOOP);
     }
   }
 
@@ -592,28 +582,15 @@ public class Linguagem20252 implements Linguagem20252Constants {
   }
 
   final public void ListaDeSaidaAux() throws ParseException {
-    try {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case COMMA:
-        jj_consume_token(COMMA);
-        Item();
-        ListaDeSaidaAux();
-        break;
-      default:
-        jj_la1[13] = jj_gen;
-        ;
-      }
-    } catch (ParseException e) {
-                              //melhorar e nunca vai acontecer
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-
-        if(tokensEsperados.contains("(") || tokensEsperados.contains(")")){
-            errosSintaticos.append("Erro Sintatico: O conteudo a ser mostrado deve estar entre '(' e ')'").append("\n\n");
-        }
-        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP, RPAREN);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case COMMA:
+      jj_consume_token(COMMA);
+      Item();
+      ListaDeSaidaAux();
+      break;
+    default:
+      jj_la1[13] = jj_gen;
+      ;
     }
   }
 
@@ -642,11 +619,12 @@ public class Linguagem20252 implements Linguagem20252Constants {
         throw new ParseException();
       }
     } catch (ParseException e) {
-                              // melhorar bastante
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+
+        skipToSynchronizingToken(SET, READ, SHOW, IF, LOOP, COMMA, RPAREN);
     }
   }
 
@@ -665,34 +643,21 @@ public class Linguagem20252 implements Linguagem20252Constants {
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
-        if(tokensEsperados.contains("IF") || tokensEsperados.contains("THEN") || tokensEsperados.contains("END")){
-            errosSintaticos.append("Erro sint\u00e1tico: Comandos de sele\u00e7\u00e3o devem ter seguir o formato 'IF <condi\u00e7\u00e3o> THEN <comandos> END'").append("\n\n");
-        }
-        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP, THEN);
+        errosSintaticos.append("Erro sint\u00e1tico: Comando de sele\u00e7\u00e3o deve seguir a sintaxe: 'IF <condi\u00e7\u00e3o> THEN <comandos> END'").append("\n\n");
+
+        skipToSynchronizingToken(SET, READ, SHOW, IF, LOOP);
     }
   }
 
   final public void Else() throws ParseException {
-    try {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case ELSE:
-        jj_consume_token(ELSE);
-        ListaDeComandos();
-        break;
-      default:
-        jj_la1[15] = jj_gen;
-        ;
-      }
-    } catch (ParseException e) {
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-
-        if(tokensEsperados.contains("ELSE")){
-            errosSintaticos.append("Erro sint\u00e1tico: O comando 'Se n\u00e3o' se inicia atrav\u00e9s de comando 'ELSE'").append("\n\n"); // melhorar
-        }
-        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP, THEN);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case ELSE:
+      jj_consume_token(ELSE);
+      ListaDeComandos();
+      break;
+    default:
+      jj_la1[15] = jj_gen;
+      ;
     }
   }
 
@@ -710,10 +675,10 @@ public class Linguagem20252 implements Linguagem20252Constants {
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
-        if(tokensEsperados.contains("LOOP") || tokensEsperados.contains("WHILE") || tokensEsperados.contains("END")){
-            errosSintaticos.append("Erro sint\u00e1tico: Comandos de repeti\u00e7\u00e3o devem seguir o formato 'LOOP WHILE <comandos> END").append("\n\n");
+        if(tokensEsperados.contains("loop") || tokensEsperados.contains("while") || tokensEsperados.contains("end")){
+            errosSintaticos.append("Erro sint\u00e1tico: Comando de repeti\u00e7\u00e3o devem a sintaxe: 'LOOP WHILE <comandos> END").append("\n\n");
         }
-        skipToSynchronizingToken(SEMICOLON, END, READ, SHOW, IF, LOOP);
+        skipToSynchronizingToken(SET, READ, SHOW, IF, LOOP);
     }
   }
 
@@ -724,61 +689,47 @@ public class Linguagem20252 implements Linguagem20252Constants {
   }
 
   final public void ExpressaoAux() throws ParseException {
-    try {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case EQUAL:
+    case NOT_EQUAL:
+    case SHIFT_LEFT:
+    case SHIFT_RIGHT:
+    case SHIFT_LEFT_ASSIGN:
+    case SHIFT_RIGHT_ASSIGN:
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case EQUAL:
+        jj_consume_token(EQUAL);
+        ExpressaoAritmeticaOuLogica();
+        break;
       case NOT_EQUAL:
+        jj_consume_token(NOT_EQUAL);
+        ExpressaoAritmeticaOuLogica();
+        break;
       case SHIFT_LEFT:
+        jj_consume_token(SHIFT_LEFT);
+        ExpressaoAritmeticaOuLogica();
+        break;
       case SHIFT_RIGHT:
+        jj_consume_token(SHIFT_RIGHT);
+        ExpressaoAritmeticaOuLogica();
+        break;
       case SHIFT_LEFT_ASSIGN:
+        jj_consume_token(SHIFT_LEFT_ASSIGN);
+        ExpressaoAritmeticaOuLogica();
+        break;
       case SHIFT_RIGHT_ASSIGN:
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case EQUAL:
-          jj_consume_token(EQUAL);
-          ExpressaoAritmeticaOuLogica();
-          break;
-        case NOT_EQUAL:
-          jj_consume_token(NOT_EQUAL);
-          ExpressaoAritmeticaOuLogica();
-          break;
-        case SHIFT_LEFT:
-          jj_consume_token(SHIFT_LEFT);
-          ExpressaoAritmeticaOuLogica();
-          break;
-        case SHIFT_RIGHT:
-          jj_consume_token(SHIFT_RIGHT);
-          ExpressaoAritmeticaOuLogica();
-          break;
-        case SHIFT_LEFT_ASSIGN:
-          jj_consume_token(SHIFT_LEFT_ASSIGN);
-          ExpressaoAritmeticaOuLogica();
-          break;
-        case SHIFT_RIGHT_ASSIGN:
-          jj_consume_token(SHIFT_RIGHT_ASSIGN);
-          ExpressaoAritmeticaOuLogica();
-          break;
-        default:
-          jj_la1[16] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
-        }
+        jj_consume_token(SHIFT_RIGHT_ASSIGN);
+        ExpressaoAritmeticaOuLogica();
         break;
       default:
-        jj_la1[17] = jj_gen;
-        ;
+        jj_la1[16] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
       }
-    } catch (ParseException e) {
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-
-        if(tokensEsperados.contains("EQUAL") || tokensEsperados.contains("NOT_EQUAL") || tokensEsperados.contains("SHIFT_LEFT")
-            || tokensEsperados.contains("SHIFT_RIGHT") || tokensEsperados.contains("SHIFT_LEFT_ASSIGN") || tokensEsperados.contains("SHIFT_RIGHT_ASSIGN"))
-        {
-            errosSintaticos.append("Erro sint\u00e1tico: A Express\u00e3o deve conter um operador l\u00f3gico").append("\n\n");
-        }
-        skipToSynchronizingToken(SEMICOLON, END, RPAREN, RBRACKET, START);
+      break;
+    default:
+      jj_la1[17] = jj_gen;
+      ;
     }
   }
 
@@ -788,47 +739,35 @@ public class Linguagem20252 implements Linguagem20252Constants {
   }
 
   final public void MenorPrioridade() throws ParseException {
-    try {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case PLUS:
+    case MINUS:
+    case PIPE:
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case PLUS:
+        jj_consume_token(PLUS);
+        Termo2();
+        MenorPrioridade();
+        break;
       case MINUS:
+        jj_consume_token(MINUS);
+        Termo2();
+        MenorPrioridade();
+        break;
       case PIPE:
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case PLUS:
-          jj_consume_token(PLUS);
-          Termo2();
-          MenorPrioridade();
-          break;
-        case MINUS:
-          jj_consume_token(MINUS);
-          Termo2();
-          MenorPrioridade();
-          break;
-        case PIPE:
-          jj_consume_token(PIPE);
-          Termo2();
-          MenorPrioridade();
-          break;
-        default:
-          jj_la1[18] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
-        }
+        jj_consume_token(PIPE);
+        Termo2();
+        MenorPrioridade();
         break;
       default:
-        jj_la1[19] = jj_gen;
-        ;
+        jj_la1[18] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
       }
-    } catch (ParseException e) {
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-
-        if(tokensEsperados.contains("PLUS") || tokensEsperados.contains("MINUS") || tokensEsperados.contains("PIPE")){
-            errosSintaticos.append("Erro sint\u00e1tico: A Express\u00e3o deve conter um operador aritm\u00e9tico").append("\n\n"); // ou logico neh
-        }
-        skipToSynchronizingToken(SEMICOLON, END, START, RPAREN, RBRACKET);
+      break;
+    default:
+      jj_la1[19] = jj_gen;
+      ;
     }
   }
 
@@ -838,61 +777,47 @@ public class Linguagem20252 implements Linguagem20252Constants {
   }
 
   final public void MediaPrioridade() throws ParseException {
-    try {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case STAR:
+    case SLASH:
+    case PERCENT:
+    case DOUBLE_PERCENT:
+    case AMPERSAND:
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case STAR:
+        jj_consume_token(STAR);
+        Termo1();
+        MediaPrioridade();
+        break;
       case SLASH:
+        jj_consume_token(SLASH);
+        Termo1();
+        MediaPrioridade();
+        break;
       case PERCENT:
+        jj_consume_token(PERCENT);
+        Termo1();
+        MediaPrioridade();
+        break;
       case DOUBLE_PERCENT:
+        jj_consume_token(DOUBLE_PERCENT);
+        Termo1();
+        MediaPrioridade();
+        break;
       case AMPERSAND:
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case STAR:
-          jj_consume_token(STAR);
-          Termo1();
-          MediaPrioridade();
-          break;
-        case SLASH:
-          jj_consume_token(SLASH);
-          Termo1();
-          MediaPrioridade();
-          break;
-        case PERCENT:
-          jj_consume_token(PERCENT);
-          Termo1();
-          MediaPrioridade();
-          break;
-        case DOUBLE_PERCENT:
-          jj_consume_token(DOUBLE_PERCENT);
-          Termo1();
-          MediaPrioridade();
-          break;
-        case AMPERSAND:
-          jj_consume_token(AMPERSAND);
-          Termo1();
-          MediaPrioridade();
-          break;
-        default:
-          jj_la1[20] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
-        }
+        jj_consume_token(AMPERSAND);
+        Termo1();
+        MediaPrioridade();
         break;
       default:
-        jj_la1[21] = jj_gen;
-        ;
+        jj_la1[20] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
       }
-    } catch (ParseException e) {
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-
-        if(tokensEsperados.contains("STAR") || tokensEsperados.contains("SLASH") || tokensEsperados.contains("PERCENT")
-            || tokensEsperados.contains("DOUBLE_PERCENT") || tokensEsperados.contains("AMPERSAND"))
-        {
-            errosSintaticos.append("Erro sint\u00e1tico: A Express\u00e3o deve conter um operador aritm\u00e9tico").append("\n\n"); // ou logico?
-        }
-        skipToSynchronizingToken(SEMICOLON, END, START, RPAREN, RBRACKET);
+      break;
+    default:
+      jj_la1[21] = jj_gen;
+      ;
     }
   }
 
@@ -902,27 +827,15 @@ public class Linguagem20252 implements Linguagem20252Constants {
   }
 
   final public void MaiorPrioridade() throws ParseException {
-    try {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case POWER:
-        jj_consume_token(POWER);
-        Elemento();
-        MaiorPrioridade();
-        break;
-      default:
-        jj_la1[22] = jj_gen;
-        ;
-      }
-    } catch (ParseException e) {
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-
-        if(tokensEsperados.contains("POWER")){
-             errosSintaticos.append("Erro sint\u00e1tico: A Express\u00e3o deve conter o operador '**'").append("\n\n");
-        }
-        skipToSynchronizingToken(SEMICOLON, END, START, RPAREN, RBRACKET);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case POWER:
+      jj_consume_token(POWER);
+      Elemento();
+      MaiorPrioridade();
+      break;
+    default:
+      jj_la1[22] = jj_gen;
+      ;
     }
   }
 
@@ -973,16 +886,16 @@ public class Linguagem20252 implements Linguagem20252Constants {
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
-        if (tokensEsperados.contains("IDENTIFIER") || tokensEsperados.contains("NUMBER") || tokensEsperados.contains("REAL") || tokensEsperados.contains("TEXT_DOUBLE")
-            || tokensEsperados.contains("TEXT_SINGLE") || tokensEsperados.contains("TRUE") || tokensEsperados.contains("FALSE"))
+        if (tokensEsperados.contains("identificador") || tokensEsperados.contains("numero inteiro") || tokensEsperados.contains("numero real") || tokensEsperados.contains("texto")
+           || tokensEsperados.contains("constante logica"))
         {
             errosSintaticos.append("Erro sint\u00e1tico: Elemento deve pertencer ao conjunto: {'Identificador', 'Constante num\u00e9rica', 'Constante num\u00e9rica real', 'Constante literal', 'TRUE' ou 'FALSE'}").append("\n\n");
-        }else if (tokensEsperados.contains("LPAREN") || tokensEsperados.contains("RPAREN")){
+        }else if (tokensEsperados.contains("(") || tokensEsperados.contains(")")){
             errosSintaticos.append("Erro sint\u00e1tico: Elemento deve estar entre '(' e ')'").append("\n\n");
-        }else if (tokensEsperados.contains("EXCLAMATION")){
+        }else if (tokensEsperados.contains("!")){
             errosSintaticos.append("Erro sint\u00e1tico: Elemento deve estar entre '!(' e ')'").append("\n\n");
         }
-        skipToSynchronizingToken(SEMICOLON, END, START, RPAREN, RBRACKET, LPAREN, LBRACKET);
+        skipToSynchronizingToken(RPAREN, RBRACKET, SET, READ, SHOW, IF, LOOP, THEN, SEMICOLON);
     }
   }
 
