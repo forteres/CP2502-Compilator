@@ -95,7 +95,7 @@ public class MenuBar {
                 fileNameStatus.setText(fileManager.getFileName());
             }else{
                 fileNameStatus.setText("Arquivo novo");
-                //limpar caixa de saida
+                resultArea.setText("");
             }
         }
     }
@@ -105,6 +105,7 @@ public class MenuBar {
                 editArea.setText(fileManager.getFileInitialState());
                 if(!fileManager.getFileName().isEmpty()){
                     fileNameStatus.setText(fileManager.getFileName());
+                    resultArea.setText("");
                 }
             }
         } catch (IOException ex) {
