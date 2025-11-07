@@ -3,6 +3,8 @@ package app;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Stack;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.javatuples.Quartet;
 import org.javatuples.Triplet;
@@ -10,7 +12,7 @@ import org.javatuples.Triplet;
 public class AnalisadorSemantico {
 
     private ArrayList<Triplet<Integer,String,Object>> listaDeInstrucoes;
-    private ArrayList<Quartet<String,Integer,Integer,Object>> tabelaDeSimbolos;
+    private Map<String, Quartet<String, Integer, Integer, Object>> tabelaDeSimbolos = new HashMap<>();
     private int VT;
     private int VP;
     private ArrayList<String> listaDeIdentificadoresDaLinha;
@@ -24,12 +26,15 @@ public class AnalisadorSemantico {
     private boolean houveInitLinha;
     private Integer primeiroBaseInit;
 
-    private Quartet<String,Integer,Integer,Object> simboloAtual;
+    private int categoriaIdentificadorAtual;
+    private int baseIdentificadorAtual;
+    private Object tamanhoIdentificadorAtual;
+
     private String contexto;
 
     public AnalisadorSemantico() {
         this.listaDeInstrucoes = new ArrayList<>();
-        this.tabelaDeSimbolos = new ArrayList<>();
+        this.tabelaDeSimbolos = new HashMap<>();
         this.VT = 0;
         this.VP = 0;
         this.listaDeIdentificadoresDaLinha = new ArrayList<>();
@@ -44,13 +49,14 @@ public class AnalisadorSemantico {
         return this.listaDeInstrucoes;
     }
 
-    public boolean verificaIdentificadorNaTS(String identificador){
-        for(Quartet<String,Integer,Integer,Object> Simbolo : this.tabelaDeSimbolos){
-            if(Simbolo.getValue0().equals(identificador)){
-                return true;
-            }
+    private void recuperarInfosDaTS(String identificador) {
+        Quartet<String, Integer, Integer, Object> simbolo = tabelaDeSimbolos.get(identificador);
+        if (simbolo == null) {
+            throw new IllegalArgumentException("Identificador '" + identificador + "' não declarado");
         }
-        return false;
+        this.categoriaIdentificadorAtual = simbolo.getValue1();
+        this.baseIdentificadorAtual = simbolo.getValue2();
+        this.tamanhoIdentificadorAtual = simbolo.getValue3();
     }
 
     public boolean verificaExpressaoEhNumerica(String expressao){
@@ -69,8 +75,8 @@ public class AnalisadorSemantico {
 
     // FIM DAS AÇÕES SEMANTICAS DA MINHA CABEÇA
 
-    public void P1(String NomeDoPrograma){
-        this.tabelaDeSimbolos.add(new Quartet<>(NomeDoPrograma,0,0,0));
+    public void P1(String nomeDoPrograma){
+        tabelaDeSimbolos.put(nomeDoPrograma, new Quartet<>(nomeDoPrograma, 0, 0, "-"));
     }
 
     public void P2(){
@@ -87,11 +93,10 @@ public class AnalisadorSemantico {
     }
 
     public void D1(String identificador){
-        if(verificaIdentificadorNaTS(identificador)){
-            throw new IllegalArgumentException("identificador já declarado");
-        }else {
-            this.listaDeIdentificadoresDaLinha.add(identificador);
+        if (tabelaDeSimbolos.containsKey(identificador)) {
+            throw new IllegalArgumentException("Identificador '" + identificador + "' já declarado");
         }
+        listaDeIdentificadoresDaLinha.add(identificador);
     }
 
     public void T(Integer categoria){
@@ -106,26 +111,26 @@ public class AnalisadorSemantico {
         }
     }
 
-    public void V2(){
+    public void V2() {
         int base;
-        for(String identificador : this.listaDeIdentificadoresDaLinha){
-            base = this.VT + 1;
-            this.tabelaDeSimbolos.add(new Quartet<>(identificador,this.categoriaAtual,base,this.tamanhoDoUltimoVetor));
-            this.VT = this.VT + this.tamanhoDoUltimoVetor;
-            this.VP = this.VP + this.tamanhoDoUltimoVetor;
-            this.baseDoUltimoVetor = base;
-            this.listaBasesDaLinha.add(base);
+        for (String identificador : listaDeIdentificadoresDaLinha) {
+            base = VT + 1;
+            tabelaDeSimbolos.put(identificador, new Quartet<>(identificador, categoriaAtual, base, tamanhoDoUltimoVetor));
+            VT += tamanhoDoUltimoVetor;
+            VP += tamanhoDoUltimoVetor;
+            baseDoUltimoVetor = base;
+            listaBasesDaLinha.add(base);
         }
     }
 
-    public void E2(){
+    public void E2() {
         int base;
-        for(String identificador : this.listaDeIdentificadoresDaLinha){
-            base = this.VT + 1;
-            this.tabelaDeSimbolos.add(new Quartet<>(identificador,this.categoriaAtual,base,"-"));
-            this.VT = this.VT + 1;
-            this.VP = this.VP + 1;
-            this.listaBasesDaLinha.add(base);
+        for (String identificador : listaDeIdentificadoresDaLinha) {
+            base = VT + 1;
+            tabelaDeSimbolos.put(identificador, new Quartet<>(identificador, categoriaAtual, base, "-"));
+            VT += 1;
+            VP += 1;
+            listaBasesDaLinha.add(base);
         }
     }
 
@@ -197,17 +202,9 @@ public class AnalisadorSemantico {
         ++this.ponteiro;
     }
 
-    public void A1(String identificador){
-        if(verificaIdentificadorNaTS(identificador)){
-            for (Quartet<String,Integer,Integer,Object> simbolo : this.tabelaDeSimbolos){
-                if (simbolo.getValue0().equals(identificador)){
-                    this.simboloAtual = simbolo; // aqui acho q fiz errado e eh pra colocar no topo da tabela de simbolos
-                    this.temIndice = false;
-                }
-            }
-        }else{
-            throw new IllegalArgumentException("Variavel não declarada");
-        }
+    public void A1(String identificador) {
+        recuperarInfosDaTS(identificador);
+        temIndice = false;
     }
 
     public void I1(String expressao){
@@ -234,8 +231,9 @@ public class AnalisadorSemantico {
         }
     }
 
-    public void R1(){
-
-    } // Faço amanha, to cansado
+    public void R1(String identificador) {
+        recuperarInfosDaTS(identificador); // Armazena nas vars temporárias!
+        temIndice = false;
+    }
 
 }
