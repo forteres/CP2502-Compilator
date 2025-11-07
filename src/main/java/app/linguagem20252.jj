@@ -443,7 +443,7 @@ void ListaIdentificadoresAux() :
     }
 }
 
-void Tipo() :
+void Tipo() ://Vou ter que revisar por conta de alguns conflitos
 {}
 {
     try{
@@ -467,7 +467,7 @@ void Tipo() :
 //<tipo> ::= num #T | real #T | text #T | flag #T
 //#T — categoriaAtual ← 1/2/3/4.
 
-void Tipo() :
+void DeclaracaoArray() :
 {}
 {
     try{
@@ -665,7 +665,7 @@ void Atribuicao() :
                 VariaveisControle.temIndice = false;
             }
         }
-        SufixoDaAtribuicao()
+        Indice()
     }catch(ParseException e){
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
@@ -675,7 +675,7 @@ void Atribuicao() :
     }
 }
 
-void SufixoDaAtribuicao() :
+void Indice() :
 {}
 {
     try{
