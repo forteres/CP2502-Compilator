@@ -80,6 +80,10 @@ public class Linguagem20252 {
         }
         return false;
     }
+
+    boolean isEOF() {
+        return getToken(1).kind == EOF;
+    }
 }
 
 PARSER_END(Linguagem20252)
@@ -197,6 +201,10 @@ void Programa() :
         if (tokensEsperados.contains("begin")){
             errosSintaticos.append("Erro sintático: Programa deve iniciar com 'BEGIN'").append("\n\n");
         }
+        Token t = getToken(1);
+        if (t.kind == EOF){
+            errosSintaticos.append("Erro sintático: Fim inesperado do programa.").append("\n\n");
+        }
         // RECUPERAÇÃO DE ERROS
         skipToSynchronizingToken(END, START, DEFINE);
         Token t = getToken(1);
@@ -213,35 +221,17 @@ void Programa() :
 void NomeDoPrograma() :
 {}
 {
-    try{
-        (<IDENTIFIER>)/* semantica*/?
-    } catch (ParseException e){
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-
-        if (tokensEsperados.contains("identificador")){
-                errosSintaticos.append("Erro sintático: Nome do Programa deve ser um 'IDENTIFICADOR'").append("\n\n");
-        }
-        skipToSynchronizingToken(DEFINE,START);
-    }
+    (
+    <IDENTIFIER>/* semantica*/
+    )?
 }
 
 void BlocoDefine() :
 {}
 {
-    try{
     (
         <DEFINE> /* semantica*/ ListaDeVariaveis()
     )?
-    }catch(ParseException e){
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-        skipToSynchronizingToken(END, START);
-    }
 }
 
 void BlocoStart() :
@@ -250,6 +240,8 @@ void BlocoStart() :
     try{
         <START> ListaDeComandos() /* semantica*/
     }catch (ParseException e){
+        if(isEOF()){throw e;}
+
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
@@ -306,8 +298,10 @@ void Variavel() :
     try{
         ListaIdentificadores() <COLON> Tipo() DeclaracaoArray() <SEMICOLON> /* semantica*/
     }catch (ParseException e){
+        if(isEOF()){throw e;}
+
         Token t = getToken(1);
-        if(t.kind != START | t.kind != IDENTIFIER){
+        if(t.kind != START && t.kind != IDENTIFIER && t.kind != EOF){
             errosSintaticosCount++;
             String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
@@ -329,6 +323,8 @@ void ListaIdentificadores() :
     try{
         <IDENTIFIER> /* semantica*/ ListaIdentificadoresAux()
     }catch (ParseException e){
+        if(isEOF()){throw e;}
+
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
@@ -347,6 +343,8 @@ void ListaIdentificadoresAux() :
             <COMMA> <IDENTIFIER> /* semantica*/ ListaIdentificadoresAux()
         )?
     }catch (ParseException e){
+        if(isEOF()){throw e;}
+
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
@@ -375,6 +373,8 @@ void Tipo() :
         | <TYPE_TEXT> /* semantica*/
         | <TYPE_FLAG> /* semantica*/
     }catch (ParseException e){
+        if(isEOF()){throw e;}
+
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
@@ -397,6 +397,8 @@ void DeclaracaoArray() :
     try{
         <LBRACKET> <NUMBER> /* semantica*/ <RBRACKET> DeclaracaoValoresArray() /* semantica*/ | DeclaracaoValoresEscalar() /* semantica*/
     }catch(ParseException e){
+        if(isEOF()){throw e;}
+
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
@@ -423,6 +425,8 @@ void DeclaracaoValoresArray() :
         <ASSIGN> <LBRACE> ListaDeValoresVetor() <RBRACE> /* semantica*/
     )?
     }catch(ParseException e){
+        if(isEOF()){throw e;}
+
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
@@ -470,6 +474,8 @@ void Valor() :
       | <TRUE> /* semantica*/
       | <FALSE> /* semantica*/
     }catch (ParseException e){
+        if(isEOF()){throw e;}
+
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
@@ -516,6 +522,8 @@ void Atribuicao() :
     try{
         <SET> <IDENTIFIER> /* semantica*/ Indice() /* semantica*/ <ASSIGN> Expressao() /* semantica*/ <SEMICOLON>
     }catch(ParseException e){
+        if(isEOF()){throw e;}
+
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
@@ -536,6 +544,8 @@ void Indice() :
         <LBRACKET> Expressao()  /* semantica*/ <RBRACKET>
     )?
     }catch(ParseException e){
+        if(isEOF()){throw e;}
+
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
@@ -553,7 +563,9 @@ void EntradaDeDados() :
     try{
         <READ> <LPAREN> <IDENTIFIER> /* semantica*/ Indice() /* semantica*/<RPAREN> <SEMICOLON>
     }catch(ParseException e){
+        if(isEOF()){throw e;}
         errosSintaticosCount++;
+
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
@@ -570,14 +582,16 @@ void SaidaDeDados() :
     try{
         <SHOW> <LPAREN> ListaDeSaida() <RPAREN> <SEMICOLON>
     }catch(ParseException e){
-            errosSintaticosCount++;
-            String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
+        if(isEOF()){throw e;}
+        errosSintaticosCount++;
 
-            TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
-            errosSintaticos.append("Erro Sintatico: Comando de saida de dados deve seguir a sintaxe: 'SHOW(identificador/identificador[indice]);' ou\n\t 'SHOW(valor/valor,valor)'").append("\n\n");
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
-            skipToSynchronizingToken(SET, READ, SHOW, IF, LOOP);
+        errosSintaticos.append("Erro Sintatico: Comando de saida de dados deve seguir a sintaxe: 'SHOW(identificador/identificador[indice]);' ou\n\t 'SHOW(valor/valor,valor)'").append("\n\n");
+
+        skipToSynchronizingToken(SET, READ, SHOW, IF, LOOP);
     }
 }
 
@@ -604,7 +618,9 @@ void Item() :
         | <REAL> /* semantica*/
         | <TEXT_DOUBLE> /* semantica*/ | <TEXT_SINGLE> /* semantica*/
     }catch(ParseException e){
+        if(isEOF()){throw e;}
         errosSintaticosCount++;
+
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
@@ -619,7 +635,9 @@ void Selecao() :
     try{
         <IF> Expressao() /* semantica*/ <THEN> ListaDeComandos() Else() /* semantica*/ <END> <SEMICOLON>
     }catch(ParseException e){
+        if(isEOF()){throw e;}
         errosSintaticosCount++;
+
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
@@ -644,7 +662,9 @@ void Repeticao() :
     try{
         <LOOP> <WHILE> Expressao() /* semantica*/ ListaDeComandos() /* semantica*/ <END> <SEMICOLON>
     }catch(ParseException e){
+        if(isEOF()){throw e;}
         errosSintaticosCount++;
+
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
@@ -738,6 +758,8 @@ void Elemento() :
       | <LPAREN> Expressao() <RPAREN>
       | <EXCLAMATION> <LPAREN> Expressao() <RPAREN> /* semantica*/
     }catch (ParseException e){
+        if(isEOF()){throw e;}
+
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
