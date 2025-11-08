@@ -77,6 +77,10 @@ public class Linguagem20252 implements Linguagem20252Constants {
         return false;
     }
 
+    boolean isEOF() {
+        return getToken(1).kind == EOF;
+    }
+
 // # PROGRAMA
   final public void Programa() throws ParseException {
     try {
@@ -94,9 +98,13 @@ public class Linguagem20252 implements Linguagem20252Constants {
         if (tokensEsperados.contains("begin")){
             errosSintaticos.append("Erro sint\u00e1tico: Programa deve iniciar com 'BEGIN'").append("\n\n");
         }
+        Token t = getToken(1);
+        if (t.kind == EOF){
+            errosSintaticos.append("Erro sint\u00e1tico: Fim inesperado do programa.").append("\n\n");
+        }
         // RECUPERAÇÃO DE ERROS
         skipToSynchronizingToken(END, START, DEFINE);
-        Token t = getToken(1);
+        t = getToken(1);
         if (t.kind == END){
             BlocoEnd();
         }else if (t.kind == START){
@@ -108,45 +116,25 @@ public class Linguagem20252 implements Linguagem20252Constants {
   }
 
   final public void NomeDoPrograma() throws ParseException {
-    try {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case IDENTIFIER:
-        jj_consume_token(IDENTIFIER);
-        break;
-      default:
-        jj_la1[0] = jj_gen;
-        ;
-      }
-    } catch (ParseException e) {
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-
-        if (tokensEsperados.contains("identificador")){
-                errosSintaticos.append("Erro sint\u00e1tico: Nome do Programa deve ser um 'IDENTIFICADOR'").append("\n\n");
-        }
-        skipToSynchronizingToken(DEFINE,START);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case IDENTIFIER:
+      jj_consume_token(IDENTIFIER);
+      break;
+    default:
+      jj_la1[0] = jj_gen;
+      ;
     }
   }
 
   final public void BlocoDefine() throws ParseException {
-    try {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case DEFINE:
-        jj_consume_token(DEFINE);
-        ListaDeVariaveis();
-        break;
-      default:
-        jj_la1[1] = jj_gen;
-        ;
-      }
-    } catch (ParseException e) {
-        errosSintaticosCount++;
-        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
-
-        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
-        skipToSynchronizingToken(END, START);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case DEFINE:
+      jj_consume_token(DEFINE);
+      ListaDeVariaveis();
+      break;
+    default:
+      jj_la1[1] = jj_gen;
+      ;
     }
   }
 
@@ -155,6 +143,8 @@ public class Linguagem20252 implements Linguagem20252Constants {
       jj_consume_token(START);
       ListaDeComandos();
     } catch (ParseException e) {
+        if(isEOF()){{if (true) throw e;}}
+
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
@@ -214,8 +204,10 @@ public class Linguagem20252 implements Linguagem20252Constants {
       DeclaracaoArray();
       jj_consume_token(SEMICOLON);
     } catch (ParseException e) {
+        if(isEOF()){{if (true) throw e;}}
+
         Token t = getToken(1);
-        if(t.kind != START | t.kind != IDENTIFIER){
+        if(t.kind != START && t.kind != IDENTIFIER && t.kind != EOF){
             errosSintaticosCount++;
             String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
@@ -236,6 +228,8 @@ public class Linguagem20252 implements Linguagem20252Constants {
       jj_consume_token(IDENTIFIER);
       ListaIdentificadoresAux();
     } catch (ParseException e) {
+        if(isEOF()){{if (true) throw e;}}
+
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
@@ -259,6 +253,8 @@ public class Linguagem20252 implements Linguagem20252Constants {
         ;
       }
     } catch (ParseException e) {
+        if(isEOF()){{if (true) throw e;}}
+
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
@@ -299,6 +295,8 @@ public class Linguagem20252 implements Linguagem20252Constants {
         throw new ParseException();
       }
     } catch (ParseException e) {
+        if(isEOF()){{if (true) throw e;}}
+
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
@@ -329,6 +327,8 @@ public class Linguagem20252 implements Linguagem20252Constants {
         DeclaracaoValoresEscalar();
       }
     } catch (ParseException e) {
+        if(isEOF()){{if (true) throw e;}}
+
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
@@ -361,6 +361,8 @@ public class Linguagem20252 implements Linguagem20252Constants {
         ;
       }
     } catch (ParseException e) {
+        if(isEOF()){{if (true) throw e;}}
+
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
@@ -433,6 +435,8 @@ public class Linguagem20252 implements Linguagem20252Constants {
         throw new ParseException();
       }
     } catch (ParseException e) {
+        if(isEOF()){{if (true) throw e;}}
+
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
@@ -502,6 +506,8 @@ public class Linguagem20252 implements Linguagem20252Constants {
       Expressao();
       jj_consume_token(SEMICOLON);
     } catch (ParseException e) {
+        if(isEOF()){{if (true) throw e;}}
+
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
@@ -526,6 +532,8 @@ public class Linguagem20252 implements Linguagem20252Constants {
         ;
       }
     } catch (ParseException e) {
+        if(isEOF()){{if (true) throw e;}}
+
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
@@ -546,7 +554,9 @@ public class Linguagem20252 implements Linguagem20252Constants {
       jj_consume_token(RPAREN);
       jj_consume_token(SEMICOLON);
     } catch (ParseException e) {
+        if(isEOF()){{if (true) throw e;}}
         errosSintaticosCount++;
+
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
@@ -565,14 +575,16 @@ public class Linguagem20252 implements Linguagem20252Constants {
       jj_consume_token(RPAREN);
       jj_consume_token(SEMICOLON);
     } catch (ParseException e) {
-            errosSintaticosCount++;
-            String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
+        if(isEOF()){{if (true) throw e;}}
+        errosSintaticosCount++;
 
-            TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+        String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
-            errosSintaticos.append("Erro Sintatico: Comando de saida de dados deve seguir a sintaxe: 'SHOW(identificador/identificador[indice]);' ou\n\t 'SHOW(valor/valor,valor)'").append("\n\n");
+        TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
 
-            skipToSynchronizingToken(SET, READ, SHOW, IF, LOOP);
+        errosSintaticos.append("Erro Sintatico: Comando de saida de dados deve seguir a sintaxe: 'SHOW(identificador/identificador[indice]);' ou\n\t 'SHOW(valor/valor,valor)'").append("\n\n");
+
+        skipToSynchronizingToken(SET, READ, SHOW, IF, LOOP);
     }
   }
 
@@ -619,7 +631,9 @@ public class Linguagem20252 implements Linguagem20252Constants {
         throw new ParseException();
       }
     } catch (ParseException e) {
+        if(isEOF()){{if (true) throw e;}}
         errosSintaticosCount++;
+
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
@@ -638,7 +652,9 @@ public class Linguagem20252 implements Linguagem20252Constants {
       jj_consume_token(END);
       jj_consume_token(SEMICOLON);
     } catch (ParseException e) {
+        if(isEOF()){{if (true) throw e;}}
         errosSintaticosCount++;
+
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
@@ -670,7 +686,9 @@ public class Linguagem20252 implements Linguagem20252Constants {
       jj_consume_token(END);
       jj_consume_token(SEMICOLON);
     } catch (ParseException e) {
+        if(isEOF()){{if (true) throw e;}}
         errosSintaticosCount++;
+
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 
         TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
@@ -881,6 +899,8 @@ public class Linguagem20252 implements Linguagem20252Constants {
         throw new ParseException();
       }
     } catch (ParseException e) {
+        if(isEOF()){{if (true) throw e;}}
+
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
 

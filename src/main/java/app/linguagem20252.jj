@@ -207,7 +207,7 @@ void Programa() :
         }
         // RECUPERAÇÃO DE ERROS
         skipToSynchronizingToken(END, START, DEFINE);
-        Token t = getToken(1);
+        t = getToken(1);
         if (t.kind == END){
             BlocoEnd();
         }else if (t.kind == START){
