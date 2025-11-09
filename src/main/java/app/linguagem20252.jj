@@ -15,9 +15,13 @@ import static app.Linguagem20252Constants.*;
 
 public class Linguagem20252 {
 
+    public static int errosSemanticosCount = 0;
     public static int errosSintaticosCount = 0;
     public static int errosLexicosCount = 0;
     public static StringBuilder errosSintaticos = new StringBuilder();
+    public static StringBuilder errosSemanticos = new StringBuilder();
+
+    private AnalisadorSemantico analisadorSemantico = new AnalisadorSemantico();
 
     public String getListaTokensEsperados(int[][] conjuntoDeTokensEsperados){
         StringBuilder listaTokens = new StringBuilder();
@@ -84,6 +88,24 @@ public class Linguagem20252 {
     boolean isEOF() {
         return getToken(1).kind == EOF;
     }
+
+    private void executarAcaoSemantica(Runnable acao) {
+            try {
+                acao.run();
+            } catch (IllegalArgumentException e) {
+                errosSemanticosCount++;
+                errosSemanticos.append("Erro semântico na linha " + getToken(1).beginLine + ", coluna " + getToken(1).beginColumn + ": " + e.getMessage() + "\n\n");
+            } catch (Exception e) {
+                errosSemanticosCount++;
+                errosSemanticos.append("Erro semântico inesperado na linha " + getToken(1).beginLine + ", coluna " + getToken(1).beginColumn + ": " + e.getMessage() + "\n\n");
+            }
+        }
+
+    public ArrayList<Triplet<Integer, String, Object>> getCodigoIntermediario() {
+            return analisadorSemantico.getListaDeInstrucoes();
+        }
+
+
 }
 
 PARSER_END(Linguagem20252)
@@ -219,10 +241,10 @@ void Programa() :
 }
 
 void NomeDoPrograma() :
-{}
+{Token t;}
 {
     (
-    <IDENTIFIER>/* semantica*/
+    t=<IDENTIFIER> { executarAcaoSemantica(() -> analisadorSemantico.P1(t.image));}
     )?
 }
 
@@ -230,7 +252,7 @@ void BlocoDefine() :
 {}
 {
     (
-        <DEFINE> /* semantica*/ ListaDeVariaveis()
+        <DEFINE> {executarAcaoSemantica(() -> analisadorSemantico.D0());} ListaDeVariaveis()
     )?
 }
 
@@ -296,7 +318,7 @@ void Variavel() :
 {}
 {
     try{
-        ListaIdentificadores() <COLON> Tipo() DeclaracaoArray() <SEMICOLON> /* semantica*/
+        ListaIdentificadores() <COLON> Tipo() DeclaracaoArray() <SEMICOLON> {executarAcaoSemantica(() -> analisadorSemantico.D6());}
     }catch (ParseException e){
         if(isEOF()){throw e;}
 
@@ -318,10 +340,10 @@ void Variavel() :
 }
 
 void ListaIdentificadores() :
-{}
+{Token t;}
 {
     try{
-        <IDENTIFIER> /* semantica*/ ListaIdentificadoresAux()
+        t=<IDENTIFIER> {executarAcaoSemantica(() -> analisadorSemantico.D1(t.image));} ListaIdentificadoresAux()
     }catch (ParseException e){
         if(isEOF()){throw e;}
 
@@ -336,11 +358,11 @@ void ListaIdentificadores() :
 }
 
 void ListaIdentificadoresAux() :
-{}
+{Token t;}
 {
     try{
         (
-            <COMMA> <IDENTIFIER> /* semantica*/ ListaIdentificadoresAux()
+            <COMMA> t=<IDENTIFIER> {executarAcaoSemantica(() -> analisadorSemantico.D1(t.image));} ListaIdentificadoresAux()
         )?
     }catch (ParseException e){
         if(isEOF()){throw e;}
