@@ -8,10 +8,12 @@ package app;
 import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
+import java.lang.reflect.Array;import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import static app.Linguagem20252Constants.*;
+import org.javatuples.Pair;
+import org.javatuples.Triplet;
 
 public class Linguagem20252 {
 
@@ -60,12 +62,12 @@ public class Linguagem20252 {
             return tokens;
         }
 
-    public static StringBuilder analiseSintatica(InputStream input) throws ParseException {
+    public static StringBuilder analise(InputStream input) throws ParseException {
             Linguagem20252 parser = new Linguagem20252(input);
             errosSintaticosCount = 0;
             errosSintaticos = new StringBuilder();
             parser.Programa();
-            return errosSintaticos;
+            return new Pair<StringBuilder,StringBuilder>(errosSintaticos,errosSemanticos);
     }
 
     public Token skipToSynchronizingToken(int... synchronizingKinds) {
@@ -104,6 +106,9 @@ public class Linguagem20252 {
     public ArrayList<Triplet<Integer, String, Object>> getCodigoIntermediario() {
             return analisadorSemantico.getListaDeInstrucoes();
         }
+
+
+}}
 
 
 }
@@ -231,11 +236,23 @@ void Programa() :
         skipToSynchronizingToken(END, START, DEFINE);
         t = getToken(1);
         if (t.kind == END){
-            BlocoEnd();
+            try{BlocoEnd();} catch (ParseException e){ // melhorar
+                errosSintaticosCount++;
+                String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
+                TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+            }
         }else if (t.kind == START){
-            BlocoStart(); BlocoEnd(); // talvez try catch em cada um, acho que nao
+            try{BlocoStart(); BlocoEnd();} catch (ParseException e){
+                errosSintaticosCount++;
+                String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
+                TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+            }
         }else if (t.kind == DEFINE){
-            BlocoDefine(); BlocoStart(); BlocoEnd();
+            try {BlocoDefine(); BlocoStart(); BlocoEnd();} catch (ParseException e){
+                errosSintaticosCount++;
+                String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
+                TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+            }
         }
     }
 }
@@ -260,7 +277,7 @@ void BlocoStart() :
 {}
 {
     try{
-        <START> ListaDeComandos() /* semantica*/
+        <START> ListaDeComandos()
     }catch (ParseException e){
         if(isEOF()){throw e;}
 
@@ -276,7 +293,11 @@ void BlocoStart() :
         skipToSynchronizingToken(SET, READ, SHOW, IF, LOOP, END);
         Token t = getToken(1);
         if (t.kind != END){ // se achar END, desempilha
-            ListaDeComandos() /* semantica*/; // talvez try catch? nao acho que precisa
+            try{ListaDeComandos()} catch (ParseException e){ // melhorar
+                errosSintaticosCount++;
+                String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
+                TokenStringBuilder.formatErroSintaticoToString(e, errosSintaticos, tokensEsperados);
+            }
         }
     }
 }
@@ -285,7 +306,7 @@ void BlocoEnd() :
 {}
 {
     try{
-        <END> <DOT>
+        <END> <DOT> { executarAcaoSemantica(() -> analisadorSemantico.P2());}
     }catch (ParseException e){
         errosSintaticosCount++;
         String tokensEsperados = getListaTokensEsperados(e.expectedTokenSequences);
@@ -390,10 +411,10 @@ void Tipo() :
 {}
 {
     try{
-         <TYPE_NUM> /* semantica*/
-        | <TYPE_REAL> /* semantica*/
-        | <TYPE_TEXT> /* semantica*/
-        | <TYPE_FLAG> /* semantica*/
+         <TYPE_NUM> { executarAcaoSemantica(() -> analisadorSemantico.T(1)); }
+        | <TYPE_REAL> { executarAcaoSemantica(() -> analisadorSemantico.T(2)); }
+        | <TYPE_TEXT> { executarAcaoSemantica(() -> analisadorSemantico.T(3)); }
+        | <TYPE_FLAG> { executarAcaoSemantica(() -> analisadorSemantico.T(4)); }
     }catch (ParseException e){
         if(isEOF()){throw e;}
 
@@ -414,10 +435,10 @@ void Tipo() :
 }
 
 void DeclaracaoArray() :
-{}
+{Token t;}
 {
     try{
-        <LBRACKET> <NUMBER> /* semantica*/ <RBRACKET> DeclaracaoValoresArray() /* semantica*/ | DeclaracaoValoresEscalar() /* semantica*/
+        <LBRACKET> t=<NUMBER> { executarAcaoSemantica(() -> analisadorSemantico.V1(Integer.parseInt(t.image))); } <RBRACKET> DeclaracaoValoresArray() { executarAcaoSemantica(() -> analisadorSemantico.V2()); } | DeclaracaoValoresEscalar() { executarAcaoSemantica(() -> analisadorSemantico.E2()); }
     }catch(ParseException e){
         if(isEOF()){throw e;}
 
@@ -434,17 +455,18 @@ void DeclaracaoArray() :
 
         Token t = getToken(1);
         if(t.kind == ASSIGN) {
-            DeclaracaoValoresArray() /* semantica*/;
+            DeclaracaoValoresArray();
+            executarAcaoSemantica(() -> analisadorSemantico.V2());
         }
     }
 }
 
 void DeclaracaoValoresArray() :
-{}
+{ ArrayList<Object> listaValores = new ArrayList<>(); }
 {
     try{
     (
-        <ASSIGN> <LBRACE> ListaDeValoresVetor() <RBRACE> /* semantica*/
+        <ASSIGN> <LBRACE> { analisador.setContexto("lista completa de vetor"); } listaValores=ListaDeValoresVetor() <RBRACE> { executarAcaoSemantica(() -> analisadorSemantico.IV(listaValores)); analisadorSemantico.setContexto(""); }
     )?
     }catch(ParseException e){
         if(isEOF()){throw e;}
@@ -468,33 +490,33 @@ void DeclaracaoValoresEscalar() :
 {}
 {
     (
-        <ASSIGN> Valor() /* semantica*/
+        <ASSIGN> Valor() { executarAcaoSemantica(() -> analisadorSemantico.IE()); }
     )?
 }
 
-void ListaDeValoresVetor() :
-{}
+ArrayList<Object> ListaDeValoresVetor() :
+{ArraList<Object> lista = new Arraylist<>(); Object val;}
 {
-    Valor() /* semantica*/ ListaDeValoresVetorAux()
+    val=Valor() {lista.add(val); executarAcaoSemantica(() -> analisadorSemantico.VAL());} ListaDeValoresVetorAux(lista)
 }
 
-void ListaDeValoresVetorAux() :
-{}
+void ListaDeValoresVetorAux(ArrayLista<Object> lista) :
+{Object val;}
 {
     (
-        <COMMA> Valor() /* semantica*/ ListaDeValoresVetorAux()
+        <COMMA> val=Valor() {lista.add(val); executarAcaoSemantica(() -> analisadorSemantico.VAL());} ListaDeValoresVetorAux(lista)
     )?
 }
 
-void Valor() :
-{}
+Object Valor() :
+{Token t; Object value = null;}
 {
     try{
-       <NUMBER> /* semantica*/
-      | <REAL> /* semantica*/
-      | <TEXT_DOUBLE> /* semantica*/| <TEXT_SINGLE> /* semantica*/ // constante literal com "" e com ''
-      | <TRUE> /* semantica*/
-      | <FALSE> /* semantica*/
+       t=<NUMBER> { value = Integer.parseInt(t.image); executarAcaoSemantica(() -> analisadorSemantico.C1((Integer)value)); }
+      | t=<REAL> { value = Float.parseFloat(t.image); executarAcaoSemantica(() -> analisadorSemantico.C2((Float)value)); }
+      | t=<TEXT_DOUBLE> { value = t.image.substring(1, t.image.length() - 1); executarAcaoSemantica(() -> analisadorSemantico.C3((String)value)); }  | t=<TEXT_SINGLE> { value = t.image.substring(1, t.image.length() - 1); executarAcaoSemantica(() -> analisadorSemantico.C3((String)value)); }  // constante literal com "" e com ''
+      | t=<TRUE> { value = true; executarAcaoSemantica(() -> analisadorSemantico.C4()); }
+      | t=<FALSE> { value = false; executarAcaoSemantica(() -> analisadorSemantico.C5()); }
     }catch (ParseException e){
         if(isEOF()){throw e;}
 
@@ -510,6 +532,7 @@ void Valor() :
         }
         skipToSynchronizingToken(COMMA, START, IDENTIFIER);
     }
+    {return(value);}
 }
 
 // COMANDOS
@@ -539,10 +562,10 @@ void Comando() :
 }
 
 void Atribuicao() :
-{}
+{Token t;}
 {
     try{
-        <SET> <IDENTIFIER> /* semantica*/ Indice() /* semantica*/ <ASSIGN> Expressao() /* semantica*/ <SEMICOLON>
+        <SET> t=<IDENTIFIER> { executarAcaoSemantica(() -> analisadorSemantico.A1(t.image)); } Indice() { executarAcaoSemantica(() -> analisadorSemantico.A2()); } <ASSIGN> { analisadorSemantico.iniciarExpressao(); } Expressao() { executarAcaoSemantica(() -> analisadorSemantico.A3()); } <SEMICOLON>
     }catch(ParseException e){
         if(isEOF()){throw e;}
 
@@ -563,7 +586,7 @@ void Indice() :
 {
     try{
     (
-        <LBRACKET> Expressao()  /* semantica*/ <RBRACKET>
+        <LBRACKET> { analisadorSemantico.iniciarExpressao(); } Expressao()  { executarAcaoSemantica(() -> analisadorSemantico.I1()); } <RBRACKET>
     )?
     }catch(ParseException e){
         if(isEOF()){throw e;}
@@ -580,10 +603,10 @@ void Indice() :
 }
 
 void EntradaDeDados() :
-{}
+{Token t;}
 {
     try{
-        <READ> <LPAREN> <IDENTIFIER> /* semantica*/ Indice() /* semantica*/<RPAREN> <SEMICOLON>
+        <READ> <LPAREN> t=<IDENTIFIER> { executarAcaoSemantica(() -> analisadorSemantico.R1(t.image)); } Indice() { executarAcaoSemantica(() -> analisadorSemantico.R2()); } <RPAREN> <SEMICOLON>
     }catch(ParseException e){
         if(isEOF()){throw e;}
         errosSintaticosCount++;
@@ -632,13 +655,13 @@ void ListaDeSaidaAux() :
 }
 
 void Item() :
-{}
+{Token t;}
 {
     try{
-        <IDENTIFIER>  /* semantica*/ Indice() /* semantica*/
-        | <NUMBER> /* semantica*/
-        | <REAL> /* semantica*/
-        | <TEXT_DOUBLE> /* semantica*/ | <TEXT_SINGLE> /* semantica*/
+        t=<IDENTIFIER>  { executarAcaoSemantica(() -> analisadorSemantico.S2(t.image)); } Indice() { executarAcaoSemantica(() -> analisadorSemantico.S3()); }
+        | t=<NUMBER> { executarAcaoSemantica(() -> analisadorSemantico.K1(Integer.parseInt(t.image))); }
+        | t=<REAL> { executarAcaoSemantica(() -> analisadorSemantico.K2(Float.parseFloat(t.image))); }
+        | t=<TEXT_DOUBLE> { executarAcaoSemantica(() -> analisadorSemantico.K3(t.image.substring(1, t.image.length() - 1))); } | t=<TEXT_SINGLE> { executarAcaoSemantica(() -> analisadorSemantico.K3(t.image.substring(1, t.image.length() - 1))); }
     }catch(ParseException e){
         if(isEOF()){throw e;}
         errosSintaticosCount++;
@@ -652,10 +675,10 @@ void Item() :
 }
 
 void Selecao() :
-{}
+{boolean houveElse = false;}
 {
     try{
-        <IF> Expressao() /* semantica*/ <THEN> ListaDeComandos() Else() /* semantica*/ <END> <SEMICOLON>
+        <IF> { analisadorSemantico.iniciarExpressao(); } Expressao() { executarAcaoSemantica(() -> analisadorSemantico.F1()); } <THEN> ListaDeComandos() Else() { executarAcaoSemantica(() -> analisadorSemantico.F3()); } <END> <SEMICOLON>
     }catch(ParseException e){
         if(isEOF()){throw e;}
         errosSintaticosCount++;
@@ -674,7 +697,7 @@ void Else() :
 {}
 {
     (
-        <ELSE> /* semantica*/ ListaDeComandos()
+        <ELSE> { executarAcaoSemantica(() -> analisadorSemantico.F2()); } ListaDeComandos()
     )?
 }
 
@@ -682,7 +705,7 @@ void Repeticao() :
 {}
 {
     try{
-        <LOOP> <WHILE> Expressao() /* semantica*/ ListaDeComandos() /* semantica*/ <END> <SEMICOLON>
+        <LOOP> <WHILE> { analisadorSemantico.iniciarExpressao(); } Expressao() { executarAcaoSemantica(() -> analisadorSemantico.L1()); } ListaDeComandos() { executarAcaoSemantica(() -> analisadorSemantico.L2()); } <END> <SEMICOLON> // SUS aqui
     }catch(ParseException e){
         if(isEOF()){throw e;}
         errosSintaticosCount++;
@@ -710,12 +733,12 @@ void ExpressaoAux() :
 {}
 {
     (
-          <EQUAL> ExpressaoAritmeticaOuLogica() /* semantica*/
-        | <NOT_EQUAL> ExpressaoAritmeticaOuLogica() /* semantica*/
-        | <SHIFT_LEFT> ExpressaoAritmeticaOuLogica() /* semantica*/
-        | <SHIFT_RIGHT> ExpressaoAritmeticaOuLogica() /* semantica*/
-        | <SHIFT_LEFT_ASSIGN> ExpressaoAritmeticaOuLogica() /* semantica*/
-        | <SHIFT_RIGHT_ASSIGN> ExpressaoAritmeticaOuLogica() /* semantica*/
+          <EQUAL> ExpressaoAritmeticaOuLogica() { executarAcaoSemantica(() -> analisadorSemantico.Requals()); }
+        | <NOT_EQUAL> ExpressaoAritmeticaOuLogica() { executarAcaoSemantica(() -> analisadorSemantico.RnotEqual()); }
+        | <SHIFT_LEFT> ExpressaoAritmeticaOuLogica() { executarAcaoSemantica(() -> analisadorSemantico.Rsmaller()); }
+        | <SHIFT_RIGHT> ExpressaoAritmeticaOuLogica() { executarAcaoSemantica(() -> analisadorSemantico.Rbigger()); }
+        | <SHIFT_LEFT_ASSIGN> ExpressaoAritmeticaOuLogica() { executarAcaoSemantica(() -> analisadorSemantico.RsmallerEqual()); }
+        | <SHIFT_RIGHT_ASSIGN> ExpressaoAritmeticaOuLogica() { executarAcaoSemantica(() -> analisadorSemantico.RbiggerEqual()); }
     )?
 }
 
@@ -729,9 +752,9 @@ void MenorPrioridade() :
 {}
 {
     (
-          <PLUS> Termo2() /* semantica*/ MenorPrioridade()
-        | <MINUS> Termo2() /* semantica*/ MenorPrioridade()
-        | <PIPE> Termo2() /* semantica*/ MenorPrioridade()
+          <PLUS> Termo2() { executarAcaoSemantica(() -> analisadorSemantico.ADD()); } MenorPrioridade()
+        | <MINUS> Termo2() { executarAcaoSemantica(() -> analisadorSemantico.SUB()); } MenorPrioridade()
+        | <PIPE> Termo2() { executarAcaoSemantica(() -> analisadorSemantico.OR()); } MenorPrioridade()
     )?
 }
 
@@ -745,11 +768,11 @@ void MediaPrioridade() :
 {}
 {
     (
-        <STAR> Termo1() /* semantica*/ MediaPrioridade()
-      | <SLASH> Termo1() /* semantica*/ MediaPrioridade()
-      | <PERCENT> Termo1() /* semantica*/ MediaPrioridade()
-      | <DOUBLE_PERCENT> Termo1() /* semantica*/ MediaPrioridade()
-      | <AMPERSAND> Termo1() /* semantica*/ MediaPrioridade()
+        <STAR> Termo1() { executarAcaoSemantica(() -> analisadorSemantico.MUL()); } MediaPrioridade()
+      | <SLASH> Termo1() { executarAcaoSemantica(() -> analisadorSemantico.DIV()); } MediaPrioridade()
+      | <PERCENT> Termo1() { executarAcaoSemantica(() -> analisadorSemantico.MOD()); } MediaPrioridade()
+      | <DOUBLE_PERCENT> Termo1() { executarAcaoSemantica(() -> analisadorSemantico.REM()); } MediaPrioridade()
+      | <AMPERSAND> Termo1() { executarAcaoSemantica(() -> analisadorSemantico.AND()); } MediaPrioridade()
     )?
 }
 
@@ -763,22 +786,22 @@ void MaiorPrioridade() :
 {}
 {
     (
-        <POWER> Elemento() /* semantica*/ MaiorPrioridade()
+        <POWER> Elemento() { executarAcaoSemantica(() -> analisadorSemantico.POW()); } MaiorPrioridade()
     )?
 }
 
 void Elemento() :
-{}
+{Token t;}
 {
     try{
-      <IDENTIFIER> /* semantica*/ Indice() /* semantica*/
-      | <NUMBER> /* semantica*/
-      | <REAL> /* semantica*/
-      | <TEXT_DOUBLE> /* semantica*/ | <TEXT_SINGLE> /* semantica*/  // constante literal com "" e com ''
-      | <TRUE> /* semantica*/
-      | <FALSE> /* semantica*/
+      t=<IDENTIFIER> { executarAcaoSemantica(() -> analisadorSemantico.E1(t.image)); } Indice() { executarAcaoSemantica(() -> analisadorSemantico.E3()); }
+      | t=<NUMBER> { executarAcaoSemantica(() -> analisadorSemantico.C1(Integer.parseInt(t.image))); }
+      | t=<REAL> { executarAcaoSemantica(() -> analisadorSemantico.C2(Float.parseFloat(t.image))); }
+      | t=<TEXT_DOUBLE> { executarAcaoSemantica(() -> analisadorSemantico.C3(t.image.substring(1, t.image.length() - 1))); } | t=<TEXT_SINGLE> { executarAcaoSemantica(() -> analisadorSemantico.C3(t.image.substring(1, t.image.length() - 1))); }  // constante literal com "" e com ''
+      | <TRUE> { executarAcaoSemantica(() -> analisadorSemantico.C4()); }
+      | <FALSE> { executarAcaoSemantica(() -> analisadorSemantico.C5()); }
       | <LPAREN> Expressao() <RPAREN>
-      | <EXCLAMATION> <LPAREN> Expressao() <RPAREN> /* semantica*/
+      | <EXCLAMATION> <LPAREN> Expressao() <RPAREN> { executarAcaoSemantica(() -> analisadorSemantico.NOT()); }
     }catch (ParseException e){
         if(isEOF()){throw e;}
 

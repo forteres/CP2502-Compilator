@@ -70,8 +70,7 @@ public class AnalisadorSemantico {
         this.tamanhoIdentificadorAtual = simbolo.getValue3();
     }
 
-    // Removido o param String expressao: agora usa pilhaTipos populada durante o parse da expressão
-    // Chame isso APÓS o parse completo da <expressão> (ex: no final de I1, após reduzir a expressão do índice)
+    // Chamar isso APÓS o parse completo da <expressão> (ex: no final de I1, após reduzir a expressão do índice)
     public boolean verificaExpressaoEhNumerica() {
         if (pilhaTipos.isEmpty()) {
             throw new IllegalArgumentException("Expressão inválida: sem tipo inferido");

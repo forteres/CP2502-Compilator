@@ -2,6 +2,7 @@ package ui;
 
 import app.*;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.javatuples.Pair;
 
 import javax.swing.*;
 import java.io.ByteArrayInputStream;
@@ -154,11 +155,16 @@ public class MenuBar {
                 if(Linguagem20252.errosLexicosCount > 0){
                     this.resultArea.setText(TokenStringBuilder.formatTokenToString(tokens));
                 }else{
-                    InputStream inputSintatico = new ByteArrayInputStream(editArea.getText().getBytes());
-                    StringBuilder errosSintaticos = Linguagem20252.analiseSintatica(inputSintatico);
+                    InputStream input = new ByteArrayInputStream(editArea.getText().getBytes());
+                    StringBuilder errosSintaticos = new StringBuilder();
+                    StringBuilder errosSemanticos = new StringBuilder();
+                    new Pair<StringBuilder,StringBuilder>(errosSintaticos,errosSemanticos) = Linguagem20252.analise(input);
                     if(Linguagem20252.errosSintaticosCount > 0) {
                         this.resultArea.setText(errosSintaticos.toString());
-                    }else {
+                    }else if (Linguagem20252.errosSemanticosCount > 0){
+                        this.resultArea.setText(errosSemanticos.toString());
+                    }
+                    else {
                         this.resultArea.setText("Programa compilado com sucesso!");
                     }
                 }
@@ -167,7 +173,7 @@ public class MenuBar {
                 throw new RuntimeException(e);
             }
         }else{
-            this.resultArea.setText("Nada a Compilar"); // talvez tirar
+            this.resultArea.setText("Nada a Compilar");
         }
     }
     public void runAction(){
