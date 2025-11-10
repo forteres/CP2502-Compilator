@@ -156,9 +156,9 @@ public class MenuBar {
                     this.resultArea.setText(TokenStringBuilder.formatTokenToString(tokens));
                 }else{
                     InputStream input = new ByteArrayInputStream(editArea.getText().getBytes());
-                    StringBuilder errosSintaticos = new StringBuilder();
-                    StringBuilder errosSemanticos = new StringBuilder();
-                    new Pair<StringBuilder,StringBuilder>(errosSintaticos,errosSemanticos) = Linguagem20252.analise(input);
+                    Pair<StringBuilder,StringBuilder> resultados = Linguagem20252.analise(input);
+                    StringBuilder errosSintaticos = resultados.getValue0();
+                    StringBuilder errosSemanticos = resultados.getValue1();
                     if(Linguagem20252.errosSintaticosCount > 0) {
                         this.resultArea.setText(errosSintaticos.toString());
                     }else if (Linguagem20252.errosSemanticosCount > 0){
