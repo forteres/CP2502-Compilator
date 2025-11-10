@@ -19,8 +19,8 @@ public class Linguagem20252 implements Linguagem20252Constants {
     public static int errosLexicosCount = 0;
     public static StringBuilder errosSintaticos = new StringBuilder();
     public static StringBuilder errosSemanticos = new StringBuilder();
+    private static AnalisadorSemantico analisadorSemantico = new AnalisadorSemantico();
 
-    private AnalisadorSemantico analisadorSemantico = new AnalisadorSemantico();
 
     public String getListaTokensEsperados(int[][] conjuntoDeTokensEsperados){
         StringBuilder listaTokens = new StringBuilder();
@@ -61,8 +61,11 @@ public class Linguagem20252 implements Linguagem20252Constants {
 
     public static Pair<StringBuilder,StringBuilder> analise(InputStream input) throws ParseException {
             Linguagem20252 parser = new Linguagem20252(input);
+            analisadorSemantico = new AnalisadorSemantico();
             errosSintaticosCount = 0;
+            errosSemanticosCount = 0;
             errosSintaticos = new StringBuilder();
+            errosSemanticos = new StringBuilder();
             parser.Programa();
             return new Pair<>(errosSintaticos, errosSemanticos);
     }
