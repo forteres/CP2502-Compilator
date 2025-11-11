@@ -436,7 +436,8 @@ void DeclaracaoArray() :
 {Token t;}
 {
     try{
-        <LBRACKET> t=<NUMBER> { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.V1(Integer.parseInt(t.image)); } }); } <RBRACKET> DeclaracaoValoresArray() { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.V2(); } }); } | DeclaracaoValoresEscalar() { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.E2(); } }); }
+        <LBRACKET> t=<NUMBER> { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.V1(Integer.parseInt(t.image)); } }); } <RBRACKET> DeclaracaoValoresArray() { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.V2(); } }); }
+        | DeclaracaoValoresEscalar() { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.E2(); } }); }
     }catch(ParseException e){
         if(isEOF()){throw e;}
 

@@ -233,8 +233,18 @@ public class AnalisadorSemantico {
         }
     }
 
-    public void IE() {
-        this.primeiroBaseInit = listaBasesDaLinha.get(0);
+    public void IE() { // gepetation
+        if (this.listaBasesDaLinha.isEmpty()) {
+            for (String identificador : this.listaDeIdentificadoresDaLinha) {
+                int base = VT + 1;
+                tabelaDeSimbolos.put(identificador, new Quartet<>(identificador, categoriaAtual, base, "-"));
+                VT += 1;
+                VP += 1;
+                listaBasesDaLinha.add(base);
+            }
+        }
+
+        this.primeiroBaseInit = listaBasesDaLinha.getFirst();
         this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "STR", this.primeiroBaseInit));
         ++this.ponteiro;
         this.houveInitLinha = true;
