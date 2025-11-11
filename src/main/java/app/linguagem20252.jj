@@ -573,7 +573,7 @@ void Atribuicao() :
 {Token t;}
 {
     try{
-        <SET> t=<IDENTIFIER> { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.A1(t.image); } }); } Indice() { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.A2(); } }); } <ASSIGN> { analisadorSemantico.iniciarExpressao(); } Expressao() { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.A3(); } }); } <SEMICOLON>
+        <SET> t=<IDENTIFIER> { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.A1(t.image); } }); } Indice() { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.A2(); } }); } <ASSIGN> Expressao() { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.A3(); } }); } <SEMICOLON>
     }catch(ParseException e){
         if(isEOF()){throw e;}
 
@@ -594,7 +594,7 @@ void Indice() :
 {
     try{
     (
-        <LBRACKET> { analisadorSemantico.iniciarExpressao(); } Expressao()  { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.I1(); } }); } <RBRACKET>
+        <LBRACKET> Expressao()  { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.I1(); } }); } <RBRACKET>
     )?
     }catch(ParseException e){
         if(isEOF()){throw e;}
@@ -686,7 +686,7 @@ void Selecao() :
 {boolean houveElse = false;}
 {
     try{
-        <IF> { analisadorSemantico.iniciarExpressao(); } Expressao() { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.F1(); } }); } <THEN> ListaDeComandos() Else() { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.F3(houveElse); } }); } <END> <SEMICOLON>
+        <IF> Expressao() { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.F1(); } }); } <THEN> ListaDeComandos() Else() { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.F3(houveElse); } }); } <END> <SEMICOLON>
     }catch(ParseException e){
         if(isEOF()){throw e;}
         errosSintaticosCount++;
@@ -713,7 +713,7 @@ void Repeticao() :
 {}
 {
     try{
-        <LOOP> <WHILE> { analisadorSemantico.iniciarExpressao(); } Expressao() { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.L1(); } }); } ListaDeComandos() { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.L2(); } }); } <END> <SEMICOLON> // SUS aqui
+        <LOOP> <WHILE> Expressao() { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.L1(); } }); } ListaDeComandos() { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.L2(); } }); } <END> <SEMICOLON> // SUS aqui
     }catch(ParseException e){
         if(isEOF()){throw e;}
         errosSintaticosCount++;

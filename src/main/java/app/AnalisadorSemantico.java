@@ -20,7 +20,7 @@ public class AnalisadorSemantico {
     private int categoriaAtual;
     private Integer ponteiro;
     private Stack<Integer> pilhaDeDesvios;
-    private boolean temIndice;
+    private Stack<Boolean> temIndice;
     private Integer baseDoUltimoVetor;
     private Integer tamanhoDoUltimoVetor;
     private boolean houveInitLinha;
@@ -28,9 +28,9 @@ public class AnalisadorSemantico {
 
     private Integer inicioLoop;
 
-    private int categoriaIdentificadorAtual;
-    private int baseIdentificadorAtual;
-    private Object tamanhoIdentificadorAtual;
+    private Stack<Integer> categoriaIdentificadorAtual;
+    private Stack<Integer> baseIdentificadorAtual;
+    private Stack<Object> tamanhoIdentificadorAtual;
 
     private String contexto; // Usado para distinguir contextos como "lista completa de vetor", "atribuição", etc.
 
@@ -49,7 +49,10 @@ public class AnalisadorSemantico {
         this.listaBasesDaLinha = new ArrayList<>();
         this.ponteiro = 1;
         this.pilhaDeDesvios = new Stack<>();
-        this.temIndice = false;
+        this.temIndice = new Stack<>();
+        this.categoriaIdentificadorAtual = new Stack<>();
+        this.baseIdentificadorAtual = new Stack<>();
+        this.tamanhoIdentificadorAtual = new Stack<>();
         this.houveInitLinha = false;
         this.primeiroBaseInit = -1;
         this.contexto = ""; // Inicializa vazio
@@ -65,9 +68,9 @@ public class AnalisadorSemantico {
         if (simbolo == null) {
             throw new IllegalArgumentException("Identificador '" + identificador + "' não declarado");
         }
-        this.categoriaIdentificadorAtual = simbolo.getValue1();
-        this.baseIdentificadorAtual = simbolo.getValue2();
-        this.tamanhoIdentificadorAtual = simbolo.getValue3();
+        this.categoriaIdentificadorAtual.add(simbolo.getValue1());
+        this.baseIdentificadorAtual.add(simbolo.getValue2());
+        this.tamanhoIdentificadorAtual.add(simbolo.getValue3());
     }
 
     // Chamar isso APÓS o parse completo da <expressão> (ex: no final de I1, após reduzir a expressão do índice)
@@ -116,6 +119,12 @@ public class AnalisadorSemantico {
             throw new IllegalArgumentException("Tipos incompatíveis para operação relacional: " + tipoToString(t1) + " e " + tipoToString(t2));
         }
         return 4;
+    }
+
+    public void desempilhaInfoDaTS(){
+        this.categoriaIdentificadorAtual.pop();
+        this.baseIdentificadorAtual.pop();
+        this.tamanhoIdentificadorAtual.pop();
     }
 
     public void P1(String nomeDoPrograma) {
@@ -292,20 +301,35 @@ public class AnalisadorSemantico {
 
     public void A1(String identificador) {
         recuperarInfosDaTS(identificador);
-        temIndice = false;
+        temIndice.push(false);
     }
 
     public void I1() {
         // Após parse da <expressão> do índice, verifique tipo (sem param String, usa pilha)
         verificaExpressaoEhNumerica(); // Lança erro se não numérico
-        this.temIndice = true;
+        this.temIndice.pop();
+        this.temIndice.push(true);
     }
 
     public void A2() {
-        boolean isVetor = !(tamanhoIdentificadorAtual instanceof String && tamanhoIdentificadorAtual.equals("-"));
-        if (!isVetor && this.temIndice) {
+        boolean isVetor = !(tamanhoIdentificadorAtual.peek() instanceof String && tamanhoIdentificadorAtual.peek().equals("-"));
+        if (!isVetor && this.temIndice.peek()) {
+            this.temIndice.pop();
             throw new IllegalArgumentException("Variável escalar com índice");
-        } else if (isVetor && !this.temIndice) {
+        } else if (isVetor && !this.temIndice.peek()) {
+            this.temIndice.pop();
+            throw new IllegalArgumentException("Vetor sem índice");
+        }
+        this.temIndice.pop();
+    }
+
+    public void A2B() {
+        boolean isVetor = !(tamanhoIdentificadorAtual.peek() instanceof String && tamanhoIdentificadorAtual.peek().equals("-"));
+        if (!isVetor && this.temIndice.peek()) {
+            this.temIndice.pop();
+            throw new IllegalArgumentException("Variável escalar com índice");
+        } else if (isVetor && !this.temIndice.peek()) {
+            this.temIndice.pop();
             throw new IllegalArgumentException("Vetor sem índice");
         }
     }
@@ -313,61 +337,64 @@ public class AnalisadorSemantico {
     public void A3() {
         // Assuma RHS <expressão> gerou valor e tipo no topo
         int tipoRHS = pilhaTipos.pop(); // Tipo do RHS
-        if (tipoRHS != categoriaIdentificadorAtual) {
-            throw new IllegalArgumentException("Atribuição com tipos incompatíveis: LHS " + tipoToString(categoriaIdentificadorAtual) + ", RHS " + tipoToString(tipoRHS));
+        if (tipoRHS != categoriaIdentificadorAtual.peek()) {
+            desempilhaInfoDaTS();
+            throw new IllegalArgumentException("Atribuição com tipos incompatíveis: LHS " + tipoToString(categoriaIdentificadorAtual.peek()) + ", RHS " + tipoToString(tipoRHS));
         }
-        if (tamanhoIdentificadorAtual instanceof String && tamanhoIdentificadorAtual.equals("-")) {
+        if (tamanhoIdentificadorAtual.peek() instanceof String && tamanhoIdentificadorAtual.peek().equals("-")) {
             this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "STR", this.baseIdentificadorAtual));
             ++this.ponteiro;
         } else {
-            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "LDI", this.baseIdentificadorAtual - 1));
+            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "LDI", this.baseIdentificadorAtual.peek() - 1));
             ++this.ponteiro;
             this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "ADD", 0));
             ++this.ponteiro;
             this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "STX", 0));
             ++this.ponteiro;
         }
+        desempilhaInfoDaTS();
     }
 
     public void R1(String identificador) {
         recuperarInfosDaTS(identificador);
-        temIndice = false;
+        temIndice.push(false);
     }
 
     public void R2() {
-        A2();
-        if (!this.temIndice) {
-            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "REA", this.categoriaIdentificadorAtual));
+        A2B();
+        if (!this.temIndice.peek()) {
+            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "REA", this.categoriaIdentificadorAtual.peek()));
             ++this.ponteiro;
-            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "STR", this.baseIdentificadorAtual));
+            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "STR", this.baseIdentificadorAtual.peek()));
             ++this.ponteiro;
         } else {
-            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "REA", this.categoriaIdentificadorAtual));
+            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "REA", this.categoriaIdentificadorAtual.peek()));
             ++this.ponteiro;
-            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "LDI", this.baseIdentificadorAtual - 1));
+            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "LDI", this.baseIdentificadorAtual.peek() - 1));
             ++this.ponteiro;
             this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "ADD", 0));
             ++this.ponteiro;
             this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "STX", 0));
             ++this.ponteiro;
         }
-        this.temIndice = false;
+        this.temIndice.pop();
+        desempilhaInfoDaTS();
     }
 
     public void S2(String identificador) {
         recuperarInfosDaTS(identificador);
-        temIndice = false;
+        temIndice.push(false);
     }
 
     public void S3() {
-        A2();
-        if (!this.temIndice) {
-            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "LDV", this.baseIdentificadorAtual));
+        A2B();
+        if (!this.temIndice.peek()) {
+            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "LDV", this.baseIdentificadorAtual.peek()));
             ++this.ponteiro;
             this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "WRT", 0));
             ++this.ponteiro;
         } else {
-            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "LDI", this.baseIdentificadorAtual - 1));
+            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "LDI", this.baseIdentificadorAtual.peek() - 1));
             ++this.ponteiro;
             this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "ADD", 0));
             ++this.ponteiro;
@@ -376,7 +403,8 @@ public class AnalisadorSemantico {
             this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "WRT", 0));
             ++this.ponteiro;
         }
-        this.temIndice = false;
+        this.temIndice.pop();
+        desempilhaInfoDaTS();
     }
 
     public void K1(Integer valor) {
@@ -568,23 +596,25 @@ public class AnalisadorSemantico {
 
     public void E1(String identificador) {
         recuperarInfosDaTS(identificador);
-        temIndice = false;
+        temIndice.push(false);
     }
 
     public void E3() {
-        A2();
-        if (!this.temIndice) {
-            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "LDV", this.baseIdentificadorAtual));
+        A2B();
+        if (!this.temIndice.peek()) {
+            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "LDV", this.baseIdentificadorAtual.peek()));
             ++this.ponteiro;
         } else {
-            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "LDI", this.baseIdentificadorAtual - 1));
+            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "LDI", this.baseIdentificadorAtual.peek() - 1));
             ++this.ponteiro;
             this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "ADD", 0));
             ++this.ponteiro;
             this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "LDX", 0));
             ++this.ponteiro;
         }
-        pilhaTipos.push(categoriaIdentificadorAtual); // Push tipo do identificador (escalar ou elemento de vetor)
+        this.temIndice.pop();
+        desempilhaInfoDaTS();
+        pilhaTipos.push(categoriaIdentificadorAtual.peek()); // Push tipo do identificador (escalar ou elemento de vetor)
     }
 
     public void NOT() {
@@ -596,10 +626,4 @@ public class AnalisadorSemantico {
         this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "NOT", 0));
         ++this.ponteiro;
     }
-
-    // Adicione isso antes de iniciar uma nova expressão (ex: no parser, antes de <expressão>)
-    public void iniciarExpressao() {
-        pilhaTipos.clear();
-    }
-
 }

@@ -610,7 +610,6 @@ executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.A
       Indice();
 executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.A2(); } });
       jj_consume_token(ASSIGN);
-analisadorSemantico.iniciarExpressao();
       Expressao();
 executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.A3(); } });
       jj_consume_token(SEMICOLON);
@@ -633,7 +632,6 @@ if(isEOF()){{if (true) throw e;}}
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case LBRACKET:{
         jj_consume_token(LBRACKET);
-analisadorSemantico.iniciarExpressao();
         Expressao();
 executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.I1(); } });
         jj_consume_token(RBRACKET);
@@ -771,7 +769,6 @@ if(isEOF()){{if (true) throw e;}}
   final public void Selecao() throws ParseException {boolean houveElse = false;
     try {
       jj_consume_token(IF);
-analisadorSemantico.iniciarExpressao();
       Expressao();
 executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.F1(); } });
       jj_consume_token(THEN);
@@ -812,7 +809,6 @@ executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.F
     try {
       jj_consume_token(LOOP);
       jj_consume_token(WHILE);
-analisadorSemantico.iniciarExpressao();
       Expressao();
 executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.L1(); } });
       ListaDeComandos();
