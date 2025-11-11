@@ -103,7 +103,7 @@ public class Linguagem20252 implements Linguagem20252Constants {
         }
     }
 
-    public ArrayList<Triplet<Integer, String, Object>> getCodigoIntermediario() {
+    public static ArrayList<Triplet<Integer, String, Object>> getCodigoIntermediario() {
             return analisadorSemantico.getListaDeInstrucoes();
     }
 

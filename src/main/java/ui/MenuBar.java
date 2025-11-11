@@ -166,6 +166,7 @@ public class MenuBar {
                     }
                     else {
                         this.resultArea.setText("Programa compilado com sucesso!");
+                        SwingUtilities.invokeLater(() -> new InstructionTable(Linguagem20252.getCodigoIntermediario()));
                     }
                 }
 

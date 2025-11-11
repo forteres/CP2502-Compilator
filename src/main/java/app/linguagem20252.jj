@@ -106,7 +106,7 @@ public class Linguagem20252 {
         }
     }
 
-    public ArrayList<Triplet<Integer, String, Object>> getCodigoIntermediario() {
+    public static ArrayList<Triplet<Integer, String, Object>> getCodigoIntermediario() {
             return analisadorSemantico.getListaDeInstrucoes();
     }
 }
