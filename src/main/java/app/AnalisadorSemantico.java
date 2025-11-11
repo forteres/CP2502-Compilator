@@ -166,9 +166,11 @@ public class AnalisadorSemantico {
         }
     }
 
-    public void E2() {
+    public void E2() { // gepetation
         int base;
         for (String identificador : listaDeIdentificadoresDaLinha) {
+            if (tabelaDeSimbolos.containsKey(identificador)) continue;
+
             base = VT + 1;
             tabelaDeSimbolos.put(identificador, new Quartet<>(identificador, categoriaAtual, base, "-"));
             VT += 1;
