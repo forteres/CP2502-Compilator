@@ -140,6 +140,7 @@ public class AnalisadorSemantico {
     }
 
     public void D0() {
+        this.contexto = "Definicao";
         this.listaDeIdentificadoresDaLinha.clear();
         this.listaBasesDaLinha.clear();
         this.VP = 0;
@@ -231,50 +232,64 @@ public class AnalisadorSemantico {
         else if (listaDeValores.size() != tamanhoDoUltimoVetor) {
             throw new IllegalArgumentException("Número de valores não corresponde ao tamanho do vetor");
         }
-        System.out.print(listaDeInstrucoesTemp.size());
         houveInitLinha = true;
     }
 
     public void IE() {this.houveInitLinha = true;}
 
     public void C1(Integer valor) {
-        if (categoriaAtual != 1) {
-            throw new IllegalArgumentException("Valor passado não corresponde ao tipo especificado");
+        if(contexto.equals("Definicao")) {
+            if (categoriaAtual != 1) {
+                throw new IllegalArgumentException("Valor passado não corresponde ao tipo especificado");
+            }
+            listaDeInstrucoesTemp.add(new Triplet<>(0, "LDI", valor));
+        } else {
+            pilhaTipos.push(1); // num
         }
-        listaDeInstrucoesTemp.add(new Triplet<>(0, "LDI", valor));
-        pilhaTipos.push(1); // num
     }
 
     public void C2(Float valor) {
-        if (categoriaAtual != 2) {
-            throw new IllegalArgumentException("Valor passado não corresponde ao tipo especificado");
+        if(contexto.equals("Definicao")) {
+            if (categoriaAtual != 2) {
+                throw new IllegalArgumentException("Valor passado não corresponde ao tipo especificado");
+            }
+            listaDeInstrucoesTemp.add(new Triplet<>(0, "LDR", valor));
+        } else {
+            pilhaTipos.push(2); // real
         }
-        listaDeInstrucoesTemp.add(new Triplet<>(0, "LDR", valor));
-        pilhaTipos.push(2); // real
     }
 
     public void C3(String valor) {
-        if (categoriaAtual != 3) {
-            throw new IllegalArgumentException("Valor passado não corresponde ao tipo especificado");
+        if(contexto.equals("Definicao")) {
+            if (categoriaAtual != 3) {
+                throw new IllegalArgumentException("Valor passado não corresponde ao tipo especificado");
+            }
+            listaDeInstrucoesTemp.add(new Triplet<>(0, "LDS", valor));
+        } else {
+            pilhaTipos.push(3); // text
         }
-        listaDeInstrucoesTemp.add(new Triplet<>(0, "LDS", valor));
-        pilhaTipos.push(3); // text
     }
 
     public void C4() {
-        if (categoriaAtual != 4) {
-            throw new IllegalArgumentException("Valor passado não corresponde ao tipo especificado");
+        if(contexto.equals("Definicao")) {
+            if (categoriaAtual != 4) {
+                throw new IllegalArgumentException("Valor passado não corresponde ao tipo especificado");
+            }
+            listaDeInstrucoesTemp.add(new Triplet<>(0, "LDB", 1));
+        } else {
+            pilhaTipos.push(4); // flag
         }
-        listaDeInstrucoesTemp.add(new Triplet<>(0, "LDB", 1));
-        pilhaTipos.push(4); // flag
     }
 
     public void C5() {
-        if (categoriaAtual != 4) {
-            throw new IllegalArgumentException("Valor passado não corresponde ao tipo especificado");
+        if(contexto.equals("Definicao")) {
+            if (categoriaAtual != 4) {
+                throw new IllegalArgumentException("Valor passado não corresponde ao tipo especificado");
+            }
+            listaDeInstrucoesTemp.add(new Triplet<>(0, "LDB", 0));
+        } else {
+            pilhaTipos.push(4); // flag
         }
-        listaDeInstrucoesTemp.add(new Triplet<>(0, "LDB", 0));
-        pilhaTipos.push(4); // flag
     }
 
     public void A1(String identificador) {

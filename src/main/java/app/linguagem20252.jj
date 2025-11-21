@@ -275,7 +275,7 @@ void BlocoStart() :
 {}
 {
     try{
-        <START> ListaDeComandos()
+        <START> {analisadorSemantico.setContexto("");} ListaDeComandos()
     }catch (ParseException e){
         if(isEOF()){throw e;}
 
@@ -472,7 +472,7 @@ void DeclaracaoValoresArray() :
 {
     try{
     ( // SUS - tive que transformar em final
-        <ASSIGN> <LBRACE> { analisadorSemantico.setContexto("lista completa de vetor"); } listaValores=ListaDeValoresVetor() <RBRACE> {ArrayList<Object> finalListaValores = listaValores;  executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.IV(finalListaValores); } }); analisadorSemantico.setContexto(""); }
+        <ASSIGN> <LBRACE> listaValores=ListaDeValoresVetor() <RBRACE> {ArrayList<Object> finalListaValores = listaValores;  executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.IV(finalListaValores); } }); }
     )?
     }catch(ParseException e){
         if(isEOF()){throw e;}

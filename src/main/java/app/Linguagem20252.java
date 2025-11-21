@@ -183,6 +183,7 @@ executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.D
   final public void BlocoStart() throws ParseException {
     try {
       jj_consume_token(START);
+        analisadorSemantico.setContexto("");
       ListaDeComandos();
     } catch (ParseException e) {
 if(isEOF()){{if (true) throw e;}}
@@ -426,10 +427,9 @@ if(isEOF()){{if (true) throw e;}}
       case ASSIGN:{
         jj_consume_token(ASSIGN);
         jj_consume_token(LBRACE);
-analisadorSemantico.setContexto("lista completa de vetor");
         listaValores = ListaDeValoresVetor();
         jj_consume_token(RBRACE);
-ArrayList<Object> finalListaValores = listaValores;  executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.IV(finalListaValores); } }); analisadorSemantico.setContexto("");
+ArrayList<Object> finalListaValores = listaValores;  executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.IV(finalListaValores); } });
         break;
         }
       default:
