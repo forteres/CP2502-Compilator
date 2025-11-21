@@ -192,16 +192,16 @@ public class AnalisadorSemantico {
     public void D6() {
         switch (this.categoriaAtual) {
             case 1:
-                this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "ALI", this.VP));
+                this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "ALI", this.VP)); // Inteiro
                 break;
             case 2:
-                this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "ALR", this.VP));
+                this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "ALR", this.VP)); // Real
                 break;
             case 3:
-                this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "ALS", this.VP));
+                this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "ALS", this.VP)); // Texto
                 break;
             case 4:
-                this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "ALB", this.VP));
+                this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "ALB", this.VP)); // Logico
                 break;
         }
         ++this.ponteiro;
@@ -271,30 +271,45 @@ public class AnalisadorSemantico {
     }
 
     public void C1(Integer valor) {
+        if (categoriaAtual != 1) {
+            throw new IllegalArgumentException("Valor passado não corresponde ao tipo especificado");
+        }
         this.listaDeInstrucoes.add(new Triplet<>(ponteiro, "LDI", valor));
         ++this.ponteiro;
         pilhaTipos.push(1); // num
     }
 
     public void C2(Float valor) {
+        if (categoriaAtual != 2) {
+            throw new IllegalArgumentException("Valor passado não corresponde ao tipo especificado");
+        }
         this.listaDeInstrucoes.add(new Triplet<>(ponteiro, "LDR", valor));
         ++this.ponteiro;
         pilhaTipos.push(2); // real
     }
 
     public void C3(String valor) {
+        if (categoriaAtual != 3) {
+            throw new IllegalArgumentException("Valor passado não corresponde ao tipo especificado");
+        }
         this.listaDeInstrucoes.add(new Triplet<>(ponteiro, "LDS", valor));
         ++this.ponteiro;
         pilhaTipos.push(3); // text
     }
 
     public void C4() {
+        if (categoriaAtual != 4) {
+            throw new IllegalArgumentException("Valor passado não corresponde ao tipo especificado");
+        }
         this.listaDeInstrucoes.add(new Triplet<>(ponteiro, "LDB", 1));
         ++this.ponteiro;
         pilhaTipos.push(4); // flag
     }
 
     public void C5() {
+        if (categoriaAtual != 4) {
+            throw new IllegalArgumentException("Valor passado não corresponde ao tipo especificado");
+        }
         this.listaDeInstrucoes.add(new Triplet<>(ponteiro, "LDB", 0));
         ++this.ponteiro;
         pilhaTipos.push(4); // flag
