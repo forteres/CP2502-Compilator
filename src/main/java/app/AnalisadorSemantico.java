@@ -183,7 +183,9 @@ public class AnalisadorSemantico {
     }
 
     public void D6() {
-        for (int i = 1; i <= listaDeIdentificadoresDaLinha.size(); i++) {
+        int inicio = proxPosicaoPilhaLogica - listaDeIdentificadoresDaLinha.size() * VP;
+        int j = 0;
+        for (int i = 0; i < listaDeIdentificadoresDaLinha.size(); i++) {
             switch (this.categoriaAtual) {
                 case 1:
                     this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "ALI", VP)); // Inteiro
@@ -204,8 +206,9 @@ public class AnalisadorSemantico {
                 for (Triplet<Integer, String, Object> instrucao : listaDeInstrucoesTemp) {
                     listaDeInstrucoes.add(instrucao.setAt0(ponteiro));
                     ++ponteiro;
-                    listaDeInstrucoes.add(new Triplet<>(ponteiro, "STR", listaDeInstrucoesTemp.size() - i));
+                    listaDeInstrucoes.add(new Triplet<>(ponteiro, "STR", inicio + j));
                     ++ponteiro;
+                    ++j;
                 }
             }
         }
@@ -220,9 +223,15 @@ public class AnalisadorSemantico {
     }
 
     public void IV(ArrayList<Object> listaDeValores) {
-        if (listaDeValores.size() != tamanhoDoUltimoVetor & listaDeValores.size() != 1) {
+        if (listaDeValores.size() == 1){
+            for(int i = 1; i < listaDeIdentificadoresDaLinha.size()-1; i++) {
+                listaDeInstrucoesTemp.add(listaDeInstrucoesTemp.getFirst());
+            }
+        }
+        else if (listaDeValores.size() != tamanhoDoUltimoVetor) {
             throw new IllegalArgumentException("Número de valores não corresponde ao tamanho do vetor");
         }
+        System.out.print(listaDeInstrucoesTemp.size());
         houveInitLinha = true;
     }
 

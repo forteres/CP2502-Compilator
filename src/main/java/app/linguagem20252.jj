@@ -337,7 +337,7 @@ void Variavel() :
 {}
 {
     try{
-        ListaIdentificadores() <COLON> Tipo() DeclaracaoArray() <SEMICOLON> { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.D6();}});}
+        ListaIdentificadores() <COLON> Tipo() DeclaracaoArray() <SEMICOLON> { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.D6();}});} // erro aqui?
     }catch (ParseException e){
         if(isEOF()){throw e;}
 
