@@ -470,7 +470,7 @@ executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.I
 
   final public ArrayList<Object> ListaDeValoresVetor() throws ParseException {ArrayList<Object> lista = new ArrayList<>(); Object val;
     val = Valor();
-lista.add(val); executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.VAL(); } });
+lista.add(val);
     ListaDeValoresVetorAux(lista);
 {if ("" != null) return (lista);}
     throw new Error("Missing return statement in function");
@@ -481,7 +481,7 @@ lista.add(val); executarAcaoSemantica(new Runnable() { public void run() { anali
     case COMMA:{
       jj_consume_token(COMMA);
       val = Valor();
-lista.add(val); executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.VAL(); } });
+lista.add(val);
       ListaDeValoresVetorAux(lista);
       break;
       }

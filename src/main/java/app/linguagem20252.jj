@@ -503,7 +503,7 @@ void DeclaracaoValoresEscalar() :
 ArrayList<Object> ListaDeValoresVetor() :
 { ArrayList<Object> lista = new ArrayList<>(); Object val; }
 {
-    val = Valor() {lista.add(val); executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.VAL(); } });} ListaDeValoresVetorAux(lista)
+    val = Valor() {lista.add(val); } ListaDeValoresVetorAux(lista)
     {return (lista);} // SUS - retorna lista ou val?
 }
 
@@ -511,7 +511,7 @@ void ListaDeValoresVetorAux(ArrayList<Object> lista) :
 {Object val;}
 {
     (
-        <COMMA> val=Valor() { lista.add(val); executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.VAL(); } }); }  ListaDeValoresVetorAux(lista)
+        <COMMA> val=Valor() { lista.add(val); }  ListaDeValoresVetorAux(lista)
     )?
 }
 

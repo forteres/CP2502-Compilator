@@ -12,8 +12,9 @@ import org.javatuples.Triplet;
 public class AnalisadorSemantico {
 
     private ArrayList<Triplet<Integer, String, Object>> listaDeInstrucoes;
+    private ArrayList<Triplet<Integer, String, Object>> listaDeInstrucoesTemp;
     private Map<String, Quartet<String, Integer, Integer, Object>> tabelaDeSimbolos = new HashMap<>();
-    private int VT;
+    private int proxPosicaoPilhaLogica;
     private int VP;
     private ArrayList<String> listaDeIdentificadoresDaLinha;
     private ArrayList<Integer> listaBasesDaLinha;
@@ -42,8 +43,9 @@ public class AnalisadorSemantico {
 
     public AnalisadorSemantico() {
         this.listaDeInstrucoes = new ArrayList<>();
+        this.listaDeInstrucoesTemp = new ArrayList<>();
         this.tabelaDeSimbolos = new HashMap<>();
-        this.VT = 0;
+        this.proxPosicaoPilhaLogica = 0;
         this.VP = 0;
         this.listaDeIdentificadoresDaLinha = new ArrayList<>();
         this.listaBasesDaLinha = new ArrayList<>();
@@ -165,117 +167,72 @@ public class AnalisadorSemantico {
     }
 
     public void V2() {
-        int base;
         for (String identificador : listaDeIdentificadoresDaLinha) {
-            base = VT + 1;
-            tabelaDeSimbolos.put(identificador, new Quartet<>(identificador, categoriaAtual, base, tamanhoDoUltimoVetor));
-            VT += tamanhoDoUltimoVetor;
-            VP += tamanhoDoUltimoVetor;
-            baseDoUltimoVetor = base;
-            listaBasesDaLinha.add(base);
+            tabelaDeSimbolos.put(identificador, new Quartet<>(identificador, categoriaAtual, proxPosicaoPilhaLogica, tamanhoDoUltimoVetor));
+            proxPosicaoPilhaLogica+=tamanhoDoUltimoVetor;
         }
+        VP = tamanhoDoUltimoVetor;
     }
 
-    public void E2() { // gepetation
-        int base;
+    public void E2() {
         for (String identificador : listaDeIdentificadoresDaLinha) {
-            if (tabelaDeSimbolos.containsKey(identificador)) continue;
-
-            base = VT + 1;
-            tabelaDeSimbolos.put(identificador, new Quartet<>(identificador, categoriaAtual, base, "-"));
-            VT += 1;
-            VP += 1;
-            listaBasesDaLinha.add(base);
+            tabelaDeSimbolos.put(identificador, new Quartet<>(identificador, categoriaAtual, proxPosicaoPilhaLogica, "-"));
+            proxPosicaoPilhaLogica += 1;
         }
+        VP = 1;
     }
 
     public void D6() {
-        switch (this.categoriaAtual) {
-            case 1:
-                this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "ALI", this.VP)); // Inteiro
-                break;
-            case 2:
-                this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "ALR", this.VP)); // Real
-                break;
-            case 3:
-                this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "ALS", this.VP)); // Texto
-                break;
-            case 4:
-                this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "ALB", this.VP)); // Logico
-                break;
-        }
-        ++this.ponteiro;
-        if (this.houveInitLinha) {
-            for (int k = 1; k < this.listaBasesDaLinha.size(); k++) {
-                this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "LDV", this.primeiroBaseInit));
-                ++this.ponteiro;
-                this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "STR", this.listaBasesDaLinha.get(k)));
-                ++this.ponteiro;
+        for (int i = 1; i <= listaDeIdentificadoresDaLinha.size(); i++) {
+            switch (this.categoriaAtual) {
+                case 1:
+                    this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "ALI", VP)); // Inteiro
+                    break;
+                case 2:
+                    this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "ALR", VP)); // Real
+                    break;
+                case 3:
+                    this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "ALS", VP)); // Texto
+                    break;
+                case 4:
+                    this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "ALB", VP)); // Logico
+                    break;
             }
-            this.houveInitLinha = false;
-            this.primeiroBaseInit = -1;
+
+            ++ponteiro;
+            if(houveInitLinha) {
+                for (Triplet<Integer, String, Object> instrucao : listaDeInstrucoesTemp) {
+                    listaDeInstrucoes.add(instrucao.setAt0(ponteiro));
+                    ++ponteiro;
+                    listaDeInstrucoes.add(new Triplet<>(ponteiro, "STR", listaDeInstrucoesTemp.size() - i));
+                    ++ponteiro;
+                }
+            }
         }
-        this.listaDeIdentificadoresDaLinha.clear();
-        this.listaBasesDaLinha.clear();
-        this.VP = 0;
+        listaDeInstrucoesTemp.clear();
+        listaDeIdentificadoresDaLinha.clear();
+        VP = 0;
+        houveInitLinha = false;
     }
 
     public void setContexto(String novoContexto) {
         this.contexto = novoContexto;
-        if (novoContexto.equals("lista completa de vetor")) {
-            this.indiceCorrente = 0; // Reset índice
-        }
     }
 
     public void IV(ArrayList<Object> listaDeValores) {
-        if (listaDeValores.size() == 1) {
-            int baseV = baseDoUltimoVetor;
-            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "STR", baseV));
-            ++this.ponteiro;
-            for (int j = 2; j <= tamanhoDoUltimoVetor; j++) {
-                this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "LDV", baseV));
-                ++this.ponteiro;
-                this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "STR", baseV + (j - 1)));
-                ++this.ponteiro;
-            }
-        } else {
-            if (listaDeValores.size() != tamanhoDoUltimoVetor) {
-                throw new IllegalArgumentException("Número de valores não corresponde ao tamanho do vetor");
-            }
+        if (listaDeValores.size() != tamanhoDoUltimoVetor & listaDeValores.size() != 1) {
+            throw new IllegalArgumentException("Número de valores não corresponde ao tamanho do vetor");
         }
+        houveInitLinha = true;
     }
 
-    public void IE() { // gepetation
-        if (this.listaBasesDaLinha.isEmpty()) {
-            for (String identificador : this.listaDeIdentificadoresDaLinha) {
-                int base = VT + 1;
-                tabelaDeSimbolos.put(identificador, new Quartet<>(identificador, categoriaAtual, base, "-"));
-                VT += 1;
-                VP += 1;
-                listaBasesDaLinha.add(base);
-            }
-        }
-
-        this.primeiroBaseInit = listaBasesDaLinha.getFirst();
-        this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "STR", this.primeiroBaseInit));
-        ++this.ponteiro;
-        this.houveInitLinha = true;
-    }
-
-    public void VAL() {
-        if (this.contexto.equals("lista completa de vetor")) {
-            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "STR", baseDoUltimoVetor + indiceCorrente));
-            ++this.ponteiro;
-            this.indiceCorrente++;
-        }
-    }
+    public void IE() {this.houveInitLinha = true;}
 
     public void C1(Integer valor) {
         if (categoriaAtual != 1) {
             throw new IllegalArgumentException("Valor passado não corresponde ao tipo especificado");
         }
-        this.listaDeInstrucoes.add(new Triplet<>(ponteiro, "LDI", valor));
-        ++this.ponteiro;
+        listaDeInstrucoesTemp.add(new Triplet<>(0, "LDI", valor));
         pilhaTipos.push(1); // num
     }
 
@@ -283,8 +240,7 @@ public class AnalisadorSemantico {
         if (categoriaAtual != 2) {
             throw new IllegalArgumentException("Valor passado não corresponde ao tipo especificado");
         }
-        this.listaDeInstrucoes.add(new Triplet<>(ponteiro, "LDR", valor));
-        ++this.ponteiro;
+        listaDeInstrucoesTemp.add(new Triplet<>(0, "LDR", valor));
         pilhaTipos.push(2); // real
     }
 
@@ -292,8 +248,7 @@ public class AnalisadorSemantico {
         if (categoriaAtual != 3) {
             throw new IllegalArgumentException("Valor passado não corresponde ao tipo especificado");
         }
-        this.listaDeInstrucoes.add(new Triplet<>(ponteiro, "LDS", valor));
-        ++this.ponteiro;
+        listaDeInstrucoesTemp.add(new Triplet<>(0, "LDS", valor));
         pilhaTipos.push(3); // text
     }
 
@@ -301,8 +256,7 @@ public class AnalisadorSemantico {
         if (categoriaAtual != 4) {
             throw new IllegalArgumentException("Valor passado não corresponde ao tipo especificado");
         }
-        this.listaDeInstrucoes.add(new Triplet<>(ponteiro, "LDB", 1));
-        ++this.ponteiro;
+        listaDeInstrucoesTemp.add(new Triplet<>(0, "LDB", 1));
         pilhaTipos.push(4); // flag
     }
 
@@ -310,8 +264,7 @@ public class AnalisadorSemantico {
         if (categoriaAtual != 4) {
             throw new IllegalArgumentException("Valor passado não corresponde ao tipo especificado");
         }
-        this.listaDeInstrucoes.add(new Triplet<>(ponteiro, "LDB", 0));
-        ++this.ponteiro;
+        listaDeInstrucoesTemp.add(new Triplet<>(0, "LDB", 0));
         pilhaTipos.push(4); // flag
     }
 
