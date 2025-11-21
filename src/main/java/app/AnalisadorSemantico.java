@@ -57,6 +57,7 @@ public class AnalisadorSemantico {
         this.primeiroBaseInit = -1;
         this.contexto = ""; // Inicializa vazio
         this.indiceCorrente = 0;
+        this.baseDoUltimoVetor = 0; // teste
     }
 
     public ArrayList<Triplet<Integer, String, Object>> getListaDeInstrucoes() {
@@ -145,7 +146,7 @@ public class AnalisadorSemantico {
     }
 
     public void D1(String identificador) {
-        if (tabelaDeSimbolos.containsKey(identificador)) {
+        if (tabelaDeSimbolos.containsKey(identificador) || listaDeIdentificadoresDaLinha.contains(identificador)) {
             throw new IllegalArgumentException("Identificador '" + identificador + "' já declarado");
         }
         listaDeIdentificadoresDaLinha.add(identificador);
