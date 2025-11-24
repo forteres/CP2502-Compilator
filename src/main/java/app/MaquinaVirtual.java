@@ -213,36 +213,53 @@ public class MaquinaVirtual {
     }
 
     private void LDI(Integer constante){
-        System.out.println("pont "+ponteiro);
-        //System.out.println("coisa no tpo: "+memoria.get(topo));
         topo++;
-        memoria.add(constante);
-        System.out.println("topo agr "+memoria.get(topo));
+        try {
+            memoria.set(topo,constante);
+        } catch (IndexOutOfBoundsException e){
+            memoria.add(constante);
+        }
         ponteiro++;
     }
 
     private void LDR(Double constante){
         topo++;
-        memoria.add(constante);
+        try {
+            memoria.set(topo,constante);
+        } catch (IndexOutOfBoundsException e){
+            memoria.add(constante);
+        }
         ponteiro++;
     }
 
     private void LDS(String constante){
         topo++;
-        memoria.add(constante);
+        try {
+            memoria.set(topo,constante);
+        } catch (IndexOutOfBoundsException e){
+            memoria.add(constante);
+        }
         ponteiro++;
     }
 
     private void LDB(Integer constante){
         boolean constanteParsed = constante.equals(1);
         topo++;
-        memoria.add(constanteParsed);
+        try {
+            memoria.set(topo,constanteParsed);
+        } catch (IndexOutOfBoundsException e){
+            memoria.add(constanteParsed);
+        }
         ponteiro++;
     }
 
     private void LDV(Integer endereco){
         topo++;
-        memoria.add(memoria.get(endereco));
+        try {
+            memoria.set(topo,memoria.get(endereco));
+        } catch (IndexOutOfBoundsException e){
+            memoria.add(memoria.get(endereco));
+        }
         ponteiro++;
     }
 
@@ -260,35 +277,24 @@ public class MaquinaVirtual {
 
     private void STX(){ // invertido
         Object valor = memoria.get(topo);
-        //System.out.println(valor);
         topo--;
-        //System.out.println(memoria.get(topo));
-        //System.out.println(topo);
         memoria.set((int)memoria.get(topo),valor);
-        //System.out.println(memoria.get(2));
         topo--;
         ponteiro++;
     }
 
     private void ADD(){
-        System.out.println("ponte "+ponteiro);
-        //System.out.println("topo"+topo);
         Object topoPilha = memoria.get(topo);
-        //System.out.println("Pilha "+topoPilha);
         topo--;
         Object subtopo = memoria.get(topo);
-        //System.out.println("SubPilha "+topoPilha);
-        //System.out.println("SubPilha a "+memoria.get(topo-1));
         if(verificaTipoNumerico(topoPilha) && verificaTipoNumerico(subtopo)) {
             if(verificaTipoFloat(topoPilha) || verificaTipoFloat(subtopo)){
                 memoria.set(topo, ((Double) subtopo) + ((Double) topoPilha));
             }else {
                 memoria.set(topo, ((Integer) subtopo) + ((Integer) topoPilha));
             }
-
+            ponteiro++;
         }
-        ponteiro++;
-        //System.out.println("Res "+memoria.get(topo));
     }
 
     private void SUB(){
