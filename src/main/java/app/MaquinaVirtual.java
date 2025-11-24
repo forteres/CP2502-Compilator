@@ -1,22 +1,27 @@
 package app;
 
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.javatuples.Triplet;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import static ui.Ui.*;
+
 public class MaquinaVirtual {
     private ArrayList<Object> memoria;
     private ArrayList<Triplet<Integer, String, Object>> listaDeInstrucoes;
     private int topo;
     private int ponteiro;
+    private RSyntaxTextArea resultArea;
 
-    public MaquinaVirtual(ArrayList<Triplet<Integer, String, Object>> listaDeInstrucoes){
+    public MaquinaVirtual(ArrayList<Triplet<Integer, String, Object>> listaDeInstrucoes, RSyntaxTextArea resultArea) {
         this.memoria = new ArrayList<>();
         this.listaDeInstrucoes = listaDeInstrucoes;
         this.topo = -1;
         this.ponteiro = 0;
+        this.resultArea = resultArea;
     }
 
     public void executarInstrucoes(){
@@ -476,9 +481,54 @@ public class MaquinaVirtual {
         ponteiro = endereco;
     }
 
-    private void REA(Integer tipo){
-        // LE O VALOR
+    private void REA(Integer tipo) {
+        topo++;
+
+        resultArea.append(">> ");
+        resultArea.setEditable(true);
+        resultArea.setCaretPosition(resultArea.getDocument().getLength());
+        resultArea.requestFocus();
+
+        waitingInput = true;
+
+        synchronized (lock) {
+            try {
+                while (waitingInput) {
+                    lock.wait();
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException("Erro ao aguardar input do usuário", e);
+            }
+        }
+
+        String input = lastInput;
+
+        switch (tipo) {
+            case 1 -> {
+                try {
+                    memoria.set(topo,Integer.parseInt(input));
+                } catch (NumberFormatException e) {
+                    throw new RuntimeException("RUNTIME error: tipo incorreto - esperado int");
+                }
+            }
+            case 2 -> {
+                try {
+                    memoria.set(topo,Float.parseFloat(input));
+                } catch (NumberFormatException e) {
+                    throw new RuntimeException("RUNTIME error: tipo incorreto - esperado real");
+                }
+            }
+            case 3 -> {
+                if (input == null || input.isEmpty()) {
+                    throw new RuntimeException("RUNTIME error: tipo incorreto - esperado char");
+                }
+                memoria.set(topo,input); // talvez validar UTF8/lexico antes?
+            }
+            default -> throw new RuntimeException("RUNTIME error: tipo incorreto");
+        }
+        ponteiro++;
     }
+
 
     private void WRT(){ // Aqui precisa mudar o SysOut pra aparecer no console da execução do compilador
         Object topoPilha = memoria.get(topo);
@@ -486,6 +536,4 @@ public class MaquinaVirtual {
         topo--;
         ponteiro++;
     }
-
-
 }

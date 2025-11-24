@@ -6,6 +6,8 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -21,6 +23,10 @@ public class Ui {
     JLabel lineColumnStatus;
     JPanel centerPanel;
     JPanel statusBar;
+
+    public static final Object lock = new Object();
+    public static volatile boolean waitingInput = false;
+    public static String lastInput = "";
 
     public Ui(){
         //Screen
@@ -109,5 +115,33 @@ public class Ui {
                 lineColumnStatus.setText("Linha: -, Coluna: -");
             }
         });
+
+        resultArea.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (waitingInput && e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    synchronized (lock) {
+
+                        String[] lines = resultArea.getText().split("\n");
+                        String lastLine = lines[lines.length - 1];
+
+                        if (lastLine.startsWith(">> ")) {
+                            lastInput = lastLine.substring(3).trim();
+                        } else {
+                            lastInput = lastLine.trim();
+                        }
+
+                        resultArea.setEditable(false);
+                        resultArea.append("\n");
+
+                        waitingInput = false;
+                        lock.notifyAll();
+                    }
+
+                    e.consume();
+                }
+            }
+        });
+
     }
 }
