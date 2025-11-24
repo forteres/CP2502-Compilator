@@ -530,9 +530,9 @@ public class MaquinaVirtual {
     }
 
 
-    private void WRT(){ // Aqui precisa mudar o SysOut pra aparecer no console da execução do compilador
+    private void WRT(){
         Object topoPilha = memoria.get(topo);
-        System.out.println(topoPilha);
+        resultArea.append((String) topoPilha); // talvez adicionar \n
         topo--;
         ponteiro++;
     }
