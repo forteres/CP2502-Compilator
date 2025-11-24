@@ -63,7 +63,7 @@ public class MaquinaVirtual {
                     LDX();
                     break;
                 case "STX":
-                    // Nao sei exatamente como implementar
+                    STX();
                     break;
                 case "ADD":
                     ADD();
@@ -249,10 +249,13 @@ public class MaquinaVirtual {
         ponteiro++;
     }
 
-//    private STX(){
-//
-//    }
-
+    private void STX(){
+        Integer endereco = (Integer) memoria.get(topo);
+        topo--;
+        memoria.set(endereco,memoria.get(topo));
+        topo--;
+        ponteiro++;
+    }
 
     private void ADD(){
         Object topoPilha = memoria.get(topo);
