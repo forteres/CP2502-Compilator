@@ -356,6 +356,8 @@ public class AnalisadorSemantico {
     public void R1(String identificador) {
         recuperarInfosDaTS(identificador);
         temIndice.push(false);
+        this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "REA", this.categoriaIdentificadorAtual.peek())); // teste READ aqui
+        ++this.ponteiro;
     }
 
     public void R2() {
@@ -366,8 +368,7 @@ public class AnalisadorSemantico {
             this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "STR", this.baseIdentificadorAtual.peek()));
             ++this.ponteiro;
         } else {
-            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "REA", this.categoriaIdentificadorAtual.peek())); // aqui vai dar errado, indice tem que ficar no tpo mas aqui ele soma indice com o read invés do valor do indice + indice
-            ++this.ponteiro;
+            // rip READ aqui
             this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "LDI", this.baseIdentificadorAtual.peek() - 1));
             ++this.ponteiro;
             this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "ADD", 0));

@@ -178,6 +178,13 @@ public class MenuBar {
         }
     }
     public void runAction(){
+        if(Linguagem20252.errosLexicosCount > 0 || Linguagem20252.errosSemanticosCount > 0 || Linguagem20252.errosSintaticosCount > 0){
+            //erro nao deu p processar aq
+        }else{
+            resultArea.setText("");
+            MaquinaVirtual maquinaVirtual = new MaquinaVirtual(Linguagem20252.getCodigoIntermediario(), resultArea);
+            maquinaVirtual.executarInstrucoes();
+        }
     }
     public void exitAction(){
         if (fileManager.needSavePrompt(editArea.getText()) == FileManager.GuardDecision.ABORT) {

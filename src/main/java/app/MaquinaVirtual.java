@@ -1,8 +1,7 @@
 package app;
-
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.javatuples.Triplet;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -14,9 +13,9 @@ public class MaquinaVirtual {
     private ArrayList<Triplet<Integer, String, Object>> listaDeInstrucoes;
     private int topo;
     private int ponteiro;
-    private RSyntaxTextArea resultArea;
+    private JTextArea resultArea;
 
-    public MaquinaVirtual(ArrayList<Triplet<Integer, String, Object>> listaDeInstrucoes, RSyntaxTextArea resultArea) {
+    public MaquinaVirtual(ArrayList<Triplet<Integer, String, Object>> listaDeInstrucoes, JTextArea resultArea) {
         this.memoria = new ArrayList<>();
         this.listaDeInstrucoes = listaDeInstrucoes;
         this.topo = -1;
@@ -208,32 +207,32 @@ public class MaquinaVirtual {
 
     private void LDI(Integer constante){
         topo++;
-        memoria.set(topo,constante);
+        memoria.add(constante);
         ponteiro++;
     }
 
     private void LDR(Double constante){
         topo++;
-        memoria.set(topo,constante);
+        memoria.add(constante);
         ponteiro++;
     }
 
     private void LDS(String constante){
         topo++;
-        memoria.set(topo,constante);
+        memoria.add(constante);
         ponteiro++;
     }
 
     private void LDB(Integer constante){
         boolean constanteParsed = constante.equals(1);
         topo++;
-        memoria.set(topo,constanteParsed);
+        memoria.add(constanteParsed);
         ponteiro++;
     }
 
     private void LDV(Integer endereco){
         topo++;
-        memoria.set(topo,memoria.get(endereco));
+        memoria.add(memoria.get(endereco));
         ponteiro++;
     }
 
@@ -536,7 +535,7 @@ public class MaquinaVirtual {
 
     private void WRT(){
         Object topoPilha = memoria.get(topo);
-        resultArea.append((String) topoPilha); // talvez adicionar \n
+        resultArea.append(String.valueOf(topoPilha)); // talvez adicionar \n
         topo--;
         ponteiro++;
     }
