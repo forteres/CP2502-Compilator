@@ -245,7 +245,8 @@ public class AnalisadorSemantico {
             listaDeInstrucoesTemp.add(new Triplet<>(0, "LDI", valor));
         } else {
             pilhaTipos.push(1); // num
-            listaDeInstrucoes.add(new Triplet<>(0, "LDI", valor));
+            listaDeInstrucoes.add(new Triplet<>(ponteiro, "LDI", valor));
+            ponteiro++;
         }
     }
 
@@ -257,7 +258,8 @@ public class AnalisadorSemantico {
             listaDeInstrucoesTemp.add(new Triplet<>(0, "LDR", valor));
         } else {
             pilhaTipos.push(2); // real
-            listaDeInstrucoes.add(new Triplet<>(0, "LDR", valor));
+            listaDeInstrucoes.add(new Triplet<>(ponteiro, "LDR", valor));
+            ponteiro++;
         }
     }
 
@@ -269,7 +271,8 @@ public class AnalisadorSemantico {
             listaDeInstrucoesTemp.add(new Triplet<>(0, "LDS", valor));
         } else {
             pilhaTipos.push(3); // text
-            listaDeInstrucoes.add(new Triplet<>(0, "LDS", valor));
+            listaDeInstrucoes.add(new Triplet<>(ponteiro, "LDS", valor));
+            ponteiro++;
         }
     }
 
@@ -281,7 +284,8 @@ public class AnalisadorSemantico {
             listaDeInstrucoesTemp.add(new Triplet<>(0, "LDB", 1));
         } else {
             pilhaTipos.push(4); // flag
-            listaDeInstrucoes.add(new Triplet<>(0, "LDB", 1));
+            listaDeInstrucoes.add(new Triplet<>(ponteiro, "LDB", 1));
+            ponteiro++;
         }
     }
 
@@ -293,7 +297,8 @@ public class AnalisadorSemantico {
             listaDeInstrucoesTemp.add(new Triplet<>(0, "LDB", 0));
         } else {
             pilhaTipos.push(4); // flag
-            listaDeInstrucoes.add(new Triplet<>(0, "LDB", 0));
+            listaDeInstrucoes.add(new Triplet<>(ponteiro, "LDB", 0));
+            ponteiro++;
         }
     }
 
@@ -319,6 +324,10 @@ public class AnalisadorSemantico {
             throw new IllegalArgumentException("Vetor sem índice");
         }
         this.temIndice.pop();
+        this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "LDI", this.baseIdentificadorAtual.peek() - 1));
+        ++this.ponteiro;
+        this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "ADD", 0));
+        ++this.ponteiro;
     }
 
     public void A2B() {
@@ -343,10 +352,6 @@ public class AnalisadorSemantico {
             this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "STR", this.baseIdentificadorAtual));
             ++this.ponteiro;
         } else {
-            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "LDI", this.baseIdentificadorAtual.peek() - 1));
-            ++this.ponteiro;
-            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "ADD", 0));
-            ++this.ponteiro;
             this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "STX", 0));
             ++this.ponteiro;
         }

@@ -173,11 +173,18 @@ public class MaquinaVirtual {
         return (obj.getClass().equals(b.getClass()));
     }
 
-    private void ALI(Integer deslocamento){
-        for(int i = topo + 1; i<topo + deslocamento; i++){
-            memoria.set(i,0);
+    private void ALI(Integer deslocamento){ //gepetation
+        int novoTopo = topo + deslocamento;
+
+        while (memoria.size() <= novoTopo) {
+            memoria.add(0);
         }
-        topo = topo + deslocamento;
+
+        for (int i = topo + 1; i <= novoTopo; i++) {
+            memoria.set(i, 0);
+        }
+
+        topo = novoTopo;
         ponteiro++;
     }
 
@@ -206,8 +213,11 @@ public class MaquinaVirtual {
     }
 
     private void LDI(Integer constante){
+        System.out.println("pont "+ponteiro);
+        //System.out.println("coisa no tpo: "+memoria.get(topo));
         topo++;
         memoria.add(constante);
+        System.out.println("topo agr "+memoria.get(topo));
         ponteiro++;
     }
 
@@ -248,26 +258,37 @@ public class MaquinaVirtual {
         ponteiro++;
     }
 
-    private void STX(){
-        Integer endereco = (Integer) memoria.get(topo);
+    private void STX(){ // invertido
+        Object valor = memoria.get(topo);
+        //System.out.println(valor);
         topo--;
-        memoria.set(endereco,memoria.get(topo));
+        //System.out.println(memoria.get(topo));
+        //System.out.println(topo);
+        memoria.set((int)memoria.get(topo),valor);
+        //System.out.println(memoria.get(2));
         topo--;
         ponteiro++;
     }
 
     private void ADD(){
+        System.out.println("ponte "+ponteiro);
+        //System.out.println("topo"+topo);
         Object topoPilha = memoria.get(topo);
-        Object subtopo = memoria.get(topo -1);
+        //System.out.println("Pilha "+topoPilha);
+        topo--;
+        Object subtopo = memoria.get(topo);
+        //System.out.println("SubPilha "+topoPilha);
+        //System.out.println("SubPilha a "+memoria.get(topo-1));
         if(verificaTipoNumerico(topoPilha) && verificaTipoNumerico(subtopo)) {
             if(verificaTipoFloat(topoPilha) || verificaTipoFloat(subtopo)){
-                memoria.set(topo - 1, ((Double) subtopo) + ((Double) topoPilha));
+                memoria.set(topo, ((Double) subtopo) + ((Double) topoPilha));
             }else {
-                memoria.set(topo - 1, ((Integer) subtopo) + ((Integer) topoPilha));
+                memoria.set(topo, ((Integer) subtopo) + ((Integer) topoPilha));
             }
-            topo--;
-            ponteiro++;
+
         }
+        ponteiro++;
+        //System.out.println("Res "+memoria.get(topo));
     }
 
     private void SUB(){
