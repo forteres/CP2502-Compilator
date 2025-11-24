@@ -245,6 +245,7 @@ public class AnalisadorSemantico {
             listaDeInstrucoesTemp.add(new Triplet<>(0, "LDI", valor));
         } else {
             pilhaTipos.push(1); // num
+            listaDeInstrucoes.add(new Triplet<>(0, "LDI", valor));
         }
     }
 
@@ -256,6 +257,7 @@ public class AnalisadorSemantico {
             listaDeInstrucoesTemp.add(new Triplet<>(0, "LDR", valor));
         } else {
             pilhaTipos.push(2); // real
+            listaDeInstrucoes.add(new Triplet<>(0, "LDR", valor));
         }
     }
 
@@ -267,6 +269,7 @@ public class AnalisadorSemantico {
             listaDeInstrucoesTemp.add(new Triplet<>(0, "LDS", valor));
         } else {
             pilhaTipos.push(3); // text
+            listaDeInstrucoes.add(new Triplet<>(0, "LDS", valor));
         }
     }
 
@@ -278,6 +281,7 @@ public class AnalisadorSemantico {
             listaDeInstrucoesTemp.add(new Triplet<>(0, "LDB", 1));
         } else {
             pilhaTipos.push(4); // flag
+            listaDeInstrucoes.add(new Triplet<>(0, "LDB", 1));
         }
     }
 
@@ -289,6 +293,7 @@ public class AnalisadorSemantico {
             listaDeInstrucoesTemp.add(new Triplet<>(0, "LDB", 0));
         } else {
             pilhaTipos.push(4); // flag
+            listaDeInstrucoes.add(new Triplet<>(0, "LDB", 0));
         }
     }
 
@@ -361,7 +366,7 @@ public class AnalisadorSemantico {
             this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "STR", this.baseIdentificadorAtual.peek()));
             ++this.ponteiro;
         } else {
-            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "REA", this.categoriaIdentificadorAtual.peek()));
+            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "REA", this.categoriaIdentificadorAtual.peek())); // aqui vai dar errado, indice tem que ficar no tpo mas aqui ele soma indice com o read invés do valor do indice + indice
             ++this.ponteiro;
             this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "LDI", this.baseIdentificadorAtual.peek() - 1));
             ++this.ponteiro;
