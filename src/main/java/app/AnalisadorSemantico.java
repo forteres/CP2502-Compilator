@@ -187,7 +187,7 @@ public class AnalisadorSemantico {
     public void IV(ArrayList<Object> listaDeValores) {
         if (listaDeValores.size() == 1){
             for(int i = 1; i < listaDeIdentificadoresDaLinha.size()-1; i++) {
-                listaDeInstrucoesTemp.add(listaDeInstrucoesTemp.getFirst());
+                listaDeInstrucoesTemp.add(listaDeInstrucoesTemp.get(0));
             }
         }
         else if (listaDeValores.size() != tamanhoDoUltimoVetor) {
