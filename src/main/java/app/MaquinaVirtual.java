@@ -19,14 +19,14 @@ public class MaquinaVirtual {
         this.memoria = new ArrayList<>();
         this.listaDeInstrucoes = listaDeInstrucoes;
         this.topo = -1;
-        this.ponteiro = 0;
+        this.ponteiro = 1;
         this.resultArea = resultArea;
     }
 
     public void executarInstrucoes(){
         boolean stopped = false;
         while(!stopped){
-            Triplet<Integer, String, Object> instrucao = listaDeInstrucoes.get(ponteiro);
+            Triplet<Integer, String, Object> instrucao = listaDeInstrucoes.get(ponteiro-1);
             switch (instrucao.getValue1()){
                 case "ALI":
                     ALI((Integer) instrucao.getValue2());
@@ -276,11 +276,15 @@ public class MaquinaVirtual {
     }
 
     private void STX(){ // invertido
-        Object valor = memoria.get(topo);
-        topo--;
-        memoria.set((int)memoria.get(topo),valor);
-        topo--;
-        ponteiro++;
+        try {
+            Object valor = memoria.get(topo);
+            topo--;
+            memoria.set((int) memoria.get(topo), valor);
+            topo--;
+            ponteiro++;
+        } catch (IndexOutOfBoundsException e){
+            throw new IndexOutOfBoundsException("algo aqui?"); // melhorar
+        }
     }
 
     private void ADD(){
