@@ -38,8 +38,6 @@ public class AnalisadorSemantico {
     // Adicionado para rastrear índice corrente em listas de valores de vetor
     private int indiceCorrente;
 
-    // Adicionado para inferência de tipos em expressões
-    private Stack<Integer> pilhaTipos = new Stack<>(); // Tipos: 1=num, 2=real, 3=text, 4=flag
 
     public AnalisadorSemantico() {
         this.listaDeInstrucoes = new ArrayList<>();
@@ -76,18 +74,6 @@ public class AnalisadorSemantico {
         this.tamanhoIdentificadorAtual.add(simbolo.getValue3());
     }
 
-    // Chamar isso APÓS o parse completo da <expressão> (ex: no final de I1, após reduzir a expressão do índice)
-    public boolean verificaExpressaoEhNumerica() {
-        if (pilhaTipos.isEmpty()) {
-            throw new IllegalArgumentException("Expressão inválida: sem tipo inferido");
-        }
-        int tipo = pilhaTipos.pop();
-        if (tipo != 1 && tipo != 2) {
-            throw new IllegalArgumentException("Expressão não numérica: tipo inferido é " + tipoToString(tipo));
-        }
-        return true;
-    }
-
     // Auxiliar para mensagens de erro
     private String tipoToString(int tipo) {
         switch (tipo) {
@@ -97,31 +83,6 @@ public class AnalisadorSemantico {
             case 4: return "flag";
             default: return "desconhecido";
         }
-    }
-
-    // Auxiliar para inferir tipo resultante de operações aritméticas (promove para real se necessário)
-    private int inferirTipoArit(int t1, int t2) {
-        if (t1 == 3 || t2 == 3 || t1 == 4 || t2 == 4) {
-            throw new IllegalArgumentException("Tipos incompatíveis para operação aritmética: " + tipoToString(t1) + " e " + tipoToString(t2));
-        }
-        if (t1 == 2 || t2 == 2) return 2; // Promote to real
-        return 1; // num
-    }
-
-    // Auxiliar para lógicos (deve ser flag)
-    private int inferirTipoLogico(int t1, int t2) {
-        if (t1 != 4 || t2 != 4) {
-            throw new IllegalArgumentException("Tipos incompatíveis para operação lógica: " + tipoToString(t1) + " e " + tipoToString(t2));
-        }
-        return 4;
-    }
-
-    // Auxiliar para relacionais (tipos devem matching, resultado flag)
-    private int inferirTipoRelacional(int t1, int t2) {
-        if (t1 != t2) {
-            throw new IllegalArgumentException("Tipos incompatíveis para operação relacional: " + tipoToString(t1) + " e " + tipoToString(t2));
-        }
-        return 4;
     }
 
     public void desempilhaInfoDaTS(){
@@ -244,7 +205,6 @@ public class AnalisadorSemantico {
             }
             listaDeInstrucoesTemp.add(new Triplet<>(0, "LDI", valor));
         } else {
-            pilhaTipos.push(1); // num
             listaDeInstrucoes.add(new Triplet<>(ponteiro, "LDI", valor));
             ponteiro++;
         }
@@ -257,7 +217,6 @@ public class AnalisadorSemantico {
             }
             listaDeInstrucoesTemp.add(new Triplet<>(0, "LDR", valor));
         } else {
-            pilhaTipos.push(2); // real
             listaDeInstrucoes.add(new Triplet<>(ponteiro, "LDR", valor));
             ponteiro++;
         }
@@ -270,7 +229,6 @@ public class AnalisadorSemantico {
             }
             listaDeInstrucoesTemp.add(new Triplet<>(0, "LDS", valor));
         } else {
-            pilhaTipos.push(3); // text
             listaDeInstrucoes.add(new Triplet<>(ponteiro, "LDS", valor));
             ponteiro++;
         }
@@ -283,7 +241,6 @@ public class AnalisadorSemantico {
             }
             listaDeInstrucoesTemp.add(new Triplet<>(0, "LDB", 1));
         } else {
-            pilhaTipos.push(4); // flag
             listaDeInstrucoes.add(new Triplet<>(ponteiro, "LDB", 1));
             ponteiro++;
         }
@@ -296,7 +253,6 @@ public class AnalisadorSemantico {
             }
             listaDeInstrucoesTemp.add(new Triplet<>(0, "LDB", 0));
         } else {
-            pilhaTipos.push(4); // flag
             listaDeInstrucoes.add(new Triplet<>(ponteiro, "LDB", 0));
             ponteiro++;
         }
@@ -308,8 +264,6 @@ public class AnalisadorSemantico {
     }
 
     public void I1() {
-        // Após parse da <expressão> do índice, verifique tipo (sem param String, usa pilha)
-        verificaExpressaoEhNumerica(); // Lança erro se não numérico
         this.temIndice.pop();
         this.temIndice.push(true);
     }
@@ -342,14 +296,8 @@ public class AnalisadorSemantico {
     }
 
     public void A3() {
-        // Assuma RHS <expressão> gerou valor e tipo no topo
-        int tipoRHS = pilhaTipos.pop(); // Tipo do RHS
-        if (tipoRHS != categoriaIdentificadorAtual.peek()) {
-            desempilhaInfoDaTS();
-            throw new IllegalArgumentException("Atribuição com tipos incompatíveis: LHS " + tipoToString(categoriaIdentificadorAtual.peek()) + ", RHS " + tipoToString(tipoRHS));
-        }
         if (tamanhoIdentificadorAtual.peek() instanceof String && tamanhoIdentificadorAtual.peek().equals("-")) {
-            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "STR", this.baseIdentificadorAtual));
+            this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "STR", this.baseIdentificadorAtual.peek()));
             ++this.ponteiro;
         } else {
             this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "STX", 0));
@@ -416,7 +364,6 @@ public class AnalisadorSemantico {
         ++this.ponteiro;
         this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "WRT", 0));
         ++this.ponteiro;
-        pilhaTipos.push(1);
     }
 
     public void K2(Float valor) {
@@ -424,7 +371,6 @@ public class AnalisadorSemantico {
         ++this.ponteiro;
         this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "WRT", 0));
         ++this.ponteiro;
-        pilhaTipos.push(2);
     }
 
     public void K3(String valor) {
@@ -432,18 +378,12 @@ public class AnalisadorSemantico {
         ++this.ponteiro;
         this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "WRT", 0));
         ++this.ponteiro;
-        pilhaTipos.push(3);
     }
 
     public void F1() {
         this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "JMF", 0));
         this.pilhaDeDesvios.push(this.ponteiro);
         ++this.ponteiro;
-        // Verifique tipo da condição (deve ser flag)
-        int tipoCond = pilhaTipos.pop();
-        if (tipoCond != 4) {
-            throw new IllegalArgumentException("Condição de if deve ser flag, mas é " + tipoToString(tipoCond));
-        }
     }
 
     public void F2() {
@@ -459,16 +399,14 @@ public class AnalisadorSemantico {
         this.listaDeInstrucoes.set(endPendente - 1, new Triplet<>(endPendente, houveElse ? "JMP" : "JMF", this.ponteiro));
     }
 
-    public void L1() {
+    public void L0(){
         this.inicioLoop = this.ponteiro;
+    }
+
+    public void L1() {
         this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "JMF", 0));
         this.pilhaDeDesvios.push(this.ponteiro);
         ++this.ponteiro;
-        // Verifique tipo da condição (flag)
-        int tipoCond = pilhaTipos.pop();
-        if (tipoCond != 4) {
-            throw new IllegalArgumentException("Condição de loop deve ser flag, mas é " + tipoToString(tipoCond));
-        }
     }
 
     public void L2() {
@@ -479,121 +417,76 @@ public class AnalisadorSemantico {
     }
 
     public void Requals() {
-        int t2 = pilhaTipos.pop();
-        int t1 = pilhaTipos.pop();
-        pilhaTipos.push(inferirTipoRelacional(t1, t2));
         this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "EQL", 0));
         ++this.ponteiro;
     }
 
     public void RnotEqual() {
-        int t2 = pilhaTipos.pop();
-        int t1 = pilhaTipos.pop();
-        pilhaTipos.push(inferirTipoRelacional(t1, t2));
         this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "DIF", 0));
         ++this.ponteiro;
     }
 
     public void Rsmaller() {
-        int t2 = pilhaTipos.pop();
-        int t1 = pilhaTipos.pop();
-        pilhaTipos.push(inferirTipoRelacional(t1, t2));
         this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "SMR", 0));
         ++this.ponteiro;
     }
 
     public void Rbigger() {
-        int t2 = pilhaTipos.pop();
-        int t1 = pilhaTipos.pop();
-        pilhaTipos.push(inferirTipoRelacional(t1, t2));
         this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "BGR", 0));
         ++this.ponteiro;
     }
 
     public void RsmallerEqual() {
-        int t2 = pilhaTipos.pop();
-        int t1 = pilhaTipos.pop();
-        pilhaTipos.push(inferirTipoRelacional(t1, t2));
         this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "SME", 0));
         ++this.ponteiro;
     }
 
     public void RbiggerEqual() {
-        int t2 = pilhaTipos.pop();
-        int t1 = pilhaTipos.pop();
-        pilhaTipos.push(inferirTipoRelacional(t1, t2));
         this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "BGE", 0));
         ++this.ponteiro;
     }
 
     public void ADD() {
-        int t2 = pilhaTipos.pop();
-        int t1 = pilhaTipos.pop();
-        pilhaTipos.push(inferirTipoArit(t1, t2));
         this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "ADD", 0));
         ++this.ponteiro;
     }
 
     public void SUB() {
-        int t2 = pilhaTipos.pop();
-        int t1 = pilhaTipos.pop();
-        pilhaTipos.push(inferirTipoArit(t1, t2));
         this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "SUB", 0));
         ++this.ponteiro;
     }
 
     public void OR() {
-        int t2 = pilhaTipos.pop();
-        int t1 = pilhaTipos.pop();
-        pilhaTipos.push(inferirTipoLogico(t1, t2));
         this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "OR", 0));
         ++this.ponteiro;
     }
 
     public void MUL() {
-        int t2 = pilhaTipos.pop();
-        int t1 = pilhaTipos.pop();
-        pilhaTipos.push(inferirTipoArit(t1, t2));
         this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "MUL", 0));
         ++this.ponteiro;
     }
 
     public void DIV() {
-        int t2 = pilhaTipos.pop();
-        int t1 = pilhaTipos.pop();
-        pilhaTipos.push(inferirTipoArit(t1, t2));
         this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "DIV", 0));
         ++this.ponteiro;
     }
 
     public void MOD() {
-        int t2 = pilhaTipos.pop();
-        int t1 = pilhaTipos.pop();
-        pilhaTipos.push(inferirTipoArit(t1, t2));
         this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "MOD", 0));
         ++this.ponteiro;
     }
 
     public void REM() {
-        int t2 = pilhaTipos.pop();
-        int t1 = pilhaTipos.pop();
-        pilhaTipos.push(inferirTipoArit(t1, t2));
         this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "REM", 0));
         ++this.ponteiro;
     }
 
     public void AND() {
-        int t2 = pilhaTipos.pop();
-        int t1 = pilhaTipos.pop();
-        pilhaTipos.push(inferirTipoLogico(t1, t2));
         this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "AND", 0));
         ++this.ponteiro;
     }
 
     public void POW() {
-        int t2 = pilhaTipos.pop();
-        int t1 = pilhaTipos.pop();
-        pilhaTipos.push(inferirTipoArit(t1, t2));
         this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "POW", 0));
         ++this.ponteiro;
     }
@@ -618,15 +511,9 @@ public class AnalisadorSemantico {
         }
         this.temIndice.pop();
         desempilhaInfoDaTS();
-        pilhaTipos.push(categoriaIdentificadorAtual.peek()); // Push tipo do identificador (escalar ou elemento de vetor)
     }
 
     public void NOT() {
-        int t = pilhaTipos.pop();
-        if (t != 4) {
-            throw new IllegalArgumentException("NOT requer flag, mas é " + tipoToString(t));
-        }
-        pilhaTipos.push(4);
         this.listaDeInstrucoes.add(new Triplet<>(this.ponteiro, "NOT", 0));
         ++this.ponteiro;
     }

@@ -713,7 +713,7 @@ void Repeticao() :
 {}
 {
     try{
-        <LOOP> <WHILE> Expressao() { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.L1(); } }); } ListaDeComandos() { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.L2(); } }); } <END> <SEMICOLON> // SUS aqui
+        <LOOP> <WHILE> { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.L0(); } }); } Expressao() { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.L1(); } }); } ListaDeComandos() { executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.L2(); } }); } <END> <SEMICOLON> // SUS aqui
     }catch(ParseException e){
         if(isEOF()){throw e;}
         errosSintaticosCount++;

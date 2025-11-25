@@ -414,7 +414,7 @@ public class MaquinaVirtual {
         Object topoPilha = memoria.get(topo);
         Object subtopo = memoria.get(topo -1);
         if (verificaTipoNumerico(topoPilha) && verificaTipoNumerico(subtopo)){
-            if ((Double) subtopo < (Double) topoPilha){
+            if (((Number) subtopo).doubleValue() <= ((Number) topoPilha).doubleValue()){
                 memoria.set(topo - 1, true);
             }else{
                 memoria.set(topo - 1, false);
@@ -428,7 +428,7 @@ public class MaquinaVirtual {
         Object topoPilha = memoria.get(topo);
         Object subtopo = memoria.get(topo -1);
         if (verificaTipoNumerico(topoPilha) && verificaTipoNumerico(subtopo)){
-            if ((Double) subtopo > (Double) topoPilha){
+            if (((Number) subtopo).doubleValue() <= ((Number) topoPilha).doubleValue()){
                 memoria.set(topo - 1, true);
             }else{
                 memoria.set(topo - 1, false);
@@ -442,7 +442,7 @@ public class MaquinaVirtual {
         Object topoPilha = memoria.get(topo);
         Object subtopo = memoria.get(topo -1);
         if (verificaTipoNumerico(topoPilha) && verificaTipoNumerico(subtopo)){
-            if ((Double) subtopo <= (Double) topoPilha){
+            if (((Number) subtopo).doubleValue() <= ((Number) topoPilha).doubleValue()){
                 memoria.set(topo - 1, true);
             }else{
                 memoria.set(topo - 1, false);
@@ -456,7 +456,7 @@ public class MaquinaVirtual {
         Object topoPilha = memoria.get(topo);
         Object subtopo = memoria.get(topo -1);
         if (verificaTipoNumerico(topoPilha) && verificaTipoNumerico(subtopo)){
-            if ((Double) subtopo >= (Double) topoPilha){
+            if (((Number) subtopo).doubleValue() <= ((Number) topoPilha).doubleValue()){
                 memoria.set(topo - 1, true);
             }else{
                 memoria.set(topo - 1, false);

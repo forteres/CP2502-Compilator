@@ -183,7 +183,7 @@ executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.D
   final public void BlocoStart() throws ParseException {
     try {
       jj_consume_token(START);
-        analisadorSemantico.setContexto("");
+analisadorSemantico.setContexto("");
       ListaDeComandos();
     } catch (ParseException e) {
 if(isEOF()){{if (true) throw e;}}
@@ -809,6 +809,7 @@ executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.F
     try {
       jj_consume_token(LOOP);
       jj_consume_token(WHILE);
+executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.L0(); } });
       Expressao();
 executarAcaoSemantica(new Runnable() { public void run() { analisadorSemantico.L1(); } });
       ListaDeComandos();
