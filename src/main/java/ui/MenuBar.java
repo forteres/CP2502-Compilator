@@ -183,7 +183,7 @@ public class MenuBar {
         }else{
             resultArea.setText("");
             MaquinaVirtual maquinaVirtual = new MaquinaVirtual(Linguagem20252.getCodigoIntermediario(), resultArea);
-            maquinaVirtual.executarInstrucoes();
+            new Thread(maquinaVirtual::executarInstrucoes).start();
         }
     }
     public void exitAction(){
